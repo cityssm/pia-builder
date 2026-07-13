@@ -544,7 +544,9 @@ declare const bootstrap: typeof Bootstrap
       const { position, name } = splitPositionAndName(data[legacyFieldKey])
 
       if (!data[positionFieldKey]) {
-        const positionInput = form.elements.namedItem(positionFieldKey) as HTMLInputElement
+        const positionInput = form.elements.namedItem(
+          positionFieldKey
+        ) as HTMLInputElement
 
         if (positionInput) {
           positionInput.value = position
@@ -552,7 +554,9 @@ declare const bootstrap: typeof Bootstrap
       }
 
       if (!data[nameFieldKey]) {
-        const nameInput = form.elements.namedItem(nameFieldKey) as HTMLInputElement
+        const nameInput = form.elements.namedItem(
+          nameFieldKey
+        ) as HTMLInputElement
 
         if (nameInput) {
           nameInput.value = name
@@ -821,8 +825,8 @@ declare const bootstrap: typeof Bootstrap
     const overviewList = document.createElement('ul')
     for (const detail of [
       `Responsible Business Unit: ${data.businessUnit || ''}`,
-      `Project Lead Position: ${data.projectLeadPosition || ''}`,
       `Project Lead Name: ${data.projectLeadName || ''}`,
+      `Project Lead Position: ${data.projectLeadPosition || ''}`,
       `Assessment Date: ${data.assessmentDate || ''}`
     ]) {
       const detailItem = document.createElement('li')
@@ -843,7 +847,8 @@ declare const bootstrap: typeof Bootstrap
       container.append(heading)
 
       const preview = document.createElement('div')
-      const source = (form.elements.namedItem(fieldId) as HTMLTextAreaElement)?.value || ''
+      const source =
+        (form.elements.namedItem(fieldId) as HTMLTextAreaElement)?.value || ''
       renderMarkdownInto(source, preview)
       container.append(preview)
     }
@@ -887,7 +892,8 @@ declare const bootstrap: typeof Bootstrap
       container.append(heading)
 
       const preview = document.createElement('div')
-      const source = (form.elements.namedItem(fieldId) as HTMLTextAreaElement)?.value || ''
+      const source =
+        (form.elements.namedItem(fieldId) as HTMLTextAreaElement)?.value || ''
       renderMarkdownInto(source, preview)
       container.append(preview)
     }
@@ -925,7 +931,9 @@ declare const bootstrap: typeof Bootstrap
     reviewNotesHeading.textContent = 'Review Notes and Recommended Actions'
     container.append(reviewNotesHeading)
     const reviewNotesPreview = document.createElement('div')
-    const reviewNotesSource = (form.elements.namedItem('reviewNotes') as HTMLTextAreaElement)?.value || ''
+    const reviewNotesSource =
+      (form.elements.namedItem('reviewNotes') as HTMLTextAreaElement)?.value ||
+      ''
     renderMarkdownInto(reviewNotesSource, reviewNotesPreview)
     container.append(reviewNotesPreview)
 

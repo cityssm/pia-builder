@@ -575,8 +575,8 @@
         const overviewList = document.createElement('ul');
         for (const detail of [
             `Responsible Business Unit: ${data.businessUnit || ''}`,
-            `Project Lead Position: ${data.projectLeadPosition || ''}`,
             `Project Lead Name: ${data.projectLeadName || ''}`,
+            `Project Lead Position: ${data.projectLeadPosition || ''}`,
             `Assessment Date: ${data.assessmentDate || ''}`
         ]) {
             const detailItem = document.createElement('li');
@@ -661,7 +661,8 @@
         reviewNotesHeading.textContent = 'Review Notes and Recommended Actions';
         container.append(reviewNotesHeading);
         const reviewNotesPreview = document.createElement('div');
-        const reviewNotesSource = form.elements.namedItem('reviewNotes')?.value || '';
+        const reviewNotesSource = form.elements.namedItem('reviewNotes')?.value ||
+            '';
         renderMarkdownInto(reviewNotesSource, reviewNotesPreview);
         container.append(reviewNotesPreview);
         return `<!doctype html><html><head><meta charset="utf-8"></head><body>${container.innerHTML}</body></html>`;
