@@ -1,0 +1,81 @@
+:root {
+  --step-active: #0d6efd;
+  --step-muted: #dee2e6;
+}
+
+body {
+  background-color: #f8f9fa;
+}
+
+.step-indicator {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.step-indicator li {
+  border: 1px solid var(--step-muted);
+  border-radius: 999px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.9rem;
+  text-align: center;
+  background: #fff;
+  color: #6c757d;
+}
+
+.step-indicator li.active {
+  border-color: var(--step-active);
+  background: rgba(13, 110, 253, 0.1);
+  color: #084298;
+  font-weight: 600;
+}
+
+.step-card {
+  border: 0;
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.05);
+}
+
+.markdown-preview {
+  min-height: 120px;
+  background: #fff;
+}
+
+.markdown-preview h1,
+.markdown-preview h2,
+.markdown-preview h3 {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.markdown-preview p,
+.markdown-preview ul {
+  margin-bottom: 0.75rem;
+}
+
+@media print {
+  header,
+  #prevStepButton,
+  #nextStepButton,
+  #saveButton,
+  #openSavedPiasButton,
+  [data-bs-toggle="modal"] {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .step-card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+    break-inside: avoid;
+  }
+
+  .d-none {
+    display: block !important;
+  }
+}
