@@ -59,6 +59,9 @@
     localStorage.setItem(storageKey, JSON.stringify(documents));
   };
 
+  const getDocumentsSortedByUpdatedAt = () => loadDocuments()
+    .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
   const showStatus = (message, type = 'info') => {
     statusMessage.className = `alert alert-${type} mt-4 mb-0`;
     statusMessage.textContent = message;
@@ -144,9 +147,9 @@
         continue;
       }
 
-      const headingMatch = line.match(/^(#{1,3})\s*(.*)$/);
+      const headingMatch = line.match(/^(#{1,3})\s+(.+)$/);
 
-      if (headingMatch && headingMatch[2] !== '') {
+      if (headingMatch) {
         const heading = document.createElement(`h${headingMatch[1].length}`);
         appendInlineMarkdown(headingMatch[2], heading);
         container.append(heading);
@@ -309,6 +312,13 @@
       accessRolesList.append(buildAccessRoleRow(role));
     }
 
+    ensureMinimumListRows();
+
+    updateHeaderTitle();
+    updateAllMarkdownPreviews();
+  };
+
+  const ensureMinimumListRows = () => {
     if (personalInfoList.children.length === 0) {
       personalInfoList.append(buildPersonalInfoRow());
     }
@@ -316,9 +326,6 @@
     if (accessRolesList.children.length === 0) {
       accessRolesList.append(buildAccessRoleRow());
     }
-
-    updateHeaderTitle();
-    updateAllMarkdownPreviews();
   };
 
   const getCurrentDocumentName = () => {
@@ -373,8 +380,7 @@
 
     personalInfoList.textContent = '';
     accessRolesList.textContent = '';
-    personalInfoList.append(buildPersonalInfoRow());
-    accessRolesList.append(buildAccessRoleRow());
+    ensureMinimumListRows();
 
     setStep(0);
     clearStatus();
@@ -538,7 +544,7 @@
   };
 
   const renderSavedList = () => {
-    const documents = loadDocuments().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    const documents = getDocumentsSortedByUpdatedAt();
 
     savedPiasList.textContent = '';
     savedPiasEmptyState.classList.toggle('d-none', documents.length > 0);
@@ -713,7 +719,7 @@
   exportWordButton.addEventListener('click', () => {
     exportToFile(
       `${getExportSlug()}.doc`,
-      'application/msword;charset=utf-8',
+      'text/html;charset=utf-8',
       buildWordExport()
     );
     showStatus('Exported Microsoft Word document.', 'success');
@@ -769,12 +775,10 @@
 
   form.addEventListener('input', clearStatus);
 
-  const existingDocuments = loadDocuments();
+  const existingDocuments = getDocumentsSortedByUpdatedAt();
 
   if (existingDocuments.length > 0) {
-    const latest = existingDocuments.reduce((previous, current) => (
-      !previous || new Date(current.updatedAt) > new Date(previous.updatedAt) ? current : previous
-    ), null);
+    const [latest] = existingDocuments;
 
     if (latest) {
       currentDocumentId = latest.id;
@@ -785,13 +789,7 @@
     createNewDocument();
   }
 
-  if (personalInfoList.children.length === 0) {
-    personalInfoList.append(buildPersonalInfoRow());
-  }
-
-  if (accessRolesList.children.length === 0) {
-    accessRolesList.append(buildAccessRoleRow());
-  }
+  ensureMinimumListRows();
 
   for (const fieldId of markdownFieldIds) {
     setMarkdownMode(fieldId, 'edit');
