@@ -41,7 +41,7 @@
   let currentStep = 0;
   let currentDocumentId = '';
   let statusToastTimeoutId;
-  const statusToast = statusToastElement
+  const statusToastInstance = statusToastElement
     ? new bootstrap.Toast(statusToastElement, { autohide: false })
     : null;
 
@@ -69,7 +69,7 @@
     .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
   const showStatus = (message, type = 'info') => {
-    if (!statusToast || !statusToastBody || !statusToastElement) {
+    if (!statusToastInstance || !statusToastBody || !statusToastElement) {
       return;
     }
 
@@ -80,20 +80,20 @@
       danger: 'text-bg-danger'
     };
 
-    for (const cssClass of ['text-bg-primary', 'text-bg-success', 'text-bg-warning', 'text-bg-danger', 'text-bg-secondary']) {
+    for (const cssClass of [...Object.values(toastClassByType), 'text-bg-secondary']) {
       statusToastElement.classList.remove(cssClass);
     }
 
     statusToastElement.classList.add(toastClassByType[type] || 'text-bg-secondary');
     statusToastBody.textContent = message;
-    statusToast.show();
+    statusToastInstance.show();
 
     if (statusToastTimeoutId) {
       clearTimeout(statusToastTimeoutId);
     }
 
     statusToastTimeoutId = window.setTimeout(() => {
-      statusToast.hide();
+      statusToastInstance.hide();
       statusToastTimeoutId = undefined;
     }, 3200);
   };
@@ -104,7 +104,38 @@
       statusToastTimeoutId = undefined;
     }
 
-    statusToast?.hide();
+    statusToastInstance?.hide();
+  };
+
+  const parseInformationSourceItems = (data) => {
+    if (Array.isArray(data?.informationSourcesItems)) {
+      return data.informationSourcesItems;
+    }
+
+    if (typeof data?.informationSources === 'string') {
+      return data.informationSources.split('\n').map((line) => line.trim()).filter((line) => line !== '');
+    }
+
+    return [];
+  };
+
+  const splitPositionAndName = (combinedValue) => {
+    const value = (combinedValue || '').trim();
+
+    if (value === '') {
+      return { position: '', name: '' };
+    }
+
+    const dividerIndex = value.indexOf('/');
+
+    if (dividerIndex === -1) {
+      return { position: value, name: '' };
+    }
+
+    return {
+      position: value.slice(0, dividerIndex).trim(),
+      name: value.slice(dividerIndex + 1).trim()
+    };
   };
 
   const updateHeaderTitle = () => {
@@ -389,15 +420,11 @@
     accessRolesList.textContent = '';
 
     const personalItems = Array.isArray(data?.personalInfoItems) ? data.personalInfoItems : [];
-    const informationSourceItems = Array.isArray(data?.informationSourcesItems)
-      ? data.informationSourcesItems
-      : (typeof data?.informationSources === 'string'
-        ? data.informationSources.split('\n').map((line) => line.trim()).filter((line) => line !== '')
-        : []);
+    const informationSourceItems = parseInformationSourceItems(data);
     const roleItems = Array.isArray(data?.accessRoles) ? data.accessRoles : [];
 
     if ((data?.projectLead || '').trim()) {
-      const [position = '', name = ''] = data.projectLead.split('/').map((part) => part.trim());
+      const { position, name } = splitPositionAndName(data.projectLead);
       if (!data.projectLeadPosition) {
         const projectLeadPositionInput = form.elements.namedItem('projectLeadPosition');
         if (projectLeadPositionInput) {
@@ -413,7 +440,7 @@
     }
 
     if ((data?.reviewedBy || '').trim()) {
-      const [position = '', name = ''] = data.reviewedBy.split('/').map((part) => part.trim());
+      const { position, name } = splitPositionAndName(data.reviewedBy);
       if (!data.reviewedByPosition) {
         const reviewedByPositionInput = form.elements.namedItem('reviewedByPosition');
         if (reviewedByPositionInput) {
