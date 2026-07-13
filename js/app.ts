@@ -92,7 +92,9 @@ declare const bootstrap: typeof Bootstrap
     'legalAuthority',
     'collectionUseDisclosure',
     'retentionDisposal',
-    'safeguards',
+    'technicalSafeguards',
+    'administrativeSafeguards',
+    'physicalSafeguards',
     'reviewNotes'
   ]
 
@@ -372,7 +374,8 @@ declare const bootstrap: typeof Bootstrap
     const moveUpButton = document.createElement('button')
     moveUpButton.type = 'button'
     moveUpButton.className = reorderButtonClass
-    moveUpButton.textContent = 'Move Up'
+    moveUpButton.innerHTML =
+      '<i class="fa-solid fa-arrow-up" aria-hidden="true"></i> <span class="visually-hidden">Move Up</span>'
     moveUpButton.addEventListener('click', () => {
       const previousRow = row.previousElementSibling
       if (previousRow) {
@@ -384,7 +387,8 @@ declare const bootstrap: typeof Bootstrap
     const moveDownButton = document.createElement('button')
     moveDownButton.type = 'button'
     moveDownButton.className = reorderButtonClass
-    moveDownButton.textContent = 'Move Down'
+    moveDownButton.innerHTML =
+      '<i class="fa-solid fa-arrow-down" aria-hidden="true"></i> <span class="visually-hidden">Move Down</span>'
     moveDownButton.addEventListener('click', () => {
       const nextRow = row.nextElementSibling
       if (nextRow) {
@@ -396,7 +400,7 @@ declare const bootstrap: typeof Bootstrap
     const removeButton = document.createElement('button')
     removeButton.type = 'button'
     removeButton.className = 'btn btn-sm btn-outline-danger remove-item-button'
-    removeButton.textContent = removeLabel
+    removeButton.innerHTML = `<i class="fa-solid fa-trash" aria-hidden="true"></i> <span class="visually-hidden">${removeLabel}</span>`
     removeButton.addEventListener('click', () => {
       row.remove()
       clearStatus()
@@ -566,6 +570,25 @@ declare const bootstrap: typeof Bootstrap
       'reviewedByPosition',
       'reviewedByName'
     )
+
+    // Handle legacy combined safeguards field: migrate to technicalSafeguards.
+    // The original field mixed all three safeguard types. Migrating the content
+    // to technicalSafeguards preserves the data and prompts users to review and
+    // split it into the appropriate new fields.
+    if (
+      (data?.safeguards || '').trim() &&
+      !data?.technicalSafeguards &&
+      !data?.administrativeSafeguards &&
+      !data?.physicalSafeguards
+    ) {
+      const technicalField = form.elements.namedItem(
+        'technicalSafeguards'
+      ) as HTMLTextAreaElement
+
+      if (technicalField) {
+        technicalField.value = data.safeguards
+      }
+    }
 
     for (const item of personalItems) {
       personalInfoList.append(buildPersonalInfoRow(item))
@@ -762,8 +785,14 @@ declare const bootstrap: typeof Bootstrap
       '## Retention and Disposal Strategy',
       data.retentionDisposal || '',
       '',
-      '## Safeguards',
-      data.safeguards || '',
+      '## Technical Safeguards',
+      data.technicalSafeguards || '',
+      '',
+      '## Administrative Safeguards',
+      data.administrativeSafeguards || '',
+      '',
+      '## Physical Safeguards',
+      data.physicalSafeguards || '',
       '',
       '## Roles with Access to Personal Information',
       accessRoleLines,
@@ -783,27 +812,9 @@ declare const bootstrap: typeof Bootstrap
     title.textContent = getCurrentDocumentName()
     container.append(title)
 
-    const sections = [
-      ['Initiative Summary and Program Context', 'initiativeSummary'],
-      ['Legal Authority for Collection/Use/Disclosure', 'legalAuthority'],
-      ['Collection, Use, and Disclosure Controls', 'collectionUseDisclosure'],
-      ['Retention and Disposal Strategy', 'retentionDisposal'],
-      ['Safeguards', 'safeguards'],
-      ['Review Notes and Recommended Actions', 'reviewNotes']
-    ]
-
-    for (const [label, fieldId] of sections) {
-      const heading = document.createElement('h2')
-      heading.textContent = label
-      container.append(heading)
-
-      const preview = document.createElement('div')
-      const source = form.elements.namedItem(fieldId)?.value || ''
-      renderMarkdownInto(source, preview)
-      container.append(preview)
-    }
-
     const data = getFormData()
+
+    // Overview
     const overviewHeading = document.createElement('h2')
     overviewHeading.textContent = 'Overview'
     container.append(overviewHeading)
@@ -820,6 +831,24 @@ declare const bootstrap: typeof Bootstrap
     }
     container.append(overviewList)
 
+    // Step 1: Data Profile (text sections)
+    const textSections: Array<[string, string]> = [
+      ['Initiative Summary and Program Context', 'initiativeSummary'],
+      ['Legal Authority for Collection/Use/Disclosure', 'legalAuthority']
+    ]
+
+    for (const [label, fieldId] of textSections) {
+      const heading = document.createElement('h2')
+      heading.textContent = label
+      container.append(heading)
+
+      const preview = document.createElement('div')
+      const source = (form.elements.namedItem(fieldId) as HTMLTextAreaElement)?.value || ''
+      renderMarkdownInto(source, preview)
+      container.append(preview)
+    }
+
+    // Step 1: Personal Information Collected
     const personalInfoHeading = document.createElement('h2')
     personalInfoHeading.textContent = 'Personal Information Collected'
     container.append(personalInfoHeading)
@@ -831,6 +860,7 @@ declare const bootstrap: typeof Bootstrap
     }
     container.append(personalInfoListElement)
 
+    // Step 1: Sources of Personal Information
     const sourceHeading = document.createElement('h2')
     sourceHeading.textContent = 'Sources of Personal Information'
     container.append(sourceHeading)
@@ -842,6 +872,27 @@ declare const bootstrap: typeof Bootstrap
     }
     container.append(sourceList)
 
+    // Step 2: Risk & Controls (text sections)
+    const riskSections: Array<[string, string]> = [
+      ['Collection, Use, and Disclosure Controls', 'collectionUseDisclosure'],
+      ['Retention and Disposal Strategy', 'retentionDisposal'],
+      ['Technical Safeguards', 'technicalSafeguards'],
+      ['Administrative Safeguards', 'administrativeSafeguards'],
+      ['Physical Safeguards', 'physicalSafeguards']
+    ]
+
+    for (const [label, fieldId] of riskSections) {
+      const heading = document.createElement('h2')
+      heading.textContent = label
+      container.append(heading)
+
+      const preview = document.createElement('div')
+      const source = (form.elements.namedItem(fieldId) as HTMLTextAreaElement)?.value || ''
+      renderMarkdownInto(source, preview)
+      container.append(preview)
+    }
+
+    // Step 2: Roles with Access to Personal Information
     const accessHeading = document.createElement('h2')
     accessHeading.textContent = 'Roles with Access to Personal Information'
     container.append(accessHeading)
@@ -853,6 +904,7 @@ declare const bootstrap: typeof Bootstrap
     }
     container.append(accessList)
 
+    // Step 3: Review
     const reviewOverviewHeading = document.createElement('h2')
     reviewOverviewHeading.textContent = 'Review'
     container.append(reviewOverviewHeading)
@@ -867,6 +919,15 @@ declare const bootstrap: typeof Bootstrap
       reviewOverviewList.append(detailItem)
     }
     container.append(reviewOverviewList)
+
+    // Step 3: Review Notes
+    const reviewNotesHeading = document.createElement('h2')
+    reviewNotesHeading.textContent = 'Review Notes and Recommended Actions'
+    container.append(reviewNotesHeading)
+    const reviewNotesPreview = document.createElement('div')
+    const reviewNotesSource = (form.elements.namedItem('reviewNotes') as HTMLTextAreaElement)?.value || ''
+    renderMarkdownInto(reviewNotesSource, reviewNotesPreview)
+    container.append(reviewNotesPreview)
 
     return `<!doctype html><html><head><meta charset="utf-8"></head><body>${container.innerHTML}</body></html>`
   }
@@ -900,14 +961,16 @@ declare const bootstrap: typeof Bootstrap
       openButton.className = 'btn btn-sm btn-outline-primary'
       openButton.dataset.action = 'open'
       openButton.dataset.id = doc.id
-      openButton.textContent = 'Open'
+      openButton.innerHTML =
+        '<i class="fa-solid fa-folder-open" aria-hidden="true"></i> Open'
 
       const deleteButton = document.createElement('button')
       deleteButton.type = 'button'
       deleteButton.className = 'btn btn-sm btn-outline-danger'
       deleteButton.dataset.action = 'delete'
       deleteButton.dataset.id = doc.id
-      deleteButton.textContent = 'Delete'
+      deleteButton.innerHTML =
+        '<i class="fa-solid fa-trash" aria-hidden="true"></i> Delete'
 
       actionsContainer.append(openButton, deleteButton)
       buttonRow.append(detailsContainer, actionsContainer)
@@ -928,8 +991,10 @@ declare const bootstrap: typeof Bootstrap
     }
 
     previousStepButton.disabled = currentStep === 0
-    nextStepButton.textContent =
-      currentStep === stepCards.length - 1 ? 'Finish & Save' : 'Next'
+    nextStepButton.innerHTML =
+      currentStep === stepCards.length - 1
+        ? '<i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Finish &amp; Save'
+        : 'Next <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>'
   }
 
   const closeModalsForPrint = () => {
