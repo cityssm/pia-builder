@@ -376,7 +376,6 @@ declare const bootstrap: typeof Bootstrap
     moveUpButton.className = reorderButtonClass
     moveUpButton.innerHTML =
       '<i class="fa-solid fa-arrow-up" aria-hidden="true"></i> <span class="visually-hidden">Move Up</span>'
-    moveUpButton.title = 'Move Up'
     moveUpButton.addEventListener('click', () => {
       const previousRow = row.previousElementSibling
       if (previousRow) {
@@ -390,7 +389,6 @@ declare const bootstrap: typeof Bootstrap
     moveDownButton.className = reorderButtonClass
     moveDownButton.innerHTML =
       '<i class="fa-solid fa-arrow-down" aria-hidden="true"></i> <span class="visually-hidden">Move Down</span>'
-    moveDownButton.title = 'Move Down'
     moveDownButton.addEventListener('click', () => {
       const nextRow = row.nextElementSibling
       if (nextRow) {
@@ -403,7 +401,6 @@ declare const bootstrap: typeof Bootstrap
     removeButton.type = 'button'
     removeButton.className = 'btn btn-sm btn-outline-danger remove-item-button'
     removeButton.innerHTML = `<i class="fa-solid fa-trash" aria-hidden="true"></i> <span class="visually-hidden">${removeLabel}</span>`
-    removeButton.title = removeLabel
     removeButton.addEventListener('click', () => {
       row.remove()
       clearStatus()
@@ -574,7 +571,10 @@ declare const bootstrap: typeof Bootstrap
       'reviewedByName'
     )
 
-    // Handle legacy combined safeguards field: migrate to technicalSafeguards
+    // Handle legacy combined safeguards field: migrate to technicalSafeguards.
+    // The original field mixed all three safeguard types. Migrating the content
+    // to technicalSafeguards preserves the data and prompts users to review and
+    // split it into the appropriate new fields.
     if (
       (data?.safeguards || '').trim() &&
       !data?.technicalSafeguards &&

@@ -243,7 +243,6 @@
         moveUpButton.className = reorderButtonClass;
         moveUpButton.innerHTML =
             '<i class="fa-solid fa-arrow-up" aria-hidden="true"></i> <span class="visually-hidden">Move Up</span>';
-        moveUpButton.title = 'Move Up';
         moveUpButton.addEventListener('click', () => {
             const previousRow = row.previousElementSibling;
             if (previousRow) {
@@ -256,7 +255,6 @@
         moveDownButton.className = reorderButtonClass;
         moveDownButton.innerHTML =
             '<i class="fa-solid fa-arrow-down" aria-hidden="true"></i> <span class="visually-hidden">Move Down</span>';
-        moveDownButton.title = 'Move Down';
         moveDownButton.addEventListener('click', () => {
             const nextRow = row.nextElementSibling;
             if (nextRow) {
@@ -268,7 +266,6 @@
         removeButton.type = 'button';
         removeButton.className = 'btn btn-sm btn-outline-danger remove-item-button';
         removeButton.innerHTML = `<i class="fa-solid fa-trash" aria-hidden="true"></i> <span class="visually-hidden">${removeLabel}</span>`;
-        removeButton.title = removeLabel;
         removeButton.addEventListener('click', () => {
             row.remove();
             clearStatus();
