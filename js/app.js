@@ -126,6 +126,7 @@
       return { position: '', name: '' };
     }
 
+    // Legacy values were captured as "Position/Name".
     const dividerIndex = value.indexOf('/');
 
     if (dividerIndex === -1) {
@@ -173,7 +174,7 @@
     }
   };
 
-  const renderMarkdownInto = (source, container, placeholder = 'No content provided.') => {
+  const renderMarkdownInto = (source, container, placeholder = null) => {
     container.textContent = '';
 
     if ((source || '').trim() === '') {
@@ -424,37 +425,30 @@
     const informationSourceItems = parseInformationSourceItems(data);
     const roleItems = Array.isArray(data?.accessRoles) ? data.accessRoles : [];
 
-    if ((data?.projectLead || '').trim()) {
-      const { position, name } = splitPositionAndName(data.projectLead);
-      if (!data.projectLeadPosition) {
-        const projectLeadPositionInput = form.elements.namedItem('projectLeadPosition');
-        if (projectLeadPositionInput) {
-          projectLeadPositionInput.value = position;
-        }
+    const applyLegacyCombinedField = (legacyFieldKey, positionFieldKey, nameFieldKey) => {
+      if (!((data?.[legacyFieldKey] || '').trim())) {
+        return;
       }
-      if (!data.projectLeadName) {
-        const projectLeadNameInput = form.elements.namedItem('projectLeadName');
-        if (projectLeadNameInput) {
-          projectLeadNameInput.value = name;
-        }
-      }
-    }
 
-    if ((data?.reviewedBy || '').trim()) {
-      const { position, name } = splitPositionAndName(data.reviewedBy);
-      if (!data.reviewedByPosition) {
-        const reviewedByPositionInput = form.elements.namedItem('reviewedByPosition');
-        if (reviewedByPositionInput) {
-          reviewedByPositionInput.value = position;
+      const { position, name } = splitPositionAndName(data[legacyFieldKey]);
+
+      if (!data[positionFieldKey]) {
+        const positionInput = form.elements.namedItem(positionFieldKey);
+        if (positionInput) {
+          positionInput.value = position;
         }
       }
-      if (!data.reviewedByName) {
-        const reviewedByNameInput = form.elements.namedItem('reviewedByName');
-        if (reviewedByNameInput) {
-          reviewedByNameInput.value = name;
+
+      if (!data[nameFieldKey]) {
+        const nameInput = form.elements.namedItem(nameFieldKey);
+        if (nameInput) {
+          nameInput.value = name;
         }
       }
-    }
+    };
+
+    applyLegacyCombinedField('projectLead', 'projectLeadPosition', 'projectLeadName');
+    applyLegacyCombinedField('reviewedBy', 'reviewedByPosition', 'reviewedByName');
 
     for (const item of personalItems) {
       personalInfoList.append(buildPersonalInfoRow(item));
