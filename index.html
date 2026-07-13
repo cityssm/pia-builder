@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PIA Builder</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <link rel="stylesheet" href="/home/runner/work/pia-builder/pia-builder/css/styles.css" />
+</head>
+<body>
+  <header class="navbar navbar-dark bg-primary shadow-sm">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">PIA Builder</span>
+      <div class="d-flex gap-2">
+        <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#newPiaModal">New PIA</button>
+        <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#savedPiasModal" id="openSavedPiasButton">Open Saved</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container py-4">
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
+      <h1 class="h4 mb-0" id="activePiaTitle">Untitled PIA</h1>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-primary" id="saveButton">Save</button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exportModal">Export</button>
+      </div>
+    </div>
+
+    <ul class="step-indicator mb-4" id="stepIndicator" aria-label="Form steps">
+      <li class="active">1. Overview</li>
+      <li>2. Data Profile</li>
+      <li>3. Risk & Controls</li>
+      <li>4. Review</li>
+    </ul>
+
+    <form id="piaForm" novalidate>
+      <section class="step-card card mb-3" data-step="0">
+        <div class="card-body">
+          <h2 class="h5">Overview</h2>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="piaName" class="form-label">PIA Name</label>
+              <input class="form-control" id="piaName" name="piaName" required>
+            </div>
+            <div class="col-md-6">
+              <label for="businessUnit" class="form-label">Business Unit</label>
+              <input class="form-control" id="businessUnit" name="businessUnit">
+            </div>
+            <div class="col-md-6">
+              <label for="projectLead" class="form-label">Project Lead</label>
+              <input class="form-control" id="projectLead" name="projectLead">
+            </div>
+            <div class="col-md-6">
+              <label for="assessmentDate" class="form-label">Assessment Date</label>
+              <input class="form-control" type="date" id="assessmentDate" name="assessmentDate">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="step-card card mb-3 d-none" data-step="1">
+        <div class="card-body">
+          <h2 class="h5">Data Profile</h2>
+          <div class="mb-3">
+            <label for="initiativeSummary" class="form-label">Initiative Summary</label>
+            <textarea class="form-control" id="initiativeSummary" name="initiativeSummary" rows="4"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="legalAuthority" class="form-label">Legal Authority</label>
+            <textarea class="form-control" id="legalAuthority" name="legalAuthority" rows="3"></textarea>
+          </div>
+          <div>
+            <label for="personalInfo" class="form-label">Personal Information Collected</label>
+            <textarea class="form-control" id="personalInfo" name="personalInfo" rows="4" placeholder="Names, addresses, identifiers, etc."></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="step-card card mb-3 d-none" data-step="2">
+        <div class="card-body">
+          <h2 class="h5">Risk & Controls</h2>
+          <div class="mb-3">
+            <label for="collectionUseDisclosure" class="form-label">Collection, Use, and Disclosure</label>
+            <textarea class="form-control" id="collectionUseDisclosure" name="collectionUseDisclosure" rows="3"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="retentionDisposal" class="form-label">Retention and Disposal</label>
+            <textarea class="form-control" id="retentionDisposal" name="retentionDisposal" rows="3"></textarea>
+          </div>
+          <div>
+            <label for="safeguards" class="form-label">Security Safeguards</label>
+            <textarea class="form-control" id="safeguards" name="safeguards" rows="3"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="step-card card mb-3 d-none" data-step="3">
+        <div class="card-body">
+          <h2 class="h5">Review</h2>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label for="reviewedBy" class="form-label">Reviewed By</label>
+              <input class="form-control" id="reviewedBy" name="reviewedBy">
+            </div>
+            <div class="col-md-6">
+              <label for="reviewDate" class="form-label">Review Date</label>
+              <input class="form-control" type="date" id="reviewDate" name="reviewDate">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="reviewNotes" class="form-label">Review Notes (Markdown Supported)</label>
+            <textarea class="form-control" id="reviewNotes" name="reviewNotes" rows="4"></textarea>
+          </div>
+          <div>
+            <h3 class="h6">Markdown Preview</h3>
+            <div id="markdownPreview" class="markdown-preview p-3 border rounded"></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="d-flex justify-content-between mt-3">
+        <button class="btn btn-outline-secondary" type="button" id="prevStepButton">Previous</button>
+        <button class="btn btn-primary" type="button" id="nextStepButton">Next</button>
+      </div>
+    </form>
+
+    <div class="alert alert-info mt-4 mb-0 d-none" id="statusMessage" role="status"></div>
+  </main>
+
+  <div class="modal fade" id="newPiaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5">Create New PIA</h2>
+          <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <label for="newPiaName" class="form-label">PIA Name</label>
+          <input class="form-control" id="newPiaName" maxlength="200">
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-primary" type="button" id="confirmNewPiaButton">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="savedPiasModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5">Saved PIAs</h2>
+          <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="savedPiasList" class="list-group"></div>
+          <p class="text-muted mb-0 mt-2" id="savedPiasEmptyState">No PIAs saved yet.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="exportModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5">Export PIA</h2>
+          <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-2">Choose export format:</p>
+          <div class="d-grid gap-2">
+            <button class="btn btn-outline-primary" type="button" id="exportMarkdownButton">Export Markdown</button>
+            <button class="btn btn-outline-primary" type="button" id="exportJsonButton">Export JSON</button>
+            <button class="btn btn-outline-secondary" type="button" id="printButton">Print</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+  <script src="/home/runner/work/pia-builder/pia-builder/js/app.js"></script>
+</body>
+</html>
