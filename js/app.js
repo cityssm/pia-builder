@@ -71,32 +71,77 @@
     activePiaTitle.textContent = name || 'Untitled PIA';
   };
 
-  const renderSimpleMarkdown = (text) => {
-    const escaped = (text || '')
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;');
-
-    return escaped
-      .replace(/^### (.*)$/gm, '<h3>$1</h3>')
-      .replace(/^## (.*)$/gm, '<h2>$1</h2>')
-      .replace(/^# (.*)$/gm, '<h1>$1</h1>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/^- (.*)$/gm, '<li>$1</li>')
-      .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
-      .replace(/\n{2,}/g, '</p><p>')
-      .replace(/\n/g, '<br>');
-  };
-
   const updateMarkdownPreview = () => {
-    const rendered = renderSimpleMarkdown(reviewNotes.value || '');
-    markdownPreview.innerHTML = `<p>${rendered || 'Preview your review notes here.'}</p>`;
+    const source = reviewNotes.value || '';
+    markdownPreview.textContent = '';
+
+    if (source.trim() === '') {
+      const paragraph = document.createElement('p');
+      paragraph.textContent = 'Preview your review notes here.';
+      markdownPreview.appendChild(paragraph);
+      return;
+    }
+
+    const lines = source.split('\n');
+    let listElement = null;
+
+    const flushList = () => {
+      if (listElement) {
+        markdownPreview.appendChild(listElement);
+        listElement = null;
+      }
+    };
+
+    for (const line of lines) {
+      const trimmedLine = line.trim();
+
+      if (trimmedLine.startsWith('- ')) {
+        if (!listElement) {
+          listElement = document.createElement('ul');
+        }
+        const item = document.createElement('li');
+        item.textContent = trimmedLine.slice(2).trim();
+        listElement.appendChild(item);
+        continue;
+      }
+
+      flushList();
+
+      if (trimmedLine === '') {
+        continue;
+      }
+
+      const headingMatch = trimmedLine.match(/^(#{1,3})\s+(.*)$/);
+
+      if (headingMatch) {
+        const heading = document.createElement(`h${headingMatch[1].length}`);
+        heading.textContent = headingMatch[2];
+        markdownPreview.appendChild(heading);
+        continue;
+      }
+
+      const paragraph = document.createElement('p');
+      paragraph.textContent = trimmedLine;
+      markdownPreview.appendChild(paragraph);
+    }
+
+    flushList();
   };
 
   const getCurrentDocumentName = () => {
     const customName = (piaNameInput.value || '').trim();
     return customName || 'Untitled PIA';
+  };
+
+  const getExportSlug = () => {
+    const baseName = (piaNameInput.value || '').trim().toLowerCase();
+    const slug = baseName
+      .replaceAll(/\s+/g, '-')
+      .replaceAll(/[^a-z0-9-]/g, '')
+      .replaceAll(/-+/g, '-')
+      .replaceAll(/^-|-$/g, '');
+
+    return slug || 'pia';
   };
 
   const persistCurrent = () => {
@@ -231,16 +276,36 @@
     for (const doc of documents) {
       const buttonRow = document.createElement('div');
       buttonRow.className = 'list-group-item d-flex justify-content-between align-items-center gap-3 flex-wrap';
-      buttonRow.innerHTML = `
-        <div>
-          <div class="fw-semibold">${doc.name || 'Untitled PIA'}</div>
-          <div class="small text-muted">Updated ${new Date(doc.updatedAt).toLocaleString()}</div>
-        </div>
-        <div class="d-flex gap-2">
-          <button type="button" class="btn btn-sm btn-outline-primary" data-action="open" data-id="${doc.id}">Open</button>
-          <button type="button" class="btn btn-sm btn-outline-danger" data-action="delete" data-id="${doc.id}">Delete</button>
-        </div>
-      `;
+
+      const detailsContainer = document.createElement('div');
+      const titleLine = document.createElement('div');
+      titleLine.className = 'fw-semibold';
+      titleLine.textContent = doc.name || 'Untitled PIA';
+
+      const updatedLine = document.createElement('div');
+      updatedLine.className = 'small text-muted';
+      updatedLine.textContent = `Updated ${new Date(doc.updatedAt).toLocaleString()}`;
+      detailsContainer.append(titleLine, updatedLine);
+
+      const actionsContainer = document.createElement('div');
+      actionsContainer.className = 'd-flex gap-2';
+
+      const openButton = document.createElement('button');
+      openButton.type = 'button';
+      openButton.className = 'btn btn-sm btn-outline-primary';
+      openButton.dataset.action = 'open';
+      openButton.dataset.id = doc.id;
+      openButton.textContent = 'Open';
+
+      const deleteButton = document.createElement('button');
+      deleteButton.type = 'button';
+      deleteButton.className = 'btn btn-sm btn-outline-danger';
+      deleteButton.dataset.action = 'delete';
+      deleteButton.dataset.id = doc.id;
+      deleteButton.textContent = 'Delete';
+
+      actionsContainer.append(openButton, deleteButton);
+      buttonRow.append(detailsContainer, actionsContainer);
 
       savedPiasList.appendChild(buttonRow);
     }
@@ -307,7 +372,7 @@
 
   exportMarkdownButton.addEventListener('click', () => {
     exportToFile(
-      `${getCurrentDocumentName().replaceAll(/\s+/g, '-').toLowerCase() || 'pia'}.md`,
+      `${getExportSlug()}.md`,
       'text/markdown;charset=utf-8',
       buildMarkdownExport()
     );
@@ -316,7 +381,7 @@
 
   exportJsonButton.addEventListener('click', () => {
     exportToFile(
-      `${getCurrentDocumentName().replaceAll(/\s+/g, '-').toLowerCase() || 'pia'}.json`,
+      `${getExportSlug()}.json`,
       'application/json;charset=utf-8',
       JSON.stringify({
         id: currentDocumentId,
