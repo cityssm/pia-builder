@@ -1,278 +1,868 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PIA Builder</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-  <link rel="stylesheet" href="css/styles.css" />
-</head>
-<body>
-  <header class="navbar navbar-dark bg-primary shadow-sm">
-    <div class="container-fluid">
-      <span class="navbar-brand mb-0 h1">PIA Builder</span>
-      <div class="d-flex gap-2">
-        <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#newPiaModal">New PIA</button>
-        <button class="btn btn-outline-light btn-sm" type="button" id="importButton">Import</button>
-        <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#savedPiasModal" id="openSavedPiasButton">Open Saved</button>
-      </div>
-    </div>
-  </header>
-
-  <main class="container py-4">
-    <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
-      <h1 class="h4 mb-0" id="activePiaTitle">Untitled PIA</h1>
-      <div class="d-flex gap-2">
-        <button class="btn btn-outline-primary" id="saveButton">Save</button>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exportModal">Export</button>
-      </div>
-    </div>
-
-    <ul class="step-indicator mb-4" id="stepIndicator" aria-label="Form steps">
-      <li class="active"><button class="step-tab" type="button" data-step="0">1. Overview</button></li>
-      <li><button class="step-tab" type="button" data-step="1">2. Data Profile</button></li>
-      <li><button class="step-tab" type="button" data-step="2">3. Risk & Controls</button></li>
-      <li><button class="step-tab" type="button" data-step="3">4. Review</button></li>
-    </ul>
-
-    <form id="piaForm" novalidate>
-      <section class="step-card card mb-3" data-step="0">
-        <div class="card-body">
-          <h2 class="h5">Overview</h2>
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label for="piaName" class="form-label">PIA Name and Initiative Identifier</label>
-              <input class="form-control" id="piaName" name="piaName" required>
-              <div class="form-text">Name this PIA so it can be located and referenced in future reviews.</div>
-            </div>
-            <div class="col-md-6">
-              <label for="businessUnit" class="form-label">Responsible Business Unit</label>
-              <input class="form-control" id="businessUnit" name="businessUnit">
-              <div class="form-text">Identify the program area or division accountable for this initiative.</div>
-            </div>
-            <div class="col-md-6">
-              <label for="projectLeadName" class="form-label">Project Lead Name</label>
-              <input class="form-control" id="projectLeadName" name="projectLeadName">
-              <div class="form-text">Name of the person currently serving as project lead.</div>
-            </div>
-            <div class="col-md-6">
-              <label for="projectLeadPosition" class="form-label">Project Lead Position Title</label>
-              <input class="form-control" id="projectLeadPosition" name="projectLeadPosition">
-              <div class="form-text">Position title of the person coordinating this PIA and answering follow-up questions.</div>
-            </div>
-            <div class="col-md-6">
-              <label for="assessmentDate" class="form-label">Assessment Date</label>
-              <input class="form-control" type="date" id="assessmentDate" name="assessmentDate">
-              <div class="form-text">The date this assessment draft was prepared or updated.</div>
-            </div>
-          </div>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy Impact Assessment (PIA) Builder</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+      integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header class="navbar navbar-dark bg-primary shadow-sm">
+      <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1"
+          >Privacy Impact Assessment (PIA) Builder</span
+        >
+        <div class="d-flex gap-2">
+          <button
+            class="btn btn-light btn-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#newPiaModal"
+          >
+            New PIA
+          </button>
+          <button
+            class="btn btn-outline-light btn-sm"
+            type="button"
+            id="importButton"
+          >
+            Import
+          </button>
+          <button
+            class="btn btn-outline-light btn-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#savedPiasModal"
+            id="openSavedPiasButton"
+          >
+            Open Saved
+          </button>
         </div>
-      </section>
+      </div>
+    </header>
 
-      <section class="step-card card mb-3 d-none" data-step="1">
-        <div class="card-body">
-          <h2 class="h5">Data Profile</h2>
+    <main class="container py-4">
+      <div
+        class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2"
+      >
+        <h1 class="h4 mb-0" id="activePiaTitle">Untitled PIA</h1>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-primary" id="saveButton">Save</button>
+          <button
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#exportModal"
+          >
+            Export
+          </button>
+        </div>
+      </div>
 
-          <div class="markdown-field mb-3" data-markdown-field="initiativeSummary">
-            <label for="initiativeSummary" class="form-label">Initiative Summary and Program Context</label>
-            <div class="form-text mb-2">Describe what the initiative does, who is affected, and why personal information is needed.</div>
-            <div class="markdown-tabs btn-group btn-group-sm mb-2" role="group" aria-label="Initiative summary mode">
-              <button type="button" class="btn btn-outline-secondary active" data-md-target="initiativeSummary" data-md-mode="edit">Edit</button>
-              <button type="button" class="btn btn-outline-secondary" data-md-target="initiativeSummary" data-md-mode="preview">Preview</button>
+      <ul
+        class="step-indicator mb-4"
+        id="stepIndicator"
+        aria-label="Form steps"
+      >
+        <li class="active">
+          <button class="step-tab" type="button" data-step="0">
+            1. Overview
+          </button>
+        </li>
+        <li>
+          <button class="step-tab" type="button" data-step="1">
+            2. Data Profile
+          </button>
+        </li>
+        <li>
+          <button class="step-tab" type="button" data-step="2">
+            3. Risk & Controls
+          </button>
+        </li>
+        <li>
+          <button class="step-tab" type="button" data-step="3">
+            4. Review
+          </button>
+        </li>
+      </ul>
+
+      <form id="piaForm" novalidate>
+        <section class="step-card card mb-3" data-step="0">
+          <div class="card-body">
+            <div class="alert alert-primary">
+              <p>
+                <strong>Note:</strong>
+                This tool is intended to help you prepare a Privacy Impact
+                Assessment (PIA) for your initiative. It is not a substitute for
+                legal advice or formal review.
+              </p>
+              <p>
+                All information entered into this tool is stored locally in your
+                browser and is not transmitted to any server.
+              </p>
             </div>
-            <textarea class="form-control markdown-input" id="initiativeSummary" name="initiativeSummary" rows="5"></textarea>
-            <div id="initiativeSummaryPreview" class="markdown-preview p-3 border rounded d-none"></div>
-          </div>
-
-          <div class="markdown-field mb-3" data-markdown-field="legalAuthority">
-            <label for="legalAuthority" class="form-label">Legal Authority for Collection/Use/Disclosure</label>
-            <div class="form-text mb-2">Document the by-law, statute, policy, agreement, or authority supporting this information practice.</div>
-            <div class="markdown-tabs btn-group btn-group-sm mb-2" role="group" aria-label="Legal authority mode">
-              <button type="button" class="btn btn-outline-secondary active" data-md-target="legalAuthority" data-md-mode="edit">Edit</button>
-              <button type="button" class="btn btn-outline-secondary" data-md-target="legalAuthority" data-md-mode="preview">Preview</button>
-            </div>
-            <textarea class="form-control markdown-input" id="legalAuthority" name="legalAuthority" rows="4"></textarea>
-            <div id="legalAuthorityPreview" class="markdown-preview p-3 border rounded d-none"></div>
-          </div>
-
-          <div class="mb-3">
-            <div class="d-flex justify-content-between align-items-center mb-2 gap-2 flex-wrap">
-              <div>
-                <label class="form-label mb-0">Personal Information Collected</label>
-                <div class="form-text">List each personal information element and how it is intended to be used or disclosed.</div>
+            <h2 class="h5">Overview</h2>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="piaName" class="form-label"
+                  >PIA Name and Initiative Identifier</label
+                >
+                <input
+                  class="form-control"
+                  id="piaName"
+                  name="piaName"
+                  required
+                />
+                <div class="form-text">
+                  Name this PIA so it can be located and referenced in future
+                  reviews.
+                </div>
               </div>
-              <button class="btn btn-sm btn-outline-primary add-item-button" type="button" id="addPersonalInfoButton">Add Personal Information Item</button>
-            </div>
-            <div id="personalInfoList" class="vstack gap-2"></div>
-          </div>
-
-          <div class="mb-3">
-            <div class="d-flex justify-content-between align-items-center mb-2 gap-2 flex-wrap">
-              <div>
-                <label class="form-label mb-0">Sources of Personal Information to be Collected</label>
-                <div class="form-text">List each source (individuals, third parties, other institutions, etc.).</div>
+              <div class="col-md-6">
+                <label for="businessUnit" class="form-label"
+                  >Responsible Business Unit</label
+                >
+                <input
+                  class="form-control"
+                  id="businessUnit"
+                  name="businessUnit"
+                />
+                <div class="form-text">
+                  Identify the program area or division accountable for this
+                  initiative.
+                </div>
               </div>
-              <button class="btn btn-sm btn-outline-primary add-item-button" type="button" id="addInformationSourceButton">Add Source</button>
-            </div>
-            <div id="informationSourcesList" class="vstack gap-2"></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="step-card card mb-3 d-none" data-step="2">
-        <div class="card-body">
-          <h2 class="h5">Risk & Controls</h2>
-
-          <div class="markdown-field mb-3" data-markdown-field="collectionUseDisclosure">
-            <label for="collectionUseDisclosure" class="form-label">Collection, Use, and Disclosure Controls</label>
-            <div class="form-text mb-2">Describe notices, consent approaches, access controls, and disclosure conditions.</div>
-            <div class="markdown-tabs btn-group btn-group-sm mb-2" role="group" aria-label="Collection use disclosure mode">
-              <button type="button" class="btn btn-outline-secondary active" data-md-target="collectionUseDisclosure" data-md-mode="edit">Edit</button>
-              <button type="button" class="btn btn-outline-secondary" data-md-target="collectionUseDisclosure" data-md-mode="preview">Preview</button>
-            </div>
-            <textarea class="form-control markdown-input" id="collectionUseDisclosure" name="collectionUseDisclosure" rows="4"></textarea>
-            <div id="collectionUseDisclosurePreview" class="markdown-preview p-3 border rounded d-none"></div>
-          </div>
-
-          <div class="markdown-field mb-3" data-markdown-field="retentionDisposal">
-            <label for="retentionDisposal" class="form-label">Retention and Disposal Strategy</label>
-            <div class="form-text mb-2">Document retention timelines, records authority, secure destruction, and archival requirements.</div>
-            <div class="markdown-tabs btn-group btn-group-sm mb-2" role="group" aria-label="Retention and disposal mode">
-              <button type="button" class="btn btn-outline-secondary active" data-md-target="retentionDisposal" data-md-mode="edit">Edit</button>
-              <button type="button" class="btn btn-outline-secondary" data-md-target="retentionDisposal" data-md-mode="preview">Preview</button>
-            </div>
-            <textarea class="form-control markdown-input" id="retentionDisposal" name="retentionDisposal" rows="4"></textarea>
-            <div id="retentionDisposalPreview" class="markdown-preview p-3 border rounded d-none"></div>
-          </div>
-
-          <div class="markdown-field mb-3" data-markdown-field="safeguards">
-            <label for="safeguards" class="form-label">Technical, Administrative, and Physical Safeguards</label>
-            <div class="form-text mb-2">Describe security controls protecting confidentiality, integrity, and availability.</div>
-            <div class="markdown-tabs btn-group btn-group-sm mb-2" role="group" aria-label="Safeguards mode">
-              <button type="button" class="btn btn-outline-secondary active" data-md-target="safeguards" data-md-mode="edit">Edit</button>
-              <button type="button" class="btn btn-outline-secondary" data-md-target="safeguards" data-md-mode="preview">Preview</button>
-            </div>
-            <textarea class="form-control markdown-input" id="safeguards" name="safeguards" rows="4"></textarea>
-            <div id="safeguardsPreview" class="markdown-preview p-3 border rounded d-none"></div>
-          </div>
-
-          <div>
-            <div class="d-flex justify-content-between align-items-center mb-2 gap-2 flex-wrap">
-              <div>
-                <label class="form-label mb-0">Roles with Access to Personal Information</label>
-                <div class="form-text">List position titles of officers, employees, consultants, or agents with access.</div>
+              <div class="col-md-6">
+                <label for="projectLeadName" class="form-label"
+                  >Project Lead Name</label
+                >
+                <input
+                  class="form-control"
+                  id="projectLeadName"
+                  name="projectLeadName"
+                />
+                <div class="form-text">
+                  Name of the person currently serving as project lead.
+                </div>
               </div>
-              <button class="btn btn-sm btn-outline-primary add-item-button" type="button" id="addAccessRoleButton">Add Position Title</button>
+              <div class="col-md-6">
+                <label for="projectLeadPosition" class="form-label"
+                  >Project Lead Position Title</label
+                >
+                <input
+                  class="form-control"
+                  id="projectLeadPosition"
+                  name="projectLeadPosition"
+                />
+                <div class="form-text">
+                  Position title of the person coordinating this PIA and
+                  answering follow-up questions.
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="assessmentDate" class="form-label"
+                  >Assessment Date</label
+                >
+                <input
+                  class="form-control"
+                  type="date"
+                  id="assessmentDate"
+                  name="assessmentDate"
+                />
+                <div class="form-text">
+                  The date this assessment draft was prepared or updated.
+                </div>
+              </div>
             </div>
-            <div id="accessRolesList" class="vstack gap-2"></div>
+          </div>
+        </section>
+
+        <section class="step-card card mb-3 d-none" data-step="1">
+          <div class="card-body">
+            <h2 class="h5">Data Profile</h2>
+
+            <div
+              class="markdown-field mb-3"
+              data-markdown-field="initiativeSummary"
+            >
+              <label for="initiativeSummary" class="form-label"
+                >Initiative Summary and Program Context</label
+              >
+              <div class="form-text mb-2">
+                Describe what the initiative does, who is affected, and why
+                personal information is needed.
+              </div>
+              <div
+                class="markdown-tabs btn-group btn-group-sm mb-2"
+                role="group"
+                aria-label="Initiative summary mode"
+              >
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary active"
+                  data-md-target="initiativeSummary"
+                  data-md-mode="edit"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  data-md-target="initiativeSummary"
+                  data-md-mode="preview"
+                >
+                  Preview
+                </button>
+              </div>
+              <textarea
+                class="form-control markdown-input"
+                id="initiativeSummary"
+                name="initiativeSummary"
+                rows="5"
+              ></textarea>
+              <div
+                id="initiativeSummaryPreview"
+                class="markdown-preview p-3 border rounded d-none"
+              ></div>
+            </div>
+
+            <div
+              class="markdown-field mb-3"
+              data-markdown-field="legalAuthority"
+            >
+              <label for="legalAuthority" class="form-label"
+                >Legal Authority for Collection/Use/Disclosure</label
+              >
+              <div class="form-text mb-2">
+                Document the by-law, statute, policy, agreement, or authority
+                supporting this information practice.
+              </div>
+              <div
+                class="markdown-tabs btn-group btn-group-sm mb-2"
+                role="group"
+                aria-label="Legal authority mode"
+              >
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary active"
+                  data-md-target="legalAuthority"
+                  data-md-mode="edit"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  data-md-target="legalAuthority"
+                  data-md-mode="preview"
+                >
+                  Preview
+                </button>
+              </div>
+              <textarea
+                class="form-control markdown-input"
+                id="legalAuthority"
+                name="legalAuthority"
+                rows="4"
+              ></textarea>
+              <div
+                id="legalAuthorityPreview"
+                class="markdown-preview p-3 border rounded d-none"
+              ></div>
+            </div>
+
+            <div class="mb-3">
+              <div
+                class="d-flex justify-content-between align-items-center mb-2 gap-2 flex-wrap"
+              >
+                <div>
+                  <label class="form-label mb-0"
+                    >Personal Information Collected</label
+                  >
+                  <div class="form-text">
+                    List each personal information element and how it is
+                    intended to be used or disclosed.
+                  </div>
+                </div>
+                <div>
+                  <button
+                    class="btn btn-info btn-sm"
+                    type="button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#whatIsPersonalInformationModal"
+                  >
+                    Help
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-primary add-item-button"
+                    type="button"
+                    id="addPersonalInfoButton"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+              <div id="personalInfoList" class="vstack gap-2"></div>
+            </div>
+
+            <div class="mb-3">
+              <div
+                class="d-flex justify-content-between align-items-center mb-2 gap-2 flex-wrap"
+              >
+                <div>
+                  <label class="form-label mb-0"
+                    >Sources of Personal Information to be Collected</label
+                  >
+                  <div class="form-text">
+                    List each source (individuals, third parties, other
+                    institutions, etc.).
+                  </div>
+                </div>
+                <button
+                  class="btn btn-sm btn-outline-primary add-item-button"
+                  type="button"
+                  id="addInformationSourceButton"
+                >
+                  Add Source
+                </button>
+              </div>
+              <div id="informationSourcesList" class="vstack gap-2"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="step-card card mb-3 d-none" data-step="2">
+          <div class="card-body">
+            <h2 class="h5">Risk & Controls</h2>
+
+            <div
+              class="markdown-field mb-3"
+              data-markdown-field="collectionUseDisclosure"
+            >
+              <label for="collectionUseDisclosure" class="form-label"
+                >Collection, Use, and Disclosure Controls</label
+              >
+              <div class="form-text mb-2">
+                Describe notices, consent approaches, access controls, and
+                disclosure conditions.
+              </div>
+              <div
+                class="markdown-tabs btn-group btn-group-sm mb-2"
+                role="group"
+                aria-label="Collection use disclosure mode"
+              >
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary active"
+                  data-md-target="collectionUseDisclosure"
+                  data-md-mode="edit"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  data-md-target="collectionUseDisclosure"
+                  data-md-mode="preview"
+                >
+                  Preview
+                </button>
+              </div>
+              <textarea
+                class="form-control markdown-input"
+                id="collectionUseDisclosure"
+                name="collectionUseDisclosure"
+                rows="4"
+              ></textarea>
+              <div
+                id="collectionUseDisclosurePreview"
+                class="markdown-preview p-3 border rounded d-none"
+              ></div>
+            </div>
+
+            <div
+              class="markdown-field mb-3"
+              data-markdown-field="retentionDisposal"
+            >
+              <label for="retentionDisposal" class="form-label"
+                >Retention and Disposal Strategy</label
+              >
+              <div class="form-text mb-2">
+                Document retention timelines, records authority, secure
+                destruction, and archival requirements.
+              </div>
+              <div
+                class="markdown-tabs btn-group btn-group-sm mb-2"
+                role="group"
+                aria-label="Retention and disposal mode"
+              >
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary active"
+                  data-md-target="retentionDisposal"
+                  data-md-mode="edit"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  data-md-target="retentionDisposal"
+                  data-md-mode="preview"
+                >
+                  Preview
+                </button>
+              </div>
+              <textarea
+                class="form-control markdown-input"
+                id="retentionDisposal"
+                name="retentionDisposal"
+                rows="4"
+              ></textarea>
+              <div
+                id="retentionDisposalPreview"
+                class="markdown-preview p-3 border rounded d-none"
+              ></div>
+            </div>
+
+            <div class="markdown-field mb-3" data-markdown-field="safeguards">
+              <label for="safeguards" class="form-label"
+                >Technical, Administrative, and Physical Safeguards</label
+              >
+              <div class="form-text mb-2">
+                Describe security controls protecting confidentiality,
+                integrity, and availability.
+              </div>
+              <div
+                class="markdown-tabs btn-group btn-group-sm mb-2"
+                role="group"
+                aria-label="Safeguards mode"
+              >
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary active"
+                  data-md-target="safeguards"
+                  data-md-mode="edit"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  data-md-target="safeguards"
+                  data-md-mode="preview"
+                >
+                  Preview
+                </button>
+              </div>
+              <textarea
+                class="form-control markdown-input"
+                id="safeguards"
+                name="safeguards"
+                rows="4"
+              ></textarea>
+              <div
+                id="safeguardsPreview"
+                class="markdown-preview p-3 border rounded d-none"
+              ></div>
+            </div>
+
+            <div>
+              <div
+                class="d-flex justify-content-between align-items-center mb-2 gap-2 flex-wrap"
+              >
+                <div>
+                  <label class="form-label mb-0"
+                    >Roles with Access to Personal Information</label
+                  >
+                  <div class="form-text">
+                    List position titles of officers, employees, consultants, or
+                    agents with access.
+                  </div>
+                </div>
+                <div>
+                  <button
+                    class="btn btn-info btn-sm"
+                    type="button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#rolesAndResponsibilitiesModal"
+                  >
+                    Help
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-primary add-item-button"
+                    type="button"
+                    id="addAccessRoleButton"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+              <div id="accessRolesList" class="vstack gap-2"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="step-card card mb-3 d-none" data-step="3">
+          <div class="card-body">
+            <h2 class="h5">Review</h2>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="reviewedByName" class="form-label"
+                  >Reviewed By Name</label
+                >
+                <input
+                  class="form-control"
+                  id="reviewedByName"
+                  name="reviewedByName"
+                />
+                <div class="form-text">
+                  Name of the person who reviewed this draft.
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="reviewedByPosition" class="form-label"
+                  >Reviewed By Position Title</label
+                >
+                <input
+                  class="form-control"
+                  id="reviewedByPosition"
+                  name="reviewedByPosition"
+                />
+                <div class="form-text">
+                  Position title of the person who reviewed this draft.
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="reviewDate" class="form-label">Review Date</label>
+                <input
+                  class="form-control"
+                  type="date"
+                  id="reviewDate"
+                  name="reviewDate"
+                />
+                <div class="form-text">Date this review was completed.</div>
+              </div>
+            </div>
+
+            <div class="markdown-field" data-markdown-field="reviewNotes">
+              <label for="reviewNotes" class="form-label"
+                >Review Notes and Recommended Actions</label
+              >
+              <div class="form-text mb-2">
+                Capture findings, required mitigations, and approvals using
+                Markdown.
+              </div>
+              <div
+                class="markdown-tabs btn-group btn-group-sm mb-2"
+                role="group"
+                aria-label="Review notes mode"
+              >
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary active"
+                  data-md-target="reviewNotes"
+                  data-md-mode="edit"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  data-md-target="reviewNotes"
+                  data-md-mode="preview"
+                >
+                  Preview
+                </button>
+              </div>
+              <textarea
+                class="form-control markdown-input"
+                id="reviewNotes"
+                name="reviewNotes"
+                rows="5"
+              ></textarea>
+              <div
+                id="reviewNotesPreview"
+                class="markdown-preview p-3 border rounded d-none"
+              ></div>
+            </div>
+          </div>
+        </section>
+
+        <div class="d-flex justify-content-between mt-3">
+          <button
+            class="btn btn-outline-secondary"
+            type="button"
+            id="prevStepButton"
+          >
+            Previous
+          </button>
+          <button class="btn btn-primary" type="button" id="nextStepButton">
+            Next
+          </button>
+        </div>
+      </form>
+
+      <input
+        id="importJsonInput"
+        type="file"
+        class="d-none"
+        accept="application/json,.json"
+      />
+    </main>
+
+    <div
+      class="toast-container position-fixed bottom-0 end-0 p-3"
+      id="statusToastContainer"
+    >
+      <div
+        id="statusToast"
+        class="toast border-0"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        <div class="toast-body" id="statusToastBody"></div>
+      </div>
+    </div>
+
+    <div
+      class="modal fade"
+      id="whatIsPersonalInformationModal"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title h5">What is Personal Information?</h2>
+            <button
+              class="btn-close"
+              type="button"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <figure>
+              <blockquote class="blockquote">
+                <p>
+                  Both FIPPA and MFIPPA define personal information as
+                  <strong
+                    >recorded information about an identifiable
+                    individual</strong
+                  >
+                </p>
+                <p>Personal information can include:</p>
+                <ul>
+                  <li>
+                    an individual's biographical details (name, sex, age, race)
+                  </li>
+                  <li>
+                    an individual's biological details (face, fingerprints,
+                    blood type, etc.)
+                  </li>
+                  <li>nationality</li>
+                  <li>religion</li>
+                  <li>marital status</li>
+                  <li>education</li>
+                  <li>medical or criminal history</li>
+                  <li>financial information</li>
+                  <li>
+                    identifying numbers, for example, social insurance numbers
+                  </li>
+                  <li>
+                    an individual's contact details (personal address, phone
+                    number, etc.)
+                  </li>
+                  <li>personal opinions and views</li>
+                </ul>
+                <p>This list of personal information is not exhaustive.</p>
+              </blockquote>
+              <figcaption class="figure-caption">
+                Adapted from the Privacy Impact Assessment Guide for Ontario's
+                Public Institutions.
+              </figcaption>
+            </figure>
           </div>
         </div>
-      </section>
+      </div>
+    </div>
 
-      <section class="step-card card mb-3 d-none" data-step="3">
-        <div class="card-body">
-          <h2 class="h5">Review</h2>
-          <div class="row g-3 mb-3">
-            <div class="col-md-6">
-              <label for="reviewedByName" class="form-label">Reviewed By Name</label>
-              <input class="form-control" id="reviewedByName" name="reviewedByName">
-              <div class="form-text">Name of the person who reviewed this draft.</div>
-            </div>
-            <div class="col-md-6">
-              <label for="reviewedByPosition" class="form-label">Reviewed By Position Title</label>
-              <input class="form-control" id="reviewedByPosition" name="reviewedByPosition">
-              <div class="form-text">Position title of the person who reviewed this draft.</div>
-            </div>
-            <div class="col-md-6">
-              <label for="reviewDate" class="form-label">Review Date</label>
-              <input class="form-control" type="date" id="reviewDate" name="reviewDate">
-              <div class="form-text">Date this review was completed.</div>
-            </div>
+    <div
+      class="modal fade"
+      id="rolesAndResponsibilitiesModal"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title h5">Roles and Responsibilities</h2>
+            <button
+              class="btn-close"
+              type="button"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
-
-          <div class="markdown-field" data-markdown-field="reviewNotes">
-            <label for="reviewNotes" class="form-label">Review Notes and Recommended Actions</label>
-            <div class="form-text mb-2">Capture findings, required mitigations, and approvals using Markdown.</div>
-            <div class="markdown-tabs btn-group btn-group-sm mb-2" role="group" aria-label="Review notes mode">
-              <button type="button" class="btn btn-outline-secondary active" data-md-target="reviewNotes" data-md-mode="edit">Edit</button>
-              <button type="button" class="btn btn-outline-secondary" data-md-target="reviewNotes" data-md-mode="preview">Preview</button>
-            </div>
-            <textarea class="form-control markdown-input" id="reviewNotes" name="reviewNotes" rows="5"></textarea>
-            <div id="reviewNotesPreview" class="markdown-preview p-3 border rounded d-none"></div>
-          </div>
-        </div>
-      </section>
-
-      <div class="d-flex justify-content-between mt-3">
-        <button class="btn btn-outline-secondary" type="button" id="prevStepButton">Previous</button>
-        <button class="btn btn-primary" type="button" id="nextStepButton">Next</button>
-      </div>
-    </form>
-
-    <input id="importJsonInput" type="file" class="d-none" accept="application/json,.json" />
-  </main>
-
-  <div class="toast-container position-fixed bottom-0 end-0 p-3" id="statusToastContainer">
-    <div id="statusToast" class="toast border-0" role="status" aria-live="polite" aria-atomic="true">
-      <div class="toast-body" id="statusToastBody"></div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="newPiaModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title h5">Create New PIA</h2>
-          <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <label for="newPiaName" class="form-label">PIA Name</label>
-          <input class="form-control" id="newPiaName" maxlength="200">
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
-          <button class="btn btn-primary" type="button" id="confirmNewPiaButton">Create</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="savedPiasModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title h5">Saved PIAs</h2>
-          <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div id="savedPiasList" class="list-group"></div>
-          <p class="text-muted mb-0 mt-2" id="savedPiasEmptyState">No PIAs saved yet.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="exportModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title h5">Export PIA</h2>
-          <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <p class="mb-2">Choose export format:</p>
-          <div class="d-grid gap-2">
-            <button class="btn btn-outline-primary" type="button" id="exportMarkdownButton">Export Markdown</button>
-            <button class="btn btn-outline-primary" type="button" id="exportJsonButton">Export JSON</button>
-            <button class="btn btn-outline-primary" type="button" id="exportWordButton">Export Word-compatible .doc</button>
-            <button class="btn btn-outline-secondary" type="button" id="printButton">Print</button>
+          <div class="modal-body">
+            <figure>
+              <blockquote class="blockquote">
+                <p>
+                  Identify the roles and responsibilities of all parties to be
+                  involved in the project when implemented. Include all relevant
+                  partners and other third parties.
+                </p>
+                <p>
+                  Think about whether the following are or will be involved:
+                </p>
+                <ul>
+                  <li>the public</li>
+                  <li>clients</li>
+                  <li>other employees or officers of your institution</li>
+                  <li>staff in other programs or institutions</li>
+                  <li>
+                    information technology staff (e.g., a system administrator)
+                  </li>
+                  <li>external legal counsel</li>
+                  <li>other governments</li>
+                  <li>partners, vendors, or agents of the institution</li>
+                  <li>consultants</li>
+                  <li>auditors</li>
+                  <li>law enforcement agencies</li>
+                </ul>
+              </blockquote>
+              <figcaption class="figure-caption">
+                Adapted from the Privacy Impact Assessment Guide for Ontario's
+                Public Institutions.
+              </figcaption>
+            </figure>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
-  <script src="js/app.js"></script>
-</body>
+    <div class="modal fade" id="newPiaModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title h5">Create New PIA</h2>
+            <button
+              class="btn-close"
+              type="button"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <label for="newPiaName" class="form-label">PIA Name</label>
+            <input class="form-control" id="newPiaName" maxlength="200" />
+          </div>
+          <div class="modal-footer">
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button
+              class="btn btn-primary"
+              type="button"
+              id="confirmNewPiaButton"
+            >
+              Create
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="modal fade"
+      id="savedPiasModal"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title h5">Saved PIAs</h2>
+            <button
+              class="btn-close"
+              type="button"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div id="savedPiasList" class="list-group"></div>
+            <p class="text-muted mb-0 mt-2" id="savedPiasEmptyState">
+              No PIAs saved yet.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="exportModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title h5">Export PIA</h2>
+            <button
+              class="btn-close"
+              type="button"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-2">Choose export format:</p>
+            <div class="d-grid gap-2">
+              <button
+                class="btn btn-outline-primary"
+                type="button"
+                id="exportMarkdownButton"
+              >
+                Export Markdown
+              </button>
+              <button
+                class="btn btn-outline-primary"
+                type="button"
+                id="exportJsonButton"
+              >
+                Export JSON
+              </button>
+              <button
+                class="btn btn-outline-primary"
+                type="button"
+                id="exportWordButton"
+              >
+                Export Word-compatible .doc
+              </button>
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                id="printButton"
+              >
+                Print
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+      crossorigin="anonymous"
+    ></script>
+    <script src="js/app.js"></script>
+  </body>
 </html>
