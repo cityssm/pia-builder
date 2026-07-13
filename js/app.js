@@ -38,8 +38,7 @@
         'retentionDisposal',
         'technicalSafeguards',
         'administrativeSafeguards',
-        'physicalSafeguards',
-        'reviewNotes'
+        'physicalSafeguards'
     ];
     let currentStep = 0;
     let currentDocumentId = '';
@@ -524,6 +523,8 @@
             `- **Project Lead Name:** ${data.projectLeadName || ''}`,
             `- **Project Lead Position:** ${data.projectLeadPosition || ''}`,
             `- **Assessment Date:** ${data.assessmentDate || ''}`,
+            `- **Assessor Name:** ${data.assessorName || ''}`,
+            `- **Assessor Position Title:** ${data.assessorPosition || ''}`,
             '',
             '## Initiative Summary and Program Context',
             data.initiativeSummary || '',
@@ -555,12 +556,11 @@
             '## Roles with Access to Personal Information',
             accessRoleLines,
             '',
-            '## Review',
-            `- **Reviewed By Name:** ${data.reviewedByName || ''}`,
-            `- **Reviewed By Position:** ${data.reviewedByPosition || ''}`,
-            `- **Review Date:** ${data.reviewDate || ''}`,
-            '',
-            data.reviewNotes || ''
+            '## Next Steps',
+            '- Review the PIA with your institution\'s privacy office or designated privacy contact.',
+            '- Address any required mitigations or recommended actions.',
+            '- Obtain approvals and signatures as required.',
+            '- Gather copies of all relevant documentation, including any checklists completed prior to the PIA, and any documents cited in the "Legal Authorities" section.'
         ].join('\n');
     };
     const buildWordExport = () => {
@@ -575,9 +575,11 @@
         const overviewList = document.createElement('ul');
         for (const detail of [
             `Responsible Business Unit: ${data.businessUnit || ''}`,
-            `Project Lead Name: ${data.projectLeadName || ''}`,
+            `Project Lead Name: ${data.projectLeadName || ''}    Signature: ____________________`,
             `Project Lead Position: ${data.projectLeadPosition || ''}`,
-            `Assessment Date: ${data.assessmentDate || ''}`
+            `Assessment Date: ${data.assessmentDate || ''}`,
+            `Assessor Name: ${data.assessorName || ''}    Signature: ____________________`,
+            `Assessor Position Title: ${data.assessorPosition || ''}`
         ]) {
             const detailItem = document.createElement('li');
             detailItem.textContent = detail;
@@ -643,14 +645,29 @@
             accessList.append(li);
         }
         container.append(accessList);
+        const nextStepsHeading = document.createElement('h2');
+        nextStepsHeading.textContent = 'Next Steps';
+        container.append(nextStepsHeading);
+        const nextStepsList = document.createElement('ul');
+        for (const detail of [
+            'Review the PIA with your institution\'s privacy office or designated privacy contact.',
+            'Address any required mitigations or recommended actions.',
+            'Obtain approvals and signatures as required.',
+            'Gather copies of all relevant documentation, including any checklists completed prior to the PIA, and any documents cited in the "Legal Authorities" section.'
+        ]) {
+            const detailItem = document.createElement('li');
+            detailItem.textContent = detail;
+            nextStepsList.append(detailItem);
+        }
+        container.append(nextStepsList);
         const reviewOverviewHeading = document.createElement('h2');
         reviewOverviewHeading.textContent = 'Review';
         container.append(reviewOverviewHeading);
         const reviewOverviewList = document.createElement('ul');
         for (const detail of [
-            `Reviewed By Name: ${data.reviewedByName || ''}`,
-            `Reviewed By Position: ${data.reviewedByPosition || ''}`,
-            `Review Date: ${data.reviewDate || ''}`
+            'Reviewed By Name: ____________________    Signature: ____________________',
+            'Reviewed By Position: ____________________',
+            'Review Date: ____________________'
         ]) {
             const detailItem = document.createElement('li');
             detailItem.textContent = detail;
@@ -660,11 +677,9 @@
         const reviewNotesHeading = document.createElement('h2');
         reviewNotesHeading.textContent = 'Review Notes and Recommended Actions';
         container.append(reviewNotesHeading);
-        const reviewNotesPreview = document.createElement('div');
-        const reviewNotesSource = form.elements.namedItem('reviewNotes')?.value ||
-            '';
-        renderMarkdownInto(reviewNotesSource, reviewNotesPreview);
-        container.append(reviewNotesPreview);
+        const reviewNotesBlank = document.createElement('p');
+        reviewNotesBlank.textContent = '____________________________________________________________';
+        container.append(reviewNotesBlank);
         return `<!doctype html><html><head><meta charset="utf-8"></head><body>${container.innerHTML}</body></html>`;
     };
     const renderSavedList = () => {
