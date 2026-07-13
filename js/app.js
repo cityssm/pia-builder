@@ -1,8 +1,12 @@
 (() => {
     const storageKey = 'piaBuilder.documents.v1';
     const form = document.querySelector('#piaForm');
-    const stepCards = [...document.querySelectorAll('.step-card')];
-    const stepIndicatorItems = [...document.querySelectorAll('#stepIndicator li')];
+    const stepCards = [
+        ...document.querySelectorAll('.step-card')
+    ];
+    const stepIndicatorItems = [
+        ...document.querySelectorAll('#stepIndicator li')
+    ];
     const stepTabButtons = [...document.querySelectorAll('.step-tab')];
     const previousStepButton = document.querySelector('#prevStepButton');
     const nextStepButton = document.querySelector('#nextStepButton');
@@ -59,7 +63,7 @@
     const saveDocuments = (documents) => {
         localStorage.setItem(storageKey, JSON.stringify(documents));
     };
-    const getDocumentsSortedByUpdatedAt = () => loadDocuments().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    const getDocumentsSortedByUpdatedAt = () => loadDocuments().sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
     const showStatus = (message, type = 'info') => {
         if (!statusToastInstance || !statusToastBody || !statusToastElement) {
             return;
@@ -504,8 +508,8 @@
             '',
             '## Overview',
             `- **Responsible Business Unit:** ${data.businessUnit || ''}`,
-            `- **Project Lead Position:** ${data.projectLeadPosition || ''}`,
             `- **Project Lead Name:** ${data.projectLeadName || ''}`,
+            `- **Project Lead Position:** ${data.projectLeadPosition || ''}`,
             `- **Assessment Date:** ${data.assessmentDate || ''}`,
             '',
             '## Initiative Summary and Program Context',
@@ -533,8 +537,8 @@
             accessRoleLines,
             '',
             '## Review',
-            `- **Reviewed By Position:** ${data.reviewedByPosition || ''}`,
             `- **Reviewed By Name:** ${data.reviewedByName || ''}`,
+            `- **Reviewed By Position:** ${data.reviewedByPosition || ''}`,
             `- **Review Date:** ${data.reviewDate || ''}`,
             '',
             data.reviewNotes || ''
@@ -613,8 +617,8 @@
         container.append(reviewOverviewHeading);
         const reviewOverviewList = document.createElement('ul');
         for (const detail of [
-            `Reviewed By Position: ${data.reviewedByPosition || ''}`,
             `Reviewed By Name: ${data.reviewedByName || ''}`,
+            `Reviewed By Position: ${data.reviewedByPosition || ''}`,
             `Review Date: ${data.reviewDate || ''}`
         ]) {
             const detailItem = document.createElement('li');
@@ -682,7 +686,7 @@
         }
     };
     savedPiasList.addEventListener('click', (event) => {
-        const button = event.target.closest('button[data-action]');
+        const button = event.target?.closest('button[data-action]');
         if (!button) {
             return;
         }
@@ -690,7 +694,7 @@
         const id = button.dataset.id;
         if (action === 'open') {
             loadDocument(id);
-            bootstrap.Modal.getInstance(document.querySelector('#savedPiasModal'))?.hide();
+            bootstrap.Modal.getInstance('#savedPiasModal')?.hide();
             return;
         }
         if (action === 'delete') {
@@ -705,7 +709,7 @@
         });
     }
     document.addEventListener('click', (event) => {
-        const button = event.target.closest('[data-md-target][data-md-mode]');
+        const button = event.target?.closest('[data-md-target][data-md-mode]');
         if (!button) {
             return;
         }
@@ -741,9 +745,9 @@
     previousStepButton.addEventListener('click', () => setStep(currentStep - 1));
     saveButton.addEventListener('click', persistCurrent);
     confirmNewPiaButton.addEventListener('click', () => {
-        const newPiaName = (document.querySelector('#newPiaName').value || '').trim();
+        const newPiaName = (document.querySelector('#newPiaName')?.value || '').trim();
         createNewDocument(newPiaName);
-        bootstrap.Modal.getInstance(document.querySelector('#newPiaModal'))?.hide();
+        bootstrap.Modal.getInstance('#newPiaModal')?.hide();
         showStatus(`Created ${newPiaName ? `"${newPiaName}"` : 'a new PIA'}.`, 'info');
     });
     openSavedPiasButton.addEventListener('click', renderSavedList);

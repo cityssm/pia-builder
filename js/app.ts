@@ -8,8 +8,12 @@ declare const bootstrap: typeof Bootstrap
   const storageKey = 'piaBuilder.documents.v1'
 
   const form = document.querySelector('#piaForm') as HTMLFormElement
-  const stepCards = [...document.querySelectorAll('.step-card')]
-  const stepIndicatorItems = [...document.querySelectorAll('#stepIndicator li')]
+  const stepCards = [
+    ...document.querySelectorAll('.step-card')
+  ] as HTMLDivElement[]
+  const stepIndicatorItems = [
+    ...document.querySelectorAll('#stepIndicator li')
+  ] as HTMLLIElement[]
 
   const stepTabButtons = [...document.querySelectorAll('.step-tab')]
   const previousStepButton = document.querySelector(
@@ -118,16 +122,20 @@ declare const bootstrap: typeof Bootstrap
     }
   }
 
-  const saveDocuments = (documents) => {
+  const saveDocuments = (documents: any[]) => {
     localStorage.setItem(storageKey, JSON.stringify(documents))
   }
 
   const getDocumentsSortedByUpdatedAt = () =>
     loadDocuments().sort(
-      (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     )
 
-  const showStatus = (message, type = 'info') => {
+  const showStatus = (
+    message: string,
+    type: 'info' | 'success' | 'warning' | 'danger' = 'info'
+  ) => {
     if (!statusToastInstance || !statusToastBody || !statusToastElement) {
       return
     }
@@ -171,7 +179,7 @@ declare const bootstrap: typeof Bootstrap
     statusToastInstance?.hide()
   }
 
-  const parseInformationSourceItems = (data) => {
+  const parseInformationSourceItems = (data: any) => {
     if (Array.isArray(data?.informationSourcesItems)) {
       return data.informationSourcesItems
     }
@@ -186,7 +194,7 @@ declare const bootstrap: typeof Bootstrap
     return []
   }
 
-  const splitPositionAndName = (combinedValue) => {
+  const splitPositionAndName = (combinedValue: string) => {
     const value = (combinedValue || '').trim()
 
     if (value === '') {
@@ -211,7 +219,7 @@ declare const bootstrap: typeof Bootstrap
     activePiaTitle.textContent = name || 'Untitled PIA'
   }
 
-  const appendInlineMarkdown = (text, container) => {
+  const appendInlineMarkdown = (text: string, container: HTMLElement) => {
     const pattern = /(\*\*[^*]+\*\*|\*[^*]+\*)/g
     let lastIndex = 0
 
@@ -241,7 +249,11 @@ declare const bootstrap: typeof Bootstrap
     }
   }
 
-  const renderMarkdownInto = (source, container, placeholder = null) => {
+  const renderMarkdownInto = (
+    source: string,
+    container: HTMLElement,
+    placeholder: string | null = null
+  ) => {
     container.textContent = ''
 
     if ((source || '').trim() === '') {
@@ -300,8 +312,10 @@ declare const bootstrap: typeof Bootstrap
     flushList()
   }
 
-  const updateMarkdownPreview = (fieldId) => {
-    const sourceTextarea = form.elements.namedItem(fieldId)
+  const updateMarkdownPreview = (fieldId: string) => {
+    const sourceTextarea = form.elements.namedItem(
+      fieldId
+    ) as HTMLTextAreaElement
     const preview = document.getElementById(`${fieldId}Preview`)
 
     if (!sourceTextarea || !preview) {
@@ -317,7 +331,7 @@ declare const bootstrap: typeof Bootstrap
     }
   }
 
-  const setMarkdownMode = (fieldId, mode) => {
+  const setMarkdownMode = (fieldId: string, mode: 'edit' | 'preview') => {
     const fieldWrapper = document.querySelector(
       `[data-markdown-field="${fieldId}"]`
     )
@@ -326,8 +340,10 @@ declare const bootstrap: typeof Bootstrap
       return
     }
 
-    const textarea = fieldWrapper.querySelector('.markdown-input')
-    const preview = document.getElementById(`${fieldId}Preview`)
+    const textarea = fieldWrapper.querySelector(
+      '.markdown-input'
+    ) as HTMLTextAreaElement
+    const preview = document.getElementById(`${fieldId}Preview`) as HTMLElement
     const buttons = fieldWrapper.querySelectorAll(
       `[data-md-target="${fieldId}"]`
     ) as NodeListOf<HTMLButtonElement>
@@ -347,7 +363,7 @@ declare const bootstrap: typeof Bootstrap
     preview.classList.add('d-none')
   }
 
-  const buildListControls = (row, removeLabel) => {
+  const buildListControls = (row: HTMLElement, removeLabel: string) => {
     const controls = document.createElement('div')
     controls.className = 'dynamic-list-controls justify-content-end'
     const reorderButtonClass =
@@ -390,7 +406,9 @@ declare const bootstrap: typeof Bootstrap
     return controls
   }
 
-  const buildPersonalInfoRow = (item = {}) => {
+  const buildPersonalInfoRow = (
+    item: { name?: string; useOrDisclosure?: string } = {}
+  ) => {
     const row = document.createElement('div')
     row.className = 'dynamic-list-item'
 
@@ -419,7 +437,7 @@ declare const bootstrap: typeof Bootstrap
     return row
   }
 
-  const buildInformationSourceRow = (source = '') => {
+  const buildInformationSourceRow = (source: string = '') => {
     const row = document.createElement('div')
     row.className = 'dynamic-list-item'
 
@@ -483,7 +501,7 @@ declare const bootstrap: typeof Bootstrap
     return raw
   }
 
-  const setFormData = (data) => {
+  const setFormData = (data: Record<string, any>) => {
     for (const [key, value] of Object.entries(data || {})) {
       if (
         key === 'personalInfoItems' ||
@@ -493,7 +511,8 @@ declare const bootstrap: typeof Bootstrap
         continue
       }
 
-      const field = form.elements.namedItem(key)
+      const field = form.elements.namedItem(key) as HTMLInputElement
+
       if (field) {
         field.value = value ?? ''
       }
@@ -521,14 +540,16 @@ declare const bootstrap: typeof Bootstrap
       const { position, name } = splitPositionAndName(data[legacyFieldKey])
 
       if (!data[positionFieldKey]) {
-        const positionInput = form.elements.namedItem(positionFieldKey)
+        const positionInput = form.elements.namedItem(positionFieldKey) as HTMLInputElement
+
         if (positionInput) {
           positionInput.value = position
         }
       }
 
       if (!data[nameFieldKey]) {
-        const nameInput = form.elements.namedItem(nameFieldKey)
+        const nameInput = form.elements.namedItem(nameFieldKey) as HTMLInputElement
+
         if (nameInput) {
           nameInput.value = name
         }
@@ -719,8 +740,8 @@ declare const bootstrap: typeof Bootstrap
       '',
       '## Overview',
       `- **Responsible Business Unit:** ${data.businessUnit || ''}`,
-      `- **Project Lead Position:** ${data.projectLeadPosition || ''}`,
       `- **Project Lead Name:** ${data.projectLeadName || ''}`,
+      `- **Project Lead Position:** ${data.projectLeadPosition || ''}`,
       `- **Assessment Date:** ${data.assessmentDate || ''}`,
       '',
       '## Initiative Summary and Program Context',
@@ -748,8 +769,8 @@ declare const bootstrap: typeof Bootstrap
       accessRoleLines,
       '',
       '## Review',
-      `- **Reviewed By Position:** ${data.reviewedByPosition || ''}`,
       `- **Reviewed By Name:** ${data.reviewedByName || ''}`,
+      `- **Reviewed By Position:** ${data.reviewedByPosition || ''}`,
       `- **Review Date:** ${data.reviewDate || ''}`,
       '',
       data.reviewNotes || ''
@@ -837,8 +858,8 @@ declare const bootstrap: typeof Bootstrap
     container.append(reviewOverviewHeading)
     const reviewOverviewList = document.createElement('ul')
     for (const detail of [
-      `Reviewed By Position: ${data.reviewedByPosition || ''}`,
       `Reviewed By Name: ${data.reviewedByName || ''}`,
+      `Reviewed By Position: ${data.reviewedByPosition || ''}`,
       `Review Date: ${data.reviewDate || ''}`
     ]) {
       const detailItem = document.createElement('li')
@@ -924,7 +945,9 @@ declare const bootstrap: typeof Bootstrap
   }
 
   savedPiasList.addEventListener('click', (event) => {
-    const button = event.target.closest('button[data-action]')
+    const button = (event.target as HTMLElement)?.closest(
+      'button[data-action]'
+    ) as HTMLButtonElement
 
     if (!button) {
       return
@@ -935,9 +958,7 @@ declare const bootstrap: typeof Bootstrap
 
     if (action === 'open') {
       loadDocument(id)
-      bootstrap.Modal.getInstance(
-        document.querySelector('#savedPiasModal')
-      )?.hide()
+      bootstrap.Modal.getInstance('#savedPiasModal')?.hide()
       return
     }
 
@@ -947,7 +968,9 @@ declare const bootstrap: typeof Bootstrap
   })
 
   for (const markdownFieldId of markdownFieldIds) {
-    const textarea = form.elements.namedItem(markdownFieldId)
+    const textarea = form.elements.namedItem(
+      markdownFieldId
+    ) as HTMLTextAreaElement
 
     textarea?.addEventListener('input', () => {
       updateMarkdownPreview(markdownFieldId)
@@ -956,7 +979,9 @@ declare const bootstrap: typeof Bootstrap
   }
 
   document.addEventListener('click', (event) => {
-    const button = event.target.closest('[data-md-target][data-md-mode]')
+    const button = (event.target as HTMLElement)?.closest(
+      '[data-md-target][data-md-mode]'
+    ) as HTMLButtonElement
 
     if (!button) {
       return
@@ -1002,10 +1027,10 @@ declare const bootstrap: typeof Bootstrap
 
   confirmNewPiaButton.addEventListener('click', () => {
     const newPiaName = (
-      document.querySelector('#newPiaName').value || ''
+      (document.querySelector('#newPiaName') as HTMLInputElement)?.value || ''
     ).trim()
     createNewDocument(newPiaName)
-    bootstrap.Modal.getInstance(document.querySelector('#newPiaModal'))?.hide()
+    bootstrap.Modal.getInstance('#newPiaModal')?.hide()
     showStatus(
       `Created ${newPiaName ? `"${newPiaName}"` : 'a new PIA'}.`,
       'info'
