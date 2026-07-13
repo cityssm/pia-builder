@@ -51,9 +51,14 @@
               <div class="form-text">Identify the program area or division accountable for this initiative.</div>
             </div>
             <div class="col-md-6">
-              <label for="projectLead" class="form-label">Project Lead (Position/Name)</label>
-              <input class="form-control" id="projectLead" name="projectLead">
-              <div class="form-text">Who is coordinating this PIA and can answer follow-up questions?</div>
+              <label for="projectLeadPosition" class="form-label">Project Lead Position Title</label>
+              <input class="form-control" id="projectLeadPosition" name="projectLeadPosition">
+              <div class="form-text">Position title of the person coordinating this PIA and answering follow-up questions.</div>
+            </div>
+            <div class="col-md-6">
+              <label for="projectLeadName" class="form-label">Project Lead Name</label>
+              <input class="form-control" id="projectLeadName" name="projectLeadName">
+              <div class="form-text">Name of the person currently serving as project lead.</div>
             </div>
             <div class="col-md-6">
               <label for="assessmentDate" class="form-label">Assessment Date</label>
@@ -96,20 +101,20 @@
                 <label class="form-label mb-0">Personal Information Collected</label>
                 <div class="form-text">List each personal information element and how it is intended to be used or disclosed.</div>
               </div>
-              <button class="btn btn-sm btn-outline-primary" type="button" id="addPersonalInfoButton">Add Personal Information Item</button>
+              <button class="btn btn-sm btn-outline-primary add-item-button" type="button" id="addPersonalInfoButton">Add Personal Information Item</button>
             </div>
             <div id="personalInfoList" class="vstack gap-2"></div>
           </div>
 
-          <div class="markdown-field" data-markdown-field="informationSources">
-            <label for="informationSources" class="form-label">Sources of Personal Information to be Collected</label>
-            <div class="form-text mb-2">Identify where personal information originates (individuals, third parties, other institutions, etc.).</div>
-            <div class="markdown-tabs btn-group btn-group-sm mb-2" role="group" aria-label="Information sources mode">
-              <button type="button" class="btn btn-outline-secondary active" data-md-target="informationSources" data-md-mode="edit">Edit</button>
-              <button type="button" class="btn btn-outline-secondary" data-md-target="informationSources" data-md-mode="preview">Preview</button>
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2 gap-2 flex-wrap">
+              <div>
+                <label class="form-label mb-0">Sources of Personal Information to be Collected</label>
+                <div class="form-text">List each source (individuals, third parties, other institutions, etc.).</div>
+              </div>
+              <button class="btn btn-sm btn-outline-primary add-item-button" type="button" id="addInformationSourceButton">Add Source</button>
             </div>
-            <textarea class="form-control markdown-input" id="informationSources" name="informationSources" rows="4"></textarea>
-            <div id="informationSourcesPreview" class="markdown-preview p-3 border rounded d-none"></div>
+            <div id="informationSourcesList" class="vstack gap-2"></div>
           </div>
         </div>
       </section>
@@ -157,7 +162,7 @@
                 <label class="form-label mb-0">Roles with Access to Personal Information</label>
                 <div class="form-text">List position titles of officers, employees, consultants, or agents with access.</div>
               </div>
-              <button class="btn btn-sm btn-outline-primary" type="button" id="addAccessRoleButton">Add Position Title</button>
+              <button class="btn btn-sm btn-outline-primary add-item-button" type="button" id="addAccessRoleButton">Add Position Title</button>
             </div>
             <div id="accessRolesList" class="vstack gap-2"></div>
           </div>
@@ -169,9 +174,14 @@
           <h2 class="h5">Review</h2>
           <div class="row g-3 mb-3">
             <div class="col-md-6">
-              <label for="reviewedBy" class="form-label">Reviewed By (Position/Name)</label>
-              <input class="form-control" id="reviewedBy" name="reviewedBy">
-              <div class="form-text">Record who reviewed this PIA draft.</div>
+              <label for="reviewedByPosition" class="form-label">Reviewed By Position Title</label>
+              <input class="form-control" id="reviewedByPosition" name="reviewedByPosition">
+              <div class="form-text">Position title of the person who reviewed this draft.</div>
+            </div>
+            <div class="col-md-6">
+              <label for="reviewedByName" class="form-label">Reviewed By Name</label>
+              <input class="form-control" id="reviewedByName" name="reviewedByName">
+              <div class="form-text">Name of the person who reviewed this draft.</div>
             </div>
             <div class="col-md-6">
               <label for="reviewDate" class="form-label">Review Date</label>
@@ -200,8 +210,13 @@
     </form>
 
     <input id="importJsonInput" type="file" class="d-none" accept="application/json,.json" />
-    <div class="alert alert-info mt-4 mb-0 d-none" id="statusMessage" role="status"></div>
   </main>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" id="statusToastContainer">
+    <div id="statusToast" class="toast border-0" role="status" aria-live="polite" aria-atomic="true">
+      <div class="toast-body" id="statusToastBody"></div>
+    </div>
+  </div>
 
   <div class="modal fade" id="newPiaModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">

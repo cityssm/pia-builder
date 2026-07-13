@@ -78,16 +78,26 @@ body {
   background: #fff;
 }
 
+.dynamic-list-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
 @media print {
   header,
+  #stepIndicator,
   #prevStepButton,
   #nextStepButton,
   #saveButton,
   #openSavedPiasButton,
   #importButton,
+  #statusToastContainer,
   [data-bs-toggle="modal"],
   .markdown-tabs,
   .remove-item-button,
+  .reorder-item-button,
   .add-item-button,
   .modal,
   .modal-backdrop {
@@ -102,6 +112,15 @@ body {
     box-shadow: none;
     border: 1px solid #ccc;
     break-inside: avoid;
+  }
+
+  .step-card .row > [class*='col-'],
+  .step-card .markdown-field,
+  .step-card .dynamic-list-item,
+  .step-card .mb-3,
+  .step-card .form-label {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   .step-card.d-none {

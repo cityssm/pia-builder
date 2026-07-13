@@ -18,18 +18,20 @@
   const exportJsonButton = document.getElementById('exportJsonButton');
   const exportWordButton = document.getElementById('exportWordButton');
   const printButton = document.getElementById('printButton');
-  const statusMessage = document.getElementById('statusMessage');
+  const statusToastElement = document.getElementById('statusToast');
+  const statusToastBody = document.getElementById('statusToastBody');
   const piaNameInput = document.getElementById('piaName');
   const activePiaTitle = document.getElementById('activePiaTitle');
   const addPersonalInfoButton = document.getElementById('addPersonalInfoButton');
   const personalInfoList = document.getElementById('personalInfoList');
+  const addInformationSourceButton = document.getElementById('addInformationSourceButton');
+  const informationSourcesList = document.getElementById('informationSourcesList');
   const addAccessRoleButton = document.getElementById('addAccessRoleButton');
   const accessRolesList = document.getElementById('accessRolesList');
 
   const markdownFieldIds = [
     'initiativeSummary',
     'legalAuthority',
-    'informationSources',
     'collectionUseDisclosure',
     'retentionDisposal',
     'safeguards',
@@ -38,6 +40,10 @@
 
   let currentStep = 0;
   let currentDocumentId = '';
+  let statusToastTimeoutId;
+  const statusToast = statusToastElement
+    ? new bootstrap.Toast(statusToastElement, { autohide: false })
+    : null;
 
   const generateDocumentId = () => {
     if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -63,13 +69,42 @@
     .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
   const showStatus = (message, type = 'info') => {
-    statusMessage.className = `alert alert-${type} mt-4 mb-0`;
-    statusMessage.textContent = message;
-    statusMessage.classList.remove('d-none');
+    if (!statusToast || !statusToastBody || !statusToastElement) {
+      return;
+    }
+
+    const toastClassByType = {
+      info: 'text-bg-primary',
+      success: 'text-bg-success',
+      warning: 'text-bg-warning',
+      danger: 'text-bg-danger'
+    };
+
+    for (const cssClass of ['text-bg-primary', 'text-bg-success', 'text-bg-warning', 'text-bg-danger', 'text-bg-secondary']) {
+      statusToastElement.classList.remove(cssClass);
+    }
+
+    statusToastElement.classList.add(toastClassByType[type] || 'text-bg-secondary');
+    statusToastBody.textContent = message;
+    statusToast.show();
+
+    if (statusToastTimeoutId) {
+      clearTimeout(statusToastTimeoutId);
+    }
+
+    statusToastTimeoutId = window.setTimeout(() => {
+      statusToast.hide();
+      statusToastTimeoutId = undefined;
+    }, 3200);
   };
 
   const clearStatus = () => {
-    statusMessage.classList.add('d-none');
+    if (statusToastTimeoutId) {
+      clearTimeout(statusToastTimeoutId);
+      statusToastTimeoutId = undefined;
+    }
+
+    statusToast?.hide();
   };
 
   const updateHeaderTitle = () => {
@@ -111,9 +146,11 @@
     container.textContent = '';
 
     if ((source || '').trim() === '') {
-      const paragraph = document.createElement('p');
-      paragraph.textContent = placeholder;
-      container.append(paragraph);
+      if (placeholder) {
+        const paragraph = document.createElement('p');
+        paragraph.textContent = placeholder;
+        container.append(paragraph);
+      }
       return;
     }
 
@@ -172,7 +209,7 @@
       return;
     }
 
-    renderMarkdownInto(sourceTextarea.value || '', preview, 'Preview your Markdown content here.');
+    renderMarkdownInto(sourceTextarea.value || '', preview, '');
   };
 
   const updateAllMarkdownPreviews = () => {
@@ -207,6 +244,47 @@
     preview.classList.add('d-none');
   };
 
+  const buildListControls = (row, removeLabel) => {
+    const controls = document.createElement('div');
+    controls.className = 'dynamic-list-controls';
+
+    const moveUpButton = document.createElement('button');
+    moveUpButton.type = 'button';
+    moveUpButton.className = 'btn btn-sm btn-outline-secondary reorder-item-button';
+    moveUpButton.textContent = 'Move Up';
+    moveUpButton.addEventListener('click', () => {
+      const previousRow = row.previousElementSibling;
+      if (previousRow) {
+        previousRow.before(row);
+      }
+      clearStatus();
+    });
+
+    const moveDownButton = document.createElement('button');
+    moveDownButton.type = 'button';
+    moveDownButton.className = 'btn btn-sm btn-outline-secondary reorder-item-button';
+    moveDownButton.textContent = 'Move Down';
+    moveDownButton.addEventListener('click', () => {
+      const nextRow = row.nextElementSibling;
+      if (nextRow) {
+        nextRow.after(row);
+      }
+      clearStatus();
+    });
+
+    const removeButton = document.createElement('button');
+    removeButton.type = 'button';
+    removeButton.className = 'btn btn-sm btn-outline-danger remove-item-button';
+    removeButton.textContent = removeLabel;
+    removeButton.addEventListener('click', () => {
+      row.remove();
+      clearStatus();
+    });
+
+    controls.append(moveUpButton, moveDownButton, removeButton);
+    return controls;
+  };
+
   const buildPersonalInfoRow = (item = {}) => {
     const row = document.createElement('div');
     row.className = 'dynamic-list-item';
@@ -230,39 +308,42 @@
     useInput.placeholder = 'How this item will be used and/or disclosed';
     useInput.value = item.useOrDisclosure || '';
 
-    const removeButton = document.createElement('button');
-    removeButton.type = 'button';
-    removeButton.className = 'btn btn-sm btn-outline-danger mt-2 remove-item-button';
-    removeButton.textContent = 'Remove Item';
-    removeButton.addEventListener('click', () => {
-      row.remove();
-      clearStatus();
-    });
+    const controls = buildListControls(row, 'Remove Item');
+    row.append(infoLabel, infoInput, useLabel, useInput, controls);
 
-    row.append(infoLabel, infoInput, useLabel, useInput, removeButton);
+    return row;
+  };
+
+  const buildInformationSourceRow = (source = '') => {
+    const row = document.createElement('div');
+    row.className = 'dynamic-list-item';
+
+    const sourceLabel = document.createElement('label');
+    sourceLabel.className = 'form-label';
+    sourceLabel.textContent = 'Source';
+
+    const sourceInput = document.createElement('input');
+    sourceInput.className = 'form-control information-source';
+    sourceInput.placeholder = 'e.g., Data subject, external partner, another institution';
+    sourceInput.value = source;
+
+    const controls = buildListControls(row, 'Remove Source');
+    row.append(sourceLabel, sourceInput, controls);
 
     return row;
   };
 
   const buildAccessRoleRow = (title = '') => {
     const row = document.createElement('div');
-    row.className = 'dynamic-list-item d-flex gap-2 align-items-center';
+    row.className = 'dynamic-list-item';
 
     const input = document.createElement('input');
     input.className = 'form-control access-role-title';
     input.placeholder = 'Position title with access to personal information';
     input.value = title;
 
-    const removeButton = document.createElement('button');
-    removeButton.type = 'button';
-    removeButton.className = 'btn btn-sm btn-outline-danger remove-item-button';
-    removeButton.textContent = 'Remove';
-    removeButton.addEventListener('click', () => {
-      row.remove();
-      clearStatus();
-    });
-
-    row.append(input, removeButton);
+    const controls = buildListControls(row, 'Remove');
+    row.append(input, controls);
     return row;
   };
 
@@ -277,10 +358,15 @@
     .map((input) => (input.value || '').trim())
     .filter((title) => title !== '');
 
+  const getInformationSources = () => [...informationSourcesList.querySelectorAll('.information-source')]
+    .map((input) => (input.value || '').trim())
+    .filter((source) => source !== '');
+
   const getFormData = () => {
     const raw = Object.fromEntries(new FormData(form).entries());
 
     raw.personalInfoItems = getPersonalInfoItems();
+    raw.informationSourcesItems = getInformationSources();
     raw.accessRoles = getAccessRoles();
 
     return raw;
@@ -288,7 +374,7 @@
 
   const setFormData = (data) => {
     for (const [key, value] of Object.entries(data || {})) {
-      if (key === 'personalInfoItems' || key === 'accessRoles') {
+      if (key === 'personalInfoItems' || key === 'accessRoles' || key === 'informationSourcesItems') {
         continue;
       }
 
@@ -299,13 +385,55 @@
     }
 
     personalInfoList.textContent = '';
+    informationSourcesList.textContent = '';
     accessRolesList.textContent = '';
 
     const personalItems = Array.isArray(data?.personalInfoItems) ? data.personalInfoItems : [];
+    const informationSourceItems = Array.isArray(data?.informationSourcesItems)
+      ? data.informationSourcesItems
+      : (typeof data?.informationSources === 'string'
+        ? data.informationSources.split('\n').map((line) => line.trim()).filter((line) => line !== '')
+        : []);
     const roleItems = Array.isArray(data?.accessRoles) ? data.accessRoles : [];
+
+    if ((data?.projectLead || '').trim()) {
+      const [position = '', name = ''] = data.projectLead.split('/').map((part) => part.trim());
+      if (!data.projectLeadPosition) {
+        const projectLeadPositionInput = form.elements.namedItem('projectLeadPosition');
+        if (projectLeadPositionInput) {
+          projectLeadPositionInput.value = position;
+        }
+      }
+      if (!data.projectLeadName) {
+        const projectLeadNameInput = form.elements.namedItem('projectLeadName');
+        if (projectLeadNameInput) {
+          projectLeadNameInput.value = name;
+        }
+      }
+    }
+
+    if ((data?.reviewedBy || '').trim()) {
+      const [position = '', name = ''] = data.reviewedBy.split('/').map((part) => part.trim());
+      if (!data.reviewedByPosition) {
+        const reviewedByPositionInput = form.elements.namedItem('reviewedByPosition');
+        if (reviewedByPositionInput) {
+          reviewedByPositionInput.value = position;
+        }
+      }
+      if (!data.reviewedByName) {
+        const reviewedByNameInput = form.elements.namedItem('reviewedByName');
+        if (reviewedByNameInput) {
+          reviewedByNameInput.value = name;
+        }
+      }
+    }
 
     for (const item of personalItems) {
       personalInfoList.append(buildPersonalInfoRow(item));
+    }
+
+    for (const source of informationSourceItems) {
+      informationSourcesList.append(buildInformationSourceRow(source));
     }
 
     for (const role of roleItems) {
@@ -325,6 +453,10 @@
 
     if (accessRolesList.children.length === 0) {
       accessRolesList.append(buildAccessRoleRow());
+    }
+
+    if (informationSourcesList.children.length === 0) {
+      informationSourcesList.append(buildInformationSourceRow());
     }
   };
 
@@ -379,6 +511,7 @@
     piaNameInput.value = name || '';
 
     personalInfoList.textContent = '';
+    informationSourcesList.textContent = '';
     accessRolesList.textContent = '';
     ensureMinimumListRows();
 
@@ -449,12 +582,17 @@
       ? data.accessRoles.map((title) => `- ${title}`).join('\n')
       : '- None listed';
 
+    const informationSourceLines = (data.informationSourcesItems || []).length > 0
+      ? data.informationSourcesItems.map((source) => `- ${source}`).join('\n')
+      : '- None listed';
+
     return [
       `# ${getCurrentDocumentName()}`,
       '',
       '## Overview',
       `- **Responsible Business Unit:** ${data.businessUnit || ''}`,
-      `- **Project Lead:** ${data.projectLead || ''}`,
+      `- **Project Lead Position:** ${data.projectLeadPosition || ''}`,
+      `- **Project Lead Name:** ${data.projectLeadName || ''}`,
       `- **Assessment Date:** ${data.assessmentDate || ''}`,
       '',
       '## Initiative Summary and Program Context',
@@ -467,7 +605,7 @@
       personalInfoLines,
       '',
       '## Sources of Personal Information',
-      data.informationSources || '',
+      informationSourceLines,
       '',
       '## Collection, Use, and Disclosure Controls',
       data.collectionUseDisclosure || '',
@@ -482,7 +620,8 @@
       accessRoleLines,
       '',
       '## Review',
-      `- **Reviewed By:** ${data.reviewedBy || ''}`,
+      `- **Reviewed By Position:** ${data.reviewedByPosition || ''}`,
+      `- **Reviewed By Name:** ${data.reviewedByName || ''}`,
       `- **Review Date:** ${data.reviewDate || ''}`,
       '',
       data.reviewNotes || ''
@@ -498,7 +637,6 @@
     const sections = [
       ['Initiative Summary and Program Context', 'initiativeSummary'],
       ['Legal Authority for Collection/Use/Disclosure', 'legalAuthority'],
-      ['Sources of Personal Information', 'informationSources'],
       ['Collection, Use, and Disclosure Controls', 'collectionUseDisclosure'],
       ['Retention and Disposal Strategy', 'retentionDisposal'],
       ['Safeguards', 'safeguards'],
@@ -517,6 +655,21 @@
     }
 
     const data = getFormData();
+    const overviewHeading = document.createElement('h2');
+    overviewHeading.textContent = 'Overview';
+    container.append(overviewHeading);
+    const overviewList = document.createElement('ul');
+    for (const detail of [
+      `Responsible Business Unit: ${data.businessUnit || ''}`,
+      `Project Lead Position: ${data.projectLeadPosition || ''}`,
+      `Project Lead Name: ${data.projectLeadName || ''}`,
+      `Assessment Date: ${data.assessmentDate || ''}`
+    ]) {
+      const detailItem = document.createElement('li');
+      detailItem.textContent = detail;
+      overviewList.append(detailItem);
+    }
+    container.append(overviewList);
 
     const personalInfoHeading = document.createElement('h2');
     personalInfoHeading.textContent = 'Personal Information Collected';
@@ -529,6 +682,17 @@
     }
     container.append(personalInfoListElement);
 
+    const sourceHeading = document.createElement('h2');
+    sourceHeading.textContent = 'Sources of Personal Information';
+    container.append(sourceHeading);
+    const sourceList = document.createElement('ul');
+    for (const source of data.informationSourcesItems || []) {
+      const li = document.createElement('li');
+      li.textContent = source;
+      sourceList.append(li);
+    }
+    container.append(sourceList);
+
     const accessHeading = document.createElement('h2');
     accessHeading.textContent = 'Roles with Access to Personal Information';
     container.append(accessHeading);
@@ -539,6 +703,21 @@
       accessList.append(li);
     }
     container.append(accessList);
+
+    const reviewOverviewHeading = document.createElement('h2');
+    reviewOverviewHeading.textContent = 'Review';
+    container.append(reviewOverviewHeading);
+    const reviewOverviewList = document.createElement('ul');
+    for (const detail of [
+      `Reviewed By Position: ${data.reviewedByPosition || ''}`,
+      `Reviewed By Name: ${data.reviewedByName || ''}`,
+      `Review Date: ${data.reviewDate || ''}`
+    ]) {
+      const detailItem = document.createElement('li');
+      detailItem.textContent = detail;
+      reviewOverviewList.append(detailItem);
+    }
+    container.append(reviewOverviewList);
 
     return `<!doctype html><html><head><meta charset="utf-8"></head><body>${container.innerHTML}</body></html>`;
   };
@@ -663,6 +842,11 @@
 
   addPersonalInfoButton.addEventListener('click', () => {
     personalInfoList.append(buildPersonalInfoRow());
+    clearStatus();
+  });
+
+  addInformationSourceButton.addEventListener('click', () => {
+    informationSourcesList.append(buildInformationSourceRow());
     clearStatus();
   });
 
