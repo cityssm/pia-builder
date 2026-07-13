@@ -11,6 +11,11 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="css/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css"
+      crossorigin="anonymous"
+    />
   </head>
   <body>
     <header class="navbar navbar-dark bg-primary shadow-sm">
@@ -24,6 +29,7 @@
             data-bs-toggle="modal"
             data-bs-target="#newPiaModal"
           >
+            <i class="fa-solid fa-file-circle-plus" aria-hidden="true"></i>
             New PIA
           </button>
           <button
@@ -31,6 +37,7 @@
             type="button"
             id="importButton"
           >
+            <i class="fa-solid fa-file-import" aria-hidden="true"></i>
             Import
           </button>
           <button
@@ -39,6 +46,7 @@
             data-bs-target="#savedPiasModal"
             id="openSavedPiasButton"
           >
+            <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
             Open Saved
           </button>
         </div>
@@ -51,12 +59,16 @@
       >
         <h1 class="h4 mb-0" id="activePiaTitle">Untitled PIA</h1>
         <div class="d-flex gap-2">
-          <button class="btn btn-outline-primary" id="saveButton">Save</button>
+          <button class="btn btn-outline-primary" id="saveButton">
+            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
+            Save
+          </button>
           <button
             class="btn btn-primary"
             data-bs-toggle="modal"
             data-bs-target="#exportModal"
           >
+            <i class="fa-solid fa-file-export" aria-hidden="true"></i>
             Export
           </button>
         </div>
@@ -294,6 +306,7 @@
                     data-bs-toggle="modal"
                     data-bs-target="#whatIsPersonalInformationModal"
                   >
+                    <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
                     Help
                   </button>
                   <button
@@ -301,6 +314,7 @@
                     type="button"
                     id="addPersonalInfoButton"
                   >
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
                     Add
                   </button>
                 </div>
@@ -326,6 +340,7 @@
                   type="button"
                   id="addInformationSourceButton"
                 >
+                  <i class="fa-solid fa-plus" aria-hidden="true"></i>
                   Add Source
                 </button>
               </div>
@@ -428,23 +443,27 @@
               ></div>
             </div>
 
-            <div class="markdown-field mb-3" data-markdown-field="safeguards">
-              <label for="safeguards" class="form-label"
-                >Technical, Administrative, and Physical Safeguards</label
+            <div
+              class="markdown-field mb-3"
+              data-markdown-field="technicalSafeguards"
+            >
+              <label for="technicalSafeguards" class="form-label"
+                >Technical Safeguards</label
               >
               <div class="form-text mb-2">
-                Describe security controls protecting confidentiality,
-                integrity, and availability.
+                Describe technical controls protecting confidentiality,
+                integrity, and availability (e.g., encryption, access controls,
+                audit logging, network security).
               </div>
               <div
                 class="markdown-tabs btn-group btn-group-sm mb-2"
                 role="group"
-                aria-label="Safeguards mode"
+                aria-label="Technical safeguards mode"
               >
                 <button
                   type="button"
                   class="btn btn-outline-secondary active"
-                  data-md-target="safeguards"
+                  data-md-target="technicalSafeguards"
                   data-md-mode="edit"
                 >
                   Edit
@@ -452,7 +471,7 @@
                 <button
                   type="button"
                   class="btn btn-outline-secondary"
-                  data-md-target="safeguards"
+                  data-md-target="technicalSafeguards"
                   data-md-mode="preview"
                 >
                   Preview
@@ -460,12 +479,104 @@
               </div>
               <textarea
                 class="form-control markdown-input"
-                id="safeguards"
-                name="safeguards"
+                id="technicalSafeguards"
+                name="technicalSafeguards"
                 rows="4"
               ></textarea>
               <div
-                id="safeguardsPreview"
+                id="technicalSafeguardsPreview"
+                class="markdown-preview p-3 border rounded d-none"
+              ></div>
+            </div>
+
+            <div
+              class="markdown-field mb-3"
+              data-markdown-field="administrativeSafeguards"
+            >
+              <label for="administrativeSafeguards" class="form-label"
+                >Administrative Safeguards</label
+              >
+              <div class="form-text mb-2">
+                Describe administrative controls protecting personal information
+                (e.g., policies, training, privacy governance, agreements with
+                third parties).
+              </div>
+              <div
+                class="markdown-tabs btn-group btn-group-sm mb-2"
+                role="group"
+                aria-label="Administrative safeguards mode"
+              >
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary active"
+                  data-md-target="administrativeSafeguards"
+                  data-md-mode="edit"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  data-md-target="administrativeSafeguards"
+                  data-md-mode="preview"
+                >
+                  Preview
+                </button>
+              </div>
+              <textarea
+                class="form-control markdown-input"
+                id="administrativeSafeguards"
+                name="administrativeSafeguards"
+                rows="4"
+              ></textarea>
+              <div
+                id="administrativeSafeguardsPreview"
+                class="markdown-preview p-3 border rounded d-none"
+              ></div>
+            </div>
+
+            <div
+              class="markdown-field mb-3"
+              data-markdown-field="physicalSafeguards"
+            >
+              <label for="physicalSafeguards" class="form-label"
+                >Physical Safeguards</label
+              >
+              <div class="form-text mb-2">
+                Describe physical controls protecting personal information
+                (e.g., locked facilities, clean desk practices, secure disposal
+                of physical records).
+              </div>
+              <div
+                class="markdown-tabs btn-group btn-group-sm mb-2"
+                role="group"
+                aria-label="Physical safeguards mode"
+              >
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary active"
+                  data-md-target="physicalSafeguards"
+                  data-md-mode="edit"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  data-md-target="physicalSafeguards"
+                  data-md-mode="preview"
+                >
+                  Preview
+                </button>
+              </div>
+              <textarea
+                class="form-control markdown-input"
+                id="physicalSafeguards"
+                name="physicalSafeguards"
+                rows="4"
+              ></textarea>
+              <div
+                id="physicalSafeguardsPreview"
                 class="markdown-preview p-3 border rounded d-none"
               ></div>
             </div>
@@ -490,6 +601,7 @@
                     data-bs-toggle="modal"
                     data-bs-target="#rolesAndResponsibilitiesModal"
                   >
+                    <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
                     Help
                   </button>
                   <button
@@ -497,6 +609,7 @@
                     type="button"
                     id="addAccessRoleButton"
                   >
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
                     Add
                   </button>
                 </div>
@@ -598,10 +711,12 @@
             type="button"
             id="prevStepButton"
           >
+            <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
             Previous
           </button>
           <button class="btn btn-primary" type="button" id="nextStepButton">
             Next
+            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
           </button>
         </div>
       </form>
@@ -768,6 +883,7 @@
               type="button"
               data-bs-dismiss="modal"
             >
+              <i class="fa-solid fa-xmark" aria-hidden="true"></i>
               Cancel
             </button>
             <button
@@ -775,6 +891,7 @@
               type="button"
               id="confirmNewPiaButton"
             >
+              <i class="fa-solid fa-plus" aria-hidden="true"></i>
               Create
             </button>
           </div>
@@ -829,6 +946,7 @@
                 type="button"
                 id="exportMarkdownButton"
               >
+                <i class="fa-solid fa-file-lines" aria-hidden="true"></i>
                 Export Markdown
               </button>
               <button
@@ -836,6 +954,7 @@
                 type="button"
                 id="exportJsonButton"
               >
+                <i class="fa-solid fa-file-code" aria-hidden="true"></i>
                 Export JSON
               </button>
               <button
@@ -843,6 +962,7 @@
                 type="button"
                 id="exportWordButton"
               >
+                <i class="fa-solid fa-file" aria-hidden="true"></i>
                 Export Word-compatible .doc
               </button>
               <button
@@ -850,6 +970,7 @@
                 type="button"
                 id="printButton"
               >
+                <i class="fa-solid fa-print" aria-hidden="true"></i>
                 Print
               </button>
             </div>

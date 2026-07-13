@@ -36,7 +36,9 @@
         'legalAuthority',
         'collectionUseDisclosure',
         'retentionDisposal',
-        'safeguards',
+        'technicalSafeguards',
+        'administrativeSafeguards',
+        'physicalSafeguards',
         'reviewNotes'
     ];
     let currentStep = 0;
@@ -239,7 +241,9 @@
         const moveUpButton = document.createElement('button');
         moveUpButton.type = 'button';
         moveUpButton.className = reorderButtonClass;
-        moveUpButton.textContent = 'Move Up';
+        moveUpButton.innerHTML =
+            '<i class="fa-solid fa-arrow-up" aria-hidden="true"></i> <span class="visually-hidden">Move Up</span>';
+        moveUpButton.title = 'Move Up';
         moveUpButton.addEventListener('click', () => {
             const previousRow = row.previousElementSibling;
             if (previousRow) {
@@ -250,7 +254,9 @@
         const moveDownButton = document.createElement('button');
         moveDownButton.type = 'button';
         moveDownButton.className = reorderButtonClass;
-        moveDownButton.textContent = 'Move Down';
+        moveDownButton.innerHTML =
+            '<i class="fa-solid fa-arrow-down" aria-hidden="true"></i> <span class="visually-hidden">Move Down</span>';
+        moveDownButton.title = 'Move Down';
         moveDownButton.addEventListener('click', () => {
             const nextRow = row.nextElementSibling;
             if (nextRow) {
@@ -261,7 +267,8 @@
         const removeButton = document.createElement('button');
         removeButton.type = 'button';
         removeButton.className = 'btn btn-sm btn-outline-danger remove-item-button';
-        removeButton.textContent = removeLabel;
+        removeButton.innerHTML = `<i class="fa-solid fa-trash" aria-hidden="true"></i> <span class="visually-hidden">${removeLabel}</span>`;
+        removeButton.title = removeLabel;
         removeButton.addEventListener('click', () => {
             row.remove();
             clearStatus();
@@ -376,6 +383,15 @@
         };
         applyLegacyCombinedField('projectLead', 'projectLeadPosition', 'projectLeadName');
         applyLegacyCombinedField('reviewedBy', 'reviewedByPosition', 'reviewedByName');
+        if ((data?.safeguards || '').trim() &&
+            !data?.technicalSafeguards &&
+            !data?.administrativeSafeguards &&
+            !data?.physicalSafeguards) {
+            const technicalField = form.elements.namedItem('technicalSafeguards');
+            if (technicalField) {
+                technicalField.value = data.safeguards;
+            }
+        }
         for (const item of personalItems) {
             personalInfoList.append(buildPersonalInfoRow(item));
         }
@@ -530,8 +546,14 @@
             '## Retention and Disposal Strategy',
             data.retentionDisposal || '',
             '',
-            '## Safeguards',
-            data.safeguards || '',
+            '## Technical Safeguards',
+            data.technicalSafeguards || '',
+            '',
+            '## Administrative Safeguards',
+            data.administrativeSafeguards || '',
+            '',
+            '## Physical Safeguards',
+            data.physicalSafeguards || '',
             '',
             '## Roles with Access to Personal Information',
             accessRoleLines,
@@ -549,23 +571,6 @@
         const title = document.createElement('h1');
         title.textContent = getCurrentDocumentName();
         container.append(title);
-        const sections = [
-            ['Initiative Summary and Program Context', 'initiativeSummary'],
-            ['Legal Authority for Collection/Use/Disclosure', 'legalAuthority'],
-            ['Collection, Use, and Disclosure Controls', 'collectionUseDisclosure'],
-            ['Retention and Disposal Strategy', 'retentionDisposal'],
-            ['Safeguards', 'safeguards'],
-            ['Review Notes and Recommended Actions', 'reviewNotes']
-        ];
-        for (const [label, fieldId] of sections) {
-            const heading = document.createElement('h2');
-            heading.textContent = label;
-            container.append(heading);
-            const preview = document.createElement('div');
-            const source = form.elements.namedItem(fieldId)?.value || '';
-            renderMarkdownInto(source, preview);
-            container.append(preview);
-        }
         const data = getFormData();
         const overviewHeading = document.createElement('h2');
         overviewHeading.textContent = 'Overview';
@@ -582,6 +587,19 @@
             overviewList.append(detailItem);
         }
         container.append(overviewList);
+        const textSections = [
+            ['Initiative Summary and Program Context', 'initiativeSummary'],
+            ['Legal Authority for Collection/Use/Disclosure', 'legalAuthority']
+        ];
+        for (const [label, fieldId] of textSections) {
+            const heading = document.createElement('h2');
+            heading.textContent = label;
+            container.append(heading);
+            const preview = document.createElement('div');
+            const source = form.elements.namedItem(fieldId)?.value || '';
+            renderMarkdownInto(source, preview);
+            container.append(preview);
+        }
         const personalInfoHeading = document.createElement('h2');
         personalInfoHeading.textContent = 'Personal Information Collected';
         container.append(personalInfoHeading);
@@ -602,6 +620,22 @@
             sourceList.append(li);
         }
         container.append(sourceList);
+        const riskSections = [
+            ['Collection, Use, and Disclosure Controls', 'collectionUseDisclosure'],
+            ['Retention and Disposal Strategy', 'retentionDisposal'],
+            ['Technical Safeguards', 'technicalSafeguards'],
+            ['Administrative Safeguards', 'administrativeSafeguards'],
+            ['Physical Safeguards', 'physicalSafeguards']
+        ];
+        for (const [label, fieldId] of riskSections) {
+            const heading = document.createElement('h2');
+            heading.textContent = label;
+            container.append(heading);
+            const preview = document.createElement('div');
+            const source = form.elements.namedItem(fieldId)?.value || '';
+            renderMarkdownInto(source, preview);
+            container.append(preview);
+        }
         const accessHeading = document.createElement('h2');
         accessHeading.textContent = 'Roles with Access to Personal Information';
         container.append(accessHeading);
@@ -626,6 +660,13 @@
             reviewOverviewList.append(detailItem);
         }
         container.append(reviewOverviewList);
+        const reviewNotesHeading = document.createElement('h2');
+        reviewNotesHeading.textContent = 'Review Notes and Recommended Actions';
+        container.append(reviewNotesHeading);
+        const reviewNotesPreview = document.createElement('div');
+        const reviewNotesSource = form.elements.namedItem('reviewNotes')?.value || '';
+        renderMarkdownInto(reviewNotesSource, reviewNotesPreview);
+        container.append(reviewNotesPreview);
         return `<!doctype html><html><head><meta charset="utf-8"></head><body>${container.innerHTML}</body></html>`;
     };
     const renderSavedList = () => {
@@ -651,13 +692,15 @@
             openButton.className = 'btn btn-sm btn-outline-primary';
             openButton.dataset.action = 'open';
             openButton.dataset.id = doc.id;
-            openButton.textContent = 'Open';
+            openButton.innerHTML =
+                '<i class="fa-solid fa-folder-open" aria-hidden="true"></i> Open';
             const deleteButton = document.createElement('button');
             deleteButton.type = 'button';
             deleteButton.className = 'btn btn-sm btn-outline-danger';
             deleteButton.dataset.action = 'delete';
             deleteButton.dataset.id = doc.id;
-            deleteButton.textContent = 'Delete';
+            deleteButton.innerHTML =
+                '<i class="fa-solid fa-trash" aria-hidden="true"></i> Delete';
             actionsContainer.append(openButton, deleteButton);
             buttonRow.append(detailsContainer, actionsContainer);
             savedPiasList.append(buttonRow);
@@ -672,8 +715,10 @@
             step.classList.toggle('active', index === currentStep);
         }
         previousStepButton.disabled = currentStep === 0;
-        nextStepButton.textContent =
-            currentStep === stepCards.length - 1 ? 'Finish & Save' : 'Next';
+        nextStepButton.innerHTML =
+            currentStep === stepCards.length - 1
+                ? '<i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Finish &amp; Save'
+                : 'Next <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>';
     };
     const closeModalsForPrint = () => {
         for (const modalElement of document.querySelectorAll('.modal')) {
