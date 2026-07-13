@@ -13,6 +13,7 @@
       <span class="navbar-brand mb-0 h1">PIA Builder</span>
       <div class="d-flex gap-2">
         <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#newPiaModal">New PIA</button>
+        <button class="btn btn-outline-light btn-sm" type="button" id="importButton">Import</button>
         <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#savedPiasModal" id="openSavedPiasButton">Open Saved</button>
       </div>
     </div>
@@ -28,10 +29,10 @@
     </div>
 
     <ul class="step-indicator mb-4" id="stepIndicator" aria-label="Form steps">
-      <li class="active">1. Overview</li>
-      <li>2. Data Profile</li>
-      <li>3. Risk & Controls</li>
-      <li>4. Review</li>
+      <li class="active"><button class="step-tab" type="button" data-step="0">1. Overview</button></li>
+      <li><button class="step-tab" type="button" data-step="1">2. Data Profile</button></li>
+      <li><button class="step-tab" type="button" data-step="2">3. Risk & Controls</button></li>
+      <li><button class="step-tab" type="button" data-step="3">4. Review</button></li>
     </ul>
 
     <form id="piaForm" novalidate>
@@ -40,20 +41,24 @@
           <h2 class="h5">Overview</h2>
           <div class="row g-3">
             <div class="col-md-6">
-              <label for="piaName" class="form-label">PIA Name</label>
+              <label for="piaName" class="form-label">PIA Name and Initiative Identifier</label>
               <input class="form-control" id="piaName" name="piaName" required>
+              <div class="form-text">Name this PIA so it can be located and referenced in future reviews.</div>
             </div>
             <div class="col-md-6">
-              <label for="businessUnit" class="form-label">Business Unit</label>
+              <label for="businessUnit" class="form-label">Responsible Business Unit</label>
               <input class="form-control" id="businessUnit" name="businessUnit">
+              <div class="form-text">Identify the program area or division accountable for this initiative.</div>
             </div>
             <div class="col-md-6">
-              <label for="projectLead" class="form-label">Project Lead</label>
+              <label for="projectLead" class="form-label">Project Lead (Position/Name)</label>
               <input class="form-control" id="projectLead" name="projectLead">
+              <div class="form-text">Who is coordinating this PIA and can answer follow-up questions?</div>
             </div>
             <div class="col-md-6">
               <label for="assessmentDate" class="form-label">Assessment Date</label>
               <input class="form-control" type="date" id="assessmentDate" name="assessmentDate">
+              <div class="form-text">The date this assessment draft was prepared or updated.</div>
             </div>
           </div>
         </div>
@@ -62,17 +67,49 @@
       <section class="step-card card mb-3 d-none" data-step="1">
         <div class="card-body">
           <h2 class="h5">Data Profile</h2>
-          <div class="mb-3">
-            <label for="initiativeSummary" class="form-label">Initiative Summary</label>
-            <textarea class="form-control" id="initiativeSummary" name="initiativeSummary" rows="4"></textarea>
+
+          <div class="markdown-field mb-3" data-markdown-field="initiativeSummary">
+            <label for="initiativeSummary" class="form-label">Initiative Summary and Program Context</label>
+            <div class="form-text mb-2">Describe what the initiative does, who is affected, and why personal information is needed.</div>
+            <div class="markdown-tabs btn-group btn-group-sm mb-2" role="group" aria-label="Initiative summary mode">
+              <button type="button" class="btn btn-outline-secondary active" data-md-target="initiativeSummary" data-md-mode="edit">Edit</button>
+              <button type="button" class="btn btn-outline-secondary" data-md-target="initiativeSummary" data-md-mode="preview">Preview</button>
+            </div>
+            <textarea class="form-control markdown-input" id="initiativeSummary" name="initiativeSummary" rows="5"></textarea>
+            <div id="initiativeSummaryPreview" class="markdown-preview p-3 border rounded d-none"></div>
           </div>
-          <div class="mb-3">
-            <label for="legalAuthority" class="form-label">Legal Authority</label>
-            <textarea class="form-control" id="legalAuthority" name="legalAuthority" rows="3"></textarea>
+
+          <div class="markdown-field mb-3" data-markdown-field="legalAuthority">
+            <label for="legalAuthority" class="form-label">Legal Authority for Collection/Use/Disclosure</label>
+            <div class="form-text mb-2">Document the by-law, statute, policy, agreement, or authority supporting this information practice.</div>
+            <div class="markdown-tabs btn-group btn-group-sm mb-2" role="group" aria-label="Legal authority mode">
+              <button type="button" class="btn btn-outline-secondary active" data-md-target="legalAuthority" data-md-mode="edit">Edit</button>
+              <button type="button" class="btn btn-outline-secondary" data-md-target="legalAuthority" data-md-mode="preview">Preview</button>
+            </div>
+            <textarea class="form-control markdown-input" id="legalAuthority" name="legalAuthority" rows="4"></textarea>
+            <div id="legalAuthorityPreview" class="markdown-preview p-3 border rounded d-none"></div>
           </div>
-          <div>
-            <label for="personalInfo" class="form-label">Personal Information Collected</label>
-            <textarea class="form-control" id="personalInfo" name="personalInfo" rows="4" placeholder="Names, addresses, identifiers, etc."></textarea>
+
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2 gap-2 flex-wrap">
+              <div>
+                <label class="form-label mb-0">Personal Information Collected</label>
+                <div class="form-text">List each personal information element and how it is intended to be used or disclosed.</div>
+              </div>
+              <button class="btn btn-sm btn-outline-primary" type="button" id="addPersonalInfoButton">Add Personal Information Item</button>
+            </div>
+            <div id="personalInfoList" class="vstack gap-2"></div>
+          </div>
+
+          <div class="markdown-field" data-markdown-field="informationSources">
+            <label for="informationSources" class="form-label">Sources of Personal Information to be Collected</label>
+            <div class="form-text mb-2">Identify where personal information originates (individuals, third parties, other institutions, etc.).</div>
+            <div class="markdown-tabs btn-group btn-group-sm mb-2" role="group" aria-label="Information sources mode">
+              <button type="button" class="btn btn-outline-secondary active" data-md-target="informationSources" data-md-mode="edit">Edit</button>
+              <button type="button" class="btn btn-outline-secondary" data-md-target="informationSources" data-md-mode="preview">Preview</button>
+            </div>
+            <textarea class="form-control markdown-input" id="informationSources" name="informationSources" rows="4"></textarea>
+            <div id="informationSourcesPreview" class="markdown-preview p-3 border rounded d-none"></div>
           </div>
         </div>
       </section>
@@ -80,17 +117,49 @@
       <section class="step-card card mb-3 d-none" data-step="2">
         <div class="card-body">
           <h2 class="h5">Risk & Controls</h2>
-          <div class="mb-3">
-            <label for="collectionUseDisclosure" class="form-label">Collection, Use, and Disclosure</label>
-            <textarea class="form-control" id="collectionUseDisclosure" name="collectionUseDisclosure" rows="3"></textarea>
+
+          <div class="markdown-field mb-3" data-markdown-field="collectionUseDisclosure">
+            <label for="collectionUseDisclosure" class="form-label">Collection, Use, and Disclosure Controls</label>
+            <div class="form-text mb-2">Describe notices, consent approaches, access controls, and disclosure conditions.</div>
+            <div class="markdown-tabs btn-group btn-group-sm mb-2" role="group" aria-label="Collection use disclosure mode">
+              <button type="button" class="btn btn-outline-secondary active" data-md-target="collectionUseDisclosure" data-md-mode="edit">Edit</button>
+              <button type="button" class="btn btn-outline-secondary" data-md-target="collectionUseDisclosure" data-md-mode="preview">Preview</button>
+            </div>
+            <textarea class="form-control markdown-input" id="collectionUseDisclosure" name="collectionUseDisclosure" rows="4"></textarea>
+            <div id="collectionUseDisclosurePreview" class="markdown-preview p-3 border rounded d-none"></div>
           </div>
-          <div class="mb-3">
-            <label for="retentionDisposal" class="form-label">Retention and Disposal</label>
-            <textarea class="form-control" id="retentionDisposal" name="retentionDisposal" rows="3"></textarea>
+
+          <div class="markdown-field mb-3" data-markdown-field="retentionDisposal">
+            <label for="retentionDisposal" class="form-label">Retention and Disposal Strategy</label>
+            <div class="form-text mb-2">Document retention timelines, records authority, secure destruction, and archival requirements.</div>
+            <div class="markdown-tabs btn-group btn-group-sm mb-2" role="group" aria-label="Retention and disposal mode">
+              <button type="button" class="btn btn-outline-secondary active" data-md-target="retentionDisposal" data-md-mode="edit">Edit</button>
+              <button type="button" class="btn btn-outline-secondary" data-md-target="retentionDisposal" data-md-mode="preview">Preview</button>
+            </div>
+            <textarea class="form-control markdown-input" id="retentionDisposal" name="retentionDisposal" rows="4"></textarea>
+            <div id="retentionDisposalPreview" class="markdown-preview p-3 border rounded d-none"></div>
           </div>
+
+          <div class="markdown-field mb-3" data-markdown-field="safeguards">
+            <label for="safeguards" class="form-label">Technical, Administrative, and Physical Safeguards</label>
+            <div class="form-text mb-2">Describe security controls protecting confidentiality, integrity, and availability.</div>
+            <div class="markdown-tabs btn-group btn-group-sm mb-2" role="group" aria-label="Safeguards mode">
+              <button type="button" class="btn btn-outline-secondary active" data-md-target="safeguards" data-md-mode="edit">Edit</button>
+              <button type="button" class="btn btn-outline-secondary" data-md-target="safeguards" data-md-mode="preview">Preview</button>
+            </div>
+            <textarea class="form-control markdown-input" id="safeguards" name="safeguards" rows="4"></textarea>
+            <div id="safeguardsPreview" class="markdown-preview p-3 border rounded d-none"></div>
+          </div>
+
           <div>
-            <label for="safeguards" class="form-label">Security Safeguards</label>
-            <textarea class="form-control" id="safeguards" name="safeguards" rows="3"></textarea>
+            <div class="d-flex justify-content-between align-items-center mb-2 gap-2 flex-wrap">
+              <div>
+                <label class="form-label mb-0">Roles with Access to Personal Information</label>
+                <div class="form-text">List position titles of officers, employees, consultants, or agents with access.</div>
+              </div>
+              <button class="btn btn-sm btn-outline-primary" type="button" id="addAccessRoleButton">Add Position Title</button>
+            </div>
+            <div id="accessRolesList" class="vstack gap-2"></div>
           </div>
         </div>
       </section>
@@ -100,21 +169,26 @@
           <h2 class="h5">Review</h2>
           <div class="row g-3 mb-3">
             <div class="col-md-6">
-              <label for="reviewedBy" class="form-label">Reviewed By</label>
+              <label for="reviewedBy" class="form-label">Reviewed By (Position/Name)</label>
               <input class="form-control" id="reviewedBy" name="reviewedBy">
+              <div class="form-text">Record who reviewed this PIA draft.</div>
             </div>
             <div class="col-md-6">
               <label for="reviewDate" class="form-label">Review Date</label>
               <input class="form-control" type="date" id="reviewDate" name="reviewDate">
+              <div class="form-text">Date this review was completed.</div>
             </div>
           </div>
-          <div class="mb-3">
-            <label for="reviewNotes" class="form-label">Review Notes (Markdown Supported)</label>
-            <textarea class="form-control" id="reviewNotes" name="reviewNotes" rows="4"></textarea>
-          </div>
-          <div>
-            <h3 class="h6">Markdown Preview</h3>
-            <div id="markdownPreview" class="markdown-preview p-3 border rounded"></div>
+
+          <div class="markdown-field" data-markdown-field="reviewNotes">
+            <label for="reviewNotes" class="form-label">Review Notes and Recommended Actions</label>
+            <div class="form-text mb-2">Capture findings, required mitigations, and approvals using Markdown.</div>
+            <div class="markdown-tabs btn-group btn-group-sm mb-2" role="group" aria-label="Review notes mode">
+              <button type="button" class="btn btn-outline-secondary active" data-md-target="reviewNotes" data-md-mode="edit">Edit</button>
+              <button type="button" class="btn btn-outline-secondary" data-md-target="reviewNotes" data-md-mode="preview">Preview</button>
+            </div>
+            <textarea class="form-control markdown-input" id="reviewNotes" name="reviewNotes" rows="5"></textarea>
+            <div id="reviewNotesPreview" class="markdown-preview p-3 border rounded d-none"></div>
           </div>
         </div>
       </section>
@@ -125,6 +199,7 @@
       </div>
     </form>
 
+    <input id="importJsonInput" type="file" class="d-none" accept="application/json,.json" />
     <div class="alert alert-info mt-4 mb-0 d-none" id="statusMessage" role="status"></div>
   </main>
 
@@ -174,6 +249,7 @@
           <div class="d-grid gap-2">
             <button class="btn btn-outline-primary" type="button" id="exportMarkdownButton">Export Markdown</button>
             <button class="btn btn-outline-primary" type="button" id="exportJsonButton">Export JSON</button>
+            <button class="btn btn-outline-primary" type="button" id="exportWordButton">Export Microsoft Word (.doc)</button>
             <button class="btn btn-outline-secondary" type="button" id="printButton">Print</button>
           </div>
         </div>
