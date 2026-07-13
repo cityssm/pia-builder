@@ -278,7 +278,7 @@
 
   const buildListControls = (row, removeLabel) => {
     const controls = document.createElement('div');
-    controls.className = 'dynamic-list-controls';
+    controls.className = 'dynamic-list-controls justify-content-end';
     const reorderButtonClass = 'btn btn-sm btn-outline-secondary reorder-item-button';
 
     const moveUpButton = document.createElement('button');
