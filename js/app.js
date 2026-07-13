@@ -92,7 +92,7 @@
       clearTimeout(statusToastTimeoutId);
     }
 
-    statusToastTimeoutId = window.setTimeout(() => {
+    statusToastTimeoutId = setTimeout(() => {
       statusToastInstance.hide();
       statusToastTimeoutId = undefined;
     }, 3200);
@@ -113,7 +113,7 @@
     }
 
     if (typeof data?.informationSources === 'string') {
-      return data.informationSources.split('\n').map((line) => line.trim()).filter((line) => line !== '');
+      return data.informationSources.split('\n').map((line) => line.trim()).filter((line) => line);
     }
 
     return [];
@@ -278,10 +278,11 @@
   const buildListControls = (row, removeLabel) => {
     const controls = document.createElement('div');
     controls.className = 'dynamic-list-controls';
+    const reorderButtonClass = 'btn btn-sm btn-outline-secondary reorder-item-button';
 
     const moveUpButton = document.createElement('button');
     moveUpButton.type = 'button';
-    moveUpButton.className = 'btn btn-sm btn-outline-secondary reorder-item-button';
+    moveUpButton.className = reorderButtonClass;
     moveUpButton.textContent = 'Move Up';
     moveUpButton.addEventListener('click', () => {
       const previousRow = row.previousElementSibling;
@@ -293,7 +294,7 @@
 
     const moveDownButton = document.createElement('button');
     moveDownButton.type = 'button';
-    moveDownButton.className = 'btn btn-sm btn-outline-secondary reorder-item-button';
+    moveDownButton.className = reorderButtonClass;
     moveDownButton.textContent = 'Move Down';
     moveDownButton.addEventListener('click', () => {
       const nextRow = row.nextElementSibling;
