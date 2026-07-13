@@ -1,32 +1,56 @@
 # Privacy Impact Assessment (PIA) Builder
 
-A tool to assist with building Privacy Impact Assessment documents (PIAs), as required under the
+🚧 **Under Development** 🚧
+
+A tool to assist with building Privacy Impact Assessment documents (PIAs), as
+required under the
 [Municipal Freedom of Information and Protection of Privacy Act (MFIPPA)](https://www.ontario.ca/laws/statute/90m56).
 
-## Background
+🔗 [**Try the PIA Builder**](https://cityssm.github.io/pia-builder)
 
-Taken from the Information and Privacy Commissioner of Ontario's resource,
-[Updates on obligations for provincial and municipal institutions](https://www.ipc.on.ca/en/resources/fippa-mfippa-updates), section **Mandatory privacy impact assessments**.
+![Privacy Impact Assessment Builder Screenshot](./resources/piaBuilderScreenshot.png)
 
-> All institutions subject to FIPPA are expressly required to carry out privacy impact assessments (PIAs). Equivalent PIA requirements for municipal institutions subject to MFIPPA are effective January 1, 2027.
->
-> Institutions must generally identify and assess privacy and security risks in a PIA before collecting personal information and update the PIA before making any significant changes to the purpose for which such personal information is used or disclosed. PIAs must also outline strategies and appropriate steps to prevent or mitigate such risks.
->
-> PIAs must be done in writing, and must contain the following information:
->
-> - the purpose for collecting, using or disclosing personal information and an explanation of why the personal information is necessary to achieve that purpose.
-> - the legal authority that the institution is relying on to collect, use or disclose the personal information.
-> - the types of personal information to be collected and, for each type, how it’s intended to be used or disclosed.
-> - the sources of the personal information to be collected.
-> - the position titles of the institution's officers, employees, consultants or agents who will have access to the personal information.
-> - any limitations or restrictions imposed on the collection, use or disclosure of the personal information.
-> - the period of time that the personal information will be retained by the institution.
-> - an explanation of the administrative, technical and physical safeguards that will be used to protect the personal information and a summary of any risks to individuals in the event of a theft, loss or unauthorized use or disclosure of the personal information.
-> - the steps to be taken by the institution to prevent or reduce the likelihood of a theft, loss or unauthorized use or disclosure of personal information and to mitigate risks to individuals.
-> - any other prescribed information.
->
-> Institutions must provide a copy of completed PIAs to the IPC upon request.
+⚠️ **Note that this project is not a substitute to review by legal counsel.**
+
+## Features
+
+- 🔐 **Privacy focused.** All form data stays on your computer.
+- 📄 **Export options** including JSON, Markdown, and Microsoft Word.
+- 💾 **Saved progress** kept locally in your browser, or downloaded to a file
+  for reimporting.
+
+## Project Background
+
+The Information and Privacy Commissioner (IPC) of Ontario has expanded its requirements
+for Privacy Impact Assessments (PIAs) to include municipalities, effective
+January 1st, 2027.
+
+[According to information released by the IPC](https://www.ipc.on.ca/en/resources/fippa-mfippa-updates),
+a PIA must include the following:
+
+> - The purpose for collecting, using or disclosing personal information and an
+>   explanation of why the personal information is necessary to achieve that purpose.
+> - The legal authority that the institution is relying on to collect, use or
+>   disclose the personal information.
+> - The types of personal information to be collected and, for each type, how
+>   it's intended to be used or disclosed.
+> - The sources of the personal information to be collected.
+> - The position titles of the institution's officers, employees, consultants or
+>   agents who will have access to the personal information.
+> - Any limitations or restrictions imposed on the collection, use or disclosure
+>   of the personal information.
+> - The period of time that the personal information will be retained by the institution.
+> - An explanation of the administrative, technical and physical safeguards that
+>   will be used to protect the personal information and a summary of any risks
+>   to individuals in the event of a theft, loss or unauthorized use or
+>   disclosure of the personal information.
+> - The steps to be taken by the institution to prevent or reduce the likelihood
+>   of a theft, loss or unauthorized use or disclosure of personal information
+>   and to mitigate risks to individuals.
+> - Any other prescribed information.
+
+This project attempts to help a user gather the information required in a PIA.
 
 ## Links
 
-[Planning for Success: Privacy Impact Assessment Guide for Ontario’s public institutions](https://www.ipc.on.ca/en/resources/planning-success-privacy-impact-assessment-guide-ontarios-public-institutions)
+- [Planning for Success: Privacy Impact Assessment Guide for Ontario’s public institutions](https://www.ipc.on.ca/en/resources/planning-success-privacy-impact-assessment-guide-ontarios-public-institutions)
