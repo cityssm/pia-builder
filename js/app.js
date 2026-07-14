@@ -149,7 +149,6 @@
             return;
         }
         const escapedSource = trimmedSource
-            .replaceAll('&', '&amp;')
             .replaceAll('<', '&lt;')
             .replaceAll('>', '&gt;');
         container.innerHTML = marked.parse(escapedSource);
