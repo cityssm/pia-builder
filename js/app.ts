@@ -757,6 +757,10 @@ declare const marked: typeof Marked
   }
 
   const refreshCompletionWarnings = () => {
+    if (!emptyFieldsSummary || !emptyFieldsSummaryList) {
+      return
+    }
+
     const emptyFieldSummaries: string[] = []
 
     for (const field of getWarnableFields()) {
@@ -772,20 +776,14 @@ declare const marked: typeof Marked
 
     const emptyListSummaries = getEmptyListSummaries()
 
-    if (!emptyFieldsSummary || !emptyFieldsSummaryList) {
-      return
-    }
-
     const summaryItems = [...emptyFieldSummaries, ...emptyListSummaries]
-    const listItemsFragment = document.createDocumentFragment()
-
-    for (const summaryItem of summaryItems) {
-      const listItem = document.createElement('li')
-      listItem.textContent = summaryItem
-      listItemsFragment.append(listItem)
-    }
-
-    emptyFieldsSummaryList.replaceChildren(listItemsFragment)
+    emptyFieldsSummaryList.replaceChildren(
+      ...summaryItems.map((summaryItem) => {
+        const listItem = document.createElement('li')
+        listItem.textContent = summaryItem
+        return listItem
+      })
+    )
     emptyFieldsSummary.classList.toggle('d-none', summaryItems.length === 0)
   }
 
