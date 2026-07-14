@@ -17,10 +17,12 @@ export const config = defineConfig(configWebApp, {
       'warn',
       {
         cspell: {
-          words: [...cspellWords, 'pias']
+          words: [...cspellWords, 'pias', 'warnable']
         }
       }
     ],
     '@typescript-eslint/no-unsafe-type-assertion': 'off'
   }
 })
+
+export default config

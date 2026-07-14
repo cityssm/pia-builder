@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-type-assertion */
+/* eslint-disable unicorn/no-null */
+/* eslint-disable max-lines */
 
 import type * as Bootstrap from 'bootstrap'
 import type { marked as Marked } from 'marked'
@@ -6,6 +7,7 @@ import type { marked as Marked } from 'marked'
 declare const bootstrap: typeof Bootstrap
 declare const marked: typeof Marked
 
+// eslint-disable-next-line complexity
 ;(() => {
   const storageKey = 'piaBuilder.documents.v1'
 
@@ -20,100 +22,83 @@ declare const marked: typeof Marked
   const stepTabButtons = [
     ...document.querySelectorAll('.step-tab')
   ] as HTMLButtonElement[]
-  const previousStepButton = document.querySelector(
-    '#prevStepButton'
-  ) as HTMLButtonElement
-  const nextStepButton = document.querySelector(
-    '#nextStepButton'
-  ) as HTMLButtonElement
+  const previousStepButton =
+    document.querySelector<HTMLButtonElement>('#prevStepButton')
+  const nextStepButton =
+    document.querySelector<HTMLButtonElement>('#nextStepButton')
 
-  const saveButton = document.querySelector('#saveButton') as HTMLButtonElement
+  const saveButton = document.querySelector<HTMLButtonElement>('#saveButton')
 
-  const importButton = document.querySelector(
-    '#importButton'
-  ) as HTMLButtonElement
-  const importJsonInput = document.querySelector(
-    '#importJsonInput'
-  ) as HTMLInputElement
-  const confirmNewPiaButton = document.querySelector(
+  const importButton =
+    document.querySelector<HTMLButtonElement>('#importButton')
+  const importJsonInput =
+    document.querySelector<HTMLInputElement>('#importJsonInput')
+  const confirmNewPiaButton = document.querySelector<HTMLButtonElement>(
     '#confirmNewPiaButton'
-  ) as HTMLButtonElement
+  )
 
-  const savedPiasList = document.querySelector(
-    '#savedPiasList'
-  ) as HTMLUListElement
-  const savedPiasEmptyState = document.querySelector(
+  const savedPiasList =
+    document.querySelector<HTMLUListElement>('#savedPiasList')
+  const savedPiasEmptyState = document.querySelector<HTMLElement>(
     '#savedPiasEmptyState'
-  ) as HTMLElement
-  const openSavedPiasButton = document.querySelector(
+  )
+  const openSavedPiasButton = document.querySelector<HTMLButtonElement>(
     '#openSavedPiasButton'
-  ) as HTMLButtonElement
+  )
 
-  const exportMarkdownButton = document.querySelector(
+  const exportMarkdownButton = document.querySelector<HTMLButtonElement>(
     '#exportMarkdownButton'
-  ) as HTMLButtonElement
-  const exportJsonButton = document.querySelector(
-    '#exportJsonButton'
-  ) as HTMLButtonElement
-  const exportWordButton = document.querySelector(
-    '#exportWordButton'
-  ) as HTMLButtonElement
-  const printButton = document.querySelector(
-    '#printButton'
-  ) as HTMLButtonElement
+  )
+  const exportJsonButton =
+    document.querySelector<HTMLButtonElement>('#exportJsonButton')
+  const exportWordButton =
+    document.querySelector<HTMLButtonElement>('#exportWordButton')
+  const printButton = document.querySelector<HTMLButtonElement>('#printButton')
 
-  const statusToastElement = document.querySelector(
-    '#statusToast'
-  ) as HTMLElement
-  const statusToastBody = document.querySelector(
-    '#statusToastBody'
-  ) as HTMLElement
-  const piaNameInput = document.querySelector('#piaName') as HTMLInputElement
-  const activePiaTitle = document.querySelector(
-    '#activePiaTitle'
-  ) as HTMLElement
-  const addPersonalInfoButton = document.querySelector(
+  const statusToastElement = document.querySelector<HTMLElement>('#statusToast')
+  const statusToastBody =
+    document.querySelector<HTMLElement>('#statusToastBody')
+  const piaNameInput = document.querySelector<HTMLInputElement>('#piaName')
+  const activePiaTitle = document.querySelector<HTMLElement>('#activePiaTitle')
+  const addPersonalInfoButton = document.querySelector<HTMLButtonElement>(
     '#addPersonalInfoButton'
-  ) as HTMLButtonElement
-  const personalInfoList = document.querySelector(
-    '#personalInfoList'
-  ) as HTMLUListElement
-  const addInformationSourceButton = document.querySelector(
+  )
+  const personalInfoList =
+    document.querySelector<HTMLUListElement>('#personalInfoList')
+  const addInformationSourceButton = document.querySelector<HTMLButtonElement>(
     '#addInformationSourceButton'
-  ) as HTMLButtonElement
-  const informationSourcesList = document.querySelector(
+  )
+  const informationSourcesList = document.querySelector<HTMLUListElement>(
     '#informationSourcesList'
-  ) as HTMLUListElement
-  const addAccessRoleButton = document.querySelector(
+  )
+  const addAccessRoleButton = document.querySelector<HTMLButtonElement>(
     '#addAccessRoleButton'
-  ) as HTMLButtonElement
-  const accessRolesList = document.querySelector(
-    '#accessRolesList'
-  ) as HTMLUListElement
-  const addTechnicalSafeguardMenu = document.querySelector(
+  )
+  const accessRolesList =
+    document.querySelector<HTMLUListElement>('#accessRolesList')
+  const addTechnicalSafeguardMenu = document.querySelector<HTMLUListElement>(
     '#addTechnicalSafeguardMenu'
-  ) as HTMLUListElement
-  const technicalSafeguardsList = document.querySelector(
+  )
+  const technicalSafeguardsList = document.querySelector<HTMLUListElement>(
     '#technicalSafeguardsList'
-  ) as HTMLUListElement
-  const addAdministrativeSafeguardMenu = document.querySelector(
-    '#addAdministrativeSafeguardMenu'
-  ) as HTMLUListElement
-  const administrativeSafeguardsList = document.querySelector(
+  )
+  const addAdministrativeSafeguardMenu =
+    document.querySelector<HTMLUListElement>('#addAdministrativeSafeguardMenu')
+  const administrativeSafeguardsList = document.querySelector<HTMLUListElement>(
     '#administrativeSafeguardsList'
-  ) as HTMLUListElement
-  const addPhysicalSafeguardMenu = document.querySelector(
+  )
+  const addPhysicalSafeguardMenu = document.querySelector<HTMLUListElement>(
     '#addPhysicalSafeguardMenu'
-  ) as HTMLUListElement
-  const physicalSafeguardsList = document.querySelector(
+  )
+  const physicalSafeguardsList = document.querySelector<HTMLUListElement>(
     '#physicalSafeguardsList'
-  ) as HTMLUListElement
-  const emptyFieldsSummary = document.querySelector(
+  )
+  const emptyFieldsSummary = document.querySelector<HTMLElement>(
     '#emptyFieldsSummary'
-  ) as HTMLElement
-  const emptyFieldsSummaryList = document.querySelector(
+  )
+  const emptyFieldsSummaryList = document.querySelector<HTMLUListElement>(
     '#emptyFieldsSummaryList'
-  ) as HTMLUListElement
+  )
 
   const markdownFieldIds = [
     'initiativeSummary',
@@ -132,7 +117,7 @@ declare const marked: typeof Marked
     ? new bootstrap.Toast(statusToastElement, { autohide: false })
     : null
 
-  const generateDocumentId = () => {
+  const generateDocumentId = (): string => {
     if (
       typeof crypto !== 'undefined' &&
       typeof crypto.randomUUID === 'function'
@@ -140,40 +125,41 @@ declare const marked: typeof Marked
       return crypto.randomUUID()
     }
 
-    return `pia-${Date.now()}-${Math.floor(Math.random() * 100000)}`
+    // eslint-disable-next-line sonarjs/pseudo-random, @typescript-eslint/no-magic-numbers
+    return `pia-${Date.now()}-${Math.floor(Math.random() * 100_000)}`
   }
 
-  const loadDocuments = () => {
+  const loadDocuments = (): any[] => {
     try {
-      return JSON.parse(localStorage.getItem(storageKey) || '[]')
+      return JSON.parse(localStorage.getItem(storageKey) ?? '[]')
     } catch {
       return []
     }
   }
 
-  const saveDocuments = (documents: any[]) => {
+  const saveDocuments = (documents: any[]): void => {
     localStorage.setItem(storageKey, JSON.stringify(documents))
   }
 
-  const getDocumentsSortedByUpdatedAt = () =>
-    loadDocuments().sort(
+  const getDocumentsSortedByUpdatedAt = (): any[] =>
+    loadDocuments().toSorted(
       (a, b) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     )
 
   const showStatus = (
     message: string,
-    type: 'info' | 'success' | 'warning' | 'danger' = 'info'
-  ) => {
+    type: 'danger' | 'info' | 'success' | 'warning' = 'info'
+  ): void => {
     if (!statusToastInstance || !statusToastBody || !statusToastElement) {
       return
     }
 
     const toastClassByType = {
+      danger: 'text-bg-danger',
       info: 'text-bg-primary',
       success: 'text-bg-success',
-      warning: 'text-bg-warning',
-      danger: 'text-bg-danger'
+      warning: 'text-bg-warning'
     }
 
     for (const cssClass of [
@@ -223,37 +209,39 @@ declare const marked: typeof Marked
     return []
   }
 
-  const splitPositionAndName = (combinedValue: string) => {
-    const value = (combinedValue || '').trim()
+  const splitPositionAndName = (
+    combinedValue: string
+  ): { name: string; position: string } => {
+    const value = (combinedValue ?? '').trim()
 
     if (value === '') {
-      return { position: '', name: '' }
+      return { name: '', position: '' }
     }
 
     // Legacy values were captured as "Position/Name".
     const dividerIndex = value.indexOf('/')
 
     if (dividerIndex === -1) {
-      return { position: value, name: '' }
+      return { name: '', position: value }
     }
 
     return {
-      position: value.slice(0, dividerIndex).trim(),
-      name: value.slice(dividerIndex + 1).trim()
+      name: value.slice(dividerIndex + 1).trim(),
+      position: value.slice(0, dividerIndex).trim()
     }
   }
 
-  const updateHeaderTitle = () => {
-    const name = (piaNameInput.value || '').trim()
+  const updateHeaderTitle = (): void => {
+    const name = (piaNameInput?.value ?? '').trim()
     activePiaTitle.textContent = name || 'Untitled PIA'
   }
 
-  const generateDynamicFieldId = (prefix: string) => {
+  const generateDynamicFieldId = (prefix: string): string => {
     dynamicFieldIndex += 1
     return `${prefix}-${dynamicFieldIndex}`
   }
 
-  const isSafeUrlAttributeValue = (value: string) => {
+  const isSafeUrlAttributeValue = (value: string): boolean => {
     const trimmedValue = (value || '').trim()
 
     if (trimmedValue === '' || trimmedValue.startsWith('#')) {
@@ -301,7 +289,7 @@ declare const marked: typeof Marked
     }
 
     for (const element of sanitizedHtmlTemplate.content.querySelectorAll('*')) {
-      for (const attribute of [...element.attributes]) {
+      for (const attribute of element.attributes) {
         const attributeName = attribute.name.toLowerCase()
         if (attributeName.startsWith('on')) {
           element.removeAttribute(attribute.name)
@@ -324,7 +312,7 @@ declare const marked: typeof Marked
     const sourceTextarea = form.elements.namedItem(
       fieldId
     ) as HTMLTextAreaElement
-    const preview = document.getElementById(`${fieldId}Preview`)
+    const preview = document.querySelector<HTMLElement>(`#${fieldId}Preview`)
 
     if (!sourceTextarea || !preview) {
       return
@@ -333,7 +321,7 @@ declare const marked: typeof Marked
     renderMarkdownInto(sourceTextarea.value || '', preview, '')
   }
 
-  const updateAllMarkdownPreviews = () => {
+  const updateAllMarkdownPreviews = (): void => {
     for (const fieldId of markdownFieldIds) {
       updateMarkdownPreview(fieldId)
     }
@@ -351,7 +339,7 @@ declare const marked: typeof Marked
     const textarea = fieldWrapper.querySelector(
       '.markdown-input'
     ) as HTMLTextAreaElement
-    const preview = document.getElementById(`${fieldId}Preview`) as HTMLElement
+    const preview = document.querySelector<HTMLElement>(`#${fieldId}Preview`)
     const buttons = fieldWrapper.querySelectorAll(
       `[data-md-target="${fieldId}"]`
     ) as NodeListOf<HTMLButtonElement>
@@ -363,12 +351,12 @@ declare const marked: typeof Marked
     if (mode === 'preview') {
       updateMarkdownPreview(fieldId)
       textarea.classList.add('d-none')
-      preview.classList.remove('d-none')
+      preview?.classList.remove('d-none')
       return
     }
 
     textarea.classList.remove('d-none')
-    preview.classList.add('d-none')
+    preview?.classList.add('d-none')
   }
 
   const buildWarningFieldWrapper = (
@@ -413,7 +401,7 @@ declare const marked: typeof Marked
     const wrapper = buildWarningFieldWrapper(field)
 
     if (nextSibling) {
-      parentElement.insertBefore(wrapper, nextSibling)
+      nextSibling.before(wrapper)
       return
     }
 
@@ -422,12 +410,15 @@ declare const marked: typeof Marked
 
   const getFieldEmptyWarningIcon = (
     field: HTMLInputElement | HTMLTextAreaElement
-  ) => field.parentElement?.querySelector('.field-empty-warning')
+  ): HTMLSpanElement | null =>
+    field.parentElement?.querySelector<HTMLSpanElement>(
+      '.field-empty-warning'
+    ) ?? null
 
   const setFieldWarningState = (
     field: HTMLInputElement | HTMLTextAreaElement,
     isEmpty: boolean
-  ) => {
+  ): void => {
     const warningIcon = getFieldEmptyWarningIcon(field)
 
     if (!warningIcon) {
@@ -437,7 +428,7 @@ declare const marked: typeof Marked
     warningIcon.classList.toggle('d-none', !isEmpty)
   }
 
-  const normalizeWhitespace = (labelText: string) =>
+  const normalizeWhitespace = (labelText: string): string =>
     (labelText || '').replaceAll(/\s+/g, ' ').trim()
 
   const getWarnableFields = () =>
@@ -513,7 +504,7 @@ declare const marked: typeof Marked
     const infoInput = document.createElement('input')
     infoInput.id = nameFieldId
     infoInput.className = 'form-control mb-2 personal-info-name'
-    infoInput.value = item.name || ''
+    infoInput.value = item.name ?? ''
     infoInput.placeholder = 'e.g., Home address, email, employee ID'
 
     const useLabel = document.createElement('label')
@@ -526,7 +517,7 @@ declare const marked: typeof Marked
     useInput.className = 'form-control personal-info-use'
     useInput.rows = 2
     useInput.placeholder = 'How this item will be used and/or disclosed'
-    useInput.value = item.useOrDisclosure || ''
+    useInput.value = item.useOrDisclosure ?? ''
 
     const infoFieldWrapper = buildWarningFieldWrapper(infoInput)
     const useFieldWrapper = buildWarningFieldWrapper(useInput)
@@ -536,7 +527,7 @@ declare const marked: typeof Marked
     return row
   }
 
-  const buildInformationSourceRow = (source: string = '') => {
+  const buildInformationSourceRow = (source = ''): HTMLDivElement => {
     const row = document.createElement('div')
     row.className = 'dynamic-list-item'
     const sourceFieldId = generateDynamicFieldId('information-source')
@@ -1549,7 +1540,7 @@ declare const marked: typeof Marked
     })
   }
 
-  addPersonalInfoButton.addEventListener('click', clearStatus)
+  addPersonalInfoButton?.addEventListener('click', clearStatus)
 
   document.addEventListener('click', (event) => {
     const personalInfoMenuButton = (event.target as HTMLElement)?.closest(
@@ -1561,19 +1552,19 @@ declare const marked: typeof Marked
     }
 
     const name = personalInfoMenuButton.dataset.personalInfoValue || ''
-    personalInfoList.append(buildPersonalInfoRow({ name }))
+    personalInfoList?.append(buildPersonalInfoRow({ name }))
     refreshCompletionWarnings()
     clearStatus()
   })
 
-  addInformationSourceButton.addEventListener('click', () => {
-    informationSourcesList.append(buildInformationSourceRow())
+  addInformationSourceButton?.addEventListener('click', () => {
+    informationSourcesList?.append(buildInformationSourceRow())
     refreshCompletionWarnings()
     clearStatus()
   })
 
-  addAccessRoleButton.addEventListener('click', () => {
-    accessRolesList.append(buildAccessRoleRow())
+  addAccessRoleButton?.addEventListener('click', () => {
+    accessRolesList?.append(buildAccessRoleRow())
     refreshCompletionWarnings()
     clearStatus()
   })
@@ -1595,7 +1586,7 @@ declare const marked: typeof Marked
       type: 'physical'
     }
   ]) {
-    menu.addEventListener('click', (event) => {
+    menu?.addEventListener('click', (event) => {
       const button = (event.target as HTMLElement)?.closest(
         '[data-safeguard-value]'
       ) as HTMLButtonElement
@@ -1604,15 +1595,15 @@ declare const marked: typeof Marked
         return
       }
 
-      list.append(buildSafeguardRow(type, button.dataset.safeguardValue || ''))
+      list?.append(buildSafeguardRow(type, button.dataset.safeguardValue || ''))
       refreshCompletionWarnings()
       clearStatus()
     })
   }
 
-  piaNameInput.addEventListener('input', updateHeaderTitle)
+  piaNameInput?.addEventListener('input', updateHeaderTitle)
 
-  nextStepButton.addEventListener('click', () => {
+  nextStepButton?.addEventListener('click', () => {
     if (currentStep < stepCards.length - 1) {
       setStep(currentStep + 1)
     } else {
@@ -1620,10 +1611,10 @@ declare const marked: typeof Marked
     }
   })
 
-  previousStepButton.addEventListener('click', () => setStep(currentStep - 1))
-  saveButton.addEventListener('click', persistCurrent)
+  previousStepButton?.addEventListener('click', () => setStep(currentStep - 1))
+  saveButton?.addEventListener('click', persistCurrent)
 
-  confirmNewPiaButton.addEventListener('click', () => {
+  confirmNewPiaButton?.addEventListener('click', () => {
     const newPiaName = (
       (document.querySelector('#newPiaName') as HTMLInputElement)?.value || ''
     ).trim()
@@ -1635,9 +1626,9 @@ declare const marked: typeof Marked
     )
   })
 
-  openSavedPiasButton.addEventListener('click', renderSavedList)
+  openSavedPiasButton?.addEventListener('click', renderSavedList)
 
-  exportMarkdownButton.addEventListener('click', () => {
+  exportMarkdownButton?.addEventListener('click', () => {
     exportToFile(
       `${getExportSlug()}.md`,
       'text/markdown;charset=utf-8',
@@ -1646,7 +1637,7 @@ declare const marked: typeof Marked
     showStatus('Exported Markdown file.', 'success')
   })
 
-  exportJsonButton.addEventListener('click', () => {
+  exportJsonButton?.addEventListener('click', () => {
     exportToFile(
       `${getExportSlug()}.json`,
       'application/json;charset=utf-8',
@@ -1664,7 +1655,7 @@ declare const marked: typeof Marked
     showStatus('Exported JSON file.', 'success')
   })
 
-  exportWordButton.addEventListener('click', () => {
+  exportWordButton?.addEventListener('click', () => {
     exportToFile(
       `${getExportSlug()}.doc`,
       'text/html;charset=utf-8',
@@ -1673,12 +1664,12 @@ declare const marked: typeof Marked
     showStatus('Exported Microsoft Word document.', 'success')
   })
 
-  importButton.addEventListener('click', () => {
+  importButton?.addEventListener('click', () => {
     importJsonInput.value = ''
     importJsonInput.click()
   })
 
-  importJsonInput.addEventListener('change', async () => {
+  importJsonInput?.addEventListener('change', async () => {
     const [file] = importJsonInput.files || []
 
     if (!file) {
@@ -1704,7 +1695,7 @@ declare const marked: typeof Marked
       }
 
       setStep(0)
-      showStatus(`Imported "${imported?.name || 'PIA'}" from JSON.`, 'success')
+      showStatus(`Imported "${imported?.name ?? 'PIA'}" from JSON.`, 'success')
     } catch {
       showStatus(
         'Import failed. Please choose a valid exported JSON file.',
@@ -1713,13 +1704,13 @@ declare const marked: typeof Marked
     }
   })
 
-  printButton.addEventListener('click', () => {
+  printButton?.addEventListener('click', () => {
     closeModalsForPrint()
     updateAllMarkdownPreviews()
-    window.print()
+    globalThis.print()
   })
 
-  window.addEventListener('beforeprint', () => {
+  globalThis.addEventListener('beforeprint', () => {
     closeModalsForPrint()
     updateAllMarkdownPreviews()
   })
@@ -1734,7 +1725,7 @@ declare const marked: typeof Marked
 
     if (latest) {
       currentDocumentId = latest.id
-      setFormData(latest.data || {})
+      setFormData(latest.data ?? {})
       showStatus(`Loaded most recent draft: "${latest.name}".`, 'info')
     }
   } else {

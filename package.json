@@ -1,4 +1,10 @@
 {
+  "name": "pia-builder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A tool to assist with building Privacy Impact Assessment documents (PIAs), as required by the Information and Privacy Commissioner (IPC) of Ontario under the Municipal Freedom of Information and Protection of Privacy Act (MFIPPA).",
+  "license": "MIT",
+  "type": "module",
   "devDependencies": {
     "@types/bootstrap": "^5.2.11",
     "eslint-config-cityssm": "^42.0.0",

@@ -5,23 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Privacy Impact Assessment (PIA) Builder</title>
     <link
-      rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
-      integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr"
       crossorigin="anonymous"
-    />
-    <link rel="stylesheet" href="css/styles.css" />
-    <link
+      integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr"
       rel="stylesheet"
+    />
+    <link href="css/styles.css" rel="stylesheet" />
+    <link
       href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css"
       crossorigin="anonymous"
+      integrity="sha384-nRgPTkuX86pH8yjPJUAFuASXQSSl2/bBUiNV47vSYpKFxHJhbcrGnmlYpYJMeD7a"
+      rel="stylesheet"
     />
   </head>
   <body>
     <header class="navbar navbar-dark bg-primary shadow-sm">
       <div class="container-fluid">
-        <span class="navbar-brand mb-0 h1"
-          >Privacy Impact Assessment (PIA) Builder
+        <span class="navbar-brand mb-0 h1">
+          Privacy Impact Assessment (PIA) Builder
           <span class="badge text-bg-secondary">Dev</span></span
         >
         <div class="d-flex gap-2">
@@ -29,23 +30,25 @@
             class="btn btn-light btn-sm"
             data-bs-toggle="modal"
             data-bs-target="#newPiaModal"
+            type="button"
           >
             <i class="fa-solid fa-file-circle-plus" aria-hidden="true"></i>
             New PIA
           </button>
           <button
             class="btn btn-outline-light btn-sm"
-            type="button"
             id="importButton"
+            type="button"
           >
             <i class="fa-solid fa-file-import" aria-hidden="true"></i>
             Import
           </button>
           <button
             class="btn btn-outline-light btn-sm"
+            id="openSavedPiasButton"
             data-bs-toggle="modal"
             data-bs-target="#savedPiasModal"
-            id="openSavedPiasButton"
+            type="button"
           >
             <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
             Open Saved
@@ -60,7 +63,7 @@
       >
         <h1 class="h4 mb-0" id="activePiaTitle">Untitled PIA</h1>
         <div class="d-flex gap-2">
-          <button class="btn btn-outline-primary" id="saveButton">
+          <button class="btn btn-outline-primary" id="saveButton" type="button">
             <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
             Save
           </button>
@@ -73,22 +76,22 @@
         aria-label="Form steps"
       >
         <li class="active">
-          <button class="step-tab" type="button" data-step="0">
+          <button class="step-tab" data-step="0" type="button">
             1. Overview
           </button>
         </li>
         <li>
-          <button class="step-tab" type="button" data-step="1">
+          <button class="step-tab" data-step="1" type="button">
             2. Data Profile
           </button>
         </li>
         <li>
-          <button class="step-tab" type="button" data-step="2">
+          <button class="step-tab" data-step="2" type="button">
             3. Risk & Controls
           </button>
         </li>
         <li>
-          <button class="step-tab" type="button" data-step="3">
+          <button class="step-tab" data-step="3" type="button">
             4. Next Steps
           </button>
         </li>
@@ -112,8 +115,8 @@
             <h2 class="h5">Overview</h2>
             <div class="row g-3">
               <div class="col-md-6">
-                <label for="piaName" class="form-label"
-                  >PIA Name and Initiative Identifier</label
+                <label class="form-label" for="piaName">
+                  PIA Name and Initiative Identifier</label
                 >
                 <input
                   class="form-control"
@@ -127,8 +130,8 @@
                 </div>
               </div>
               <div class="col-md-6">
-                <label for="businessUnit" class="form-label"
-                  >Responsible Business Unit</label
+                <label class="form-label" for="businessUnit">
+                  Responsible Business Unit</label
                 >
                 <input
                   class="form-control"
@@ -141,9 +144,9 @@
                 </div>
               </div>
               <div class="col-md-6">
-                <label for="projectLeadName" class="form-label"
-                  >Project Lead Name</label
-                >
+                <label class="form-label" for="projectLeadName">
+                  Project Lead Name
+                </label>
                 <input
                   class="form-control"
                   id="projectLeadName"
@@ -154,9 +157,9 @@
                 </div>
               </div>
               <div class="col-md-6">
-                <label for="projectLeadPosition" class="form-label"
-                  >Project Lead Position Title</label
-                >
+                <label class="form-label" for="projectLeadPosition">
+                  Project Lead Position Title
+                </label>
                 <input
                   class="form-control"
                   id="projectLeadPosition"
@@ -171,9 +174,9 @@
             <hr />
             <div class="row g-3">
               <div class="col-md-6">
-                <label for="assessorName" class="form-label"
-                  >Assessor Name</label
-                >
+                <label class="form-label" for="assessorName">
+                  Assessor Name
+                </label>
                 <input
                   class="form-control"
                   id="assessorName"
@@ -184,9 +187,9 @@
                 </div>
               </div>
               <div class="col-md-6">
-                <label for="assessorPosition" class="form-label"
-                  >Assessor Position Title</label
-                >
+                <label class="form-label" for="assessorPosition">
+                  Assessor Position Title
+                </label>
                 <input
                   class="form-control"
                   id="assessorPosition"
@@ -198,14 +201,14 @@
                 </div>
               </div>
               <div class="col-md-6">
-                <label for="assessmentDate" class="form-label"
-                  >Assessment Date</label
-                >
+                <label class="form-label" for="assessmentDate">
+                  Assessment Date
+                </label>
                 <input
                   class="form-control"
-                  type="date"
                   id="assessmentDate"
                   name="assessmentDate"
+                  type="date"
                 />
                 <div class="form-text">
                   The date this assessment draft was prepared or updated.
@@ -223,9 +226,9 @@
               class="markdown-field mb-3"
               data-markdown-field="initiativeSummary"
             >
-              <label for="initiativeSummary" class="form-label"
-                >Initiative Summary and Program Context</label
-              >
+              <label class="form-label" for="initiativeSummary">
+                Initiative Summary and Program Context
+              </label>
               <div class="form-text mb-2">
                 Describe what the initiative does, who is affected, and why
                 personal information is needed.
@@ -236,18 +239,18 @@
                 aria-label="Initiative summary mode"
               >
                 <button
-                  type="button"
                   class="btn btn-outline-secondary active"
                   data-md-target="initiativeSummary"
                   data-md-mode="edit"
+                  type="button"
                 >
                   Edit
                 </button>
                 <button
-                  type="button"
                   class="btn btn-outline-secondary"
                   data-md-target="initiativeSummary"
                   data-md-mode="preview"
+                  type="button"
                 >
                   Preview
                 </button>
@@ -259,8 +262,8 @@
                 rows="5"
               ></textarea>
               <div
-                id="initiativeSummaryPreview"
                 class="markdown-preview p-3 border rounded d-none"
+                id="initiativeSummaryPreview"
               ></div>
             </div>
 
@@ -268,9 +271,9 @@
               class="markdown-field mb-3"
               data-markdown-field="legalAuthority"
             >
-              <label for="legalAuthority" class="form-label"
-                >Legal Authority for Collection/Use/Disclosure</label
-              >
+              <label class="form-label" for="legalAuthority">
+                Legal Authority for Collection/Use/Disclosure
+              </label>
               <div class="form-text mb-2">
                 Document the by-law, statute, policy, agreement, or authority
                 supporting this information practice.
@@ -281,18 +284,18 @@
                 aria-label="Legal authority mode"
               >
                 <button
-                  type="button"
                   class="btn btn-outline-secondary active"
                   data-md-target="legalAuthority"
                   data-md-mode="edit"
+                  type="button"
                 >
                   Edit
                 </button>
                 <button
-                  type="button"
                   class="btn btn-outline-secondary"
                   data-md-target="legalAuthority"
                   data-md-mode="preview"
+                  type="button"
                 >
                   Preview
                 </button>
@@ -304,8 +307,8 @@
                 rows="4"
               ></textarea>
               <div
-                id="legalAuthorityPreview"
                 class="markdown-preview p-3 border rounded d-none"
+                id="legalAuthorityPreview"
               ></div>
             </div>
             <hr />
@@ -314,9 +317,12 @@
                 class="d-flex justify-content-between align-items-center mb-2 gap-2 flex-wrap"
               >
                 <div>
-                  <label class="form-label mb-0"
-                    >Personal Information Collected</label
+                  <label
+                    class="form-label mb-0"
+                    for="personalInformationCollected"
                   >
+                    Personal Information Collected
+                  </label>
                   <div class="form-text">
                     List each personal information element and how it is
                     intended to be used or disclosed.
@@ -325,9 +331,9 @@
                 <div>
                   <button
                     class="btn btn-info btn-sm"
-                    type="button"
                     data-bs-toggle="modal"
                     data-bs-target="#whatIsPersonalInformationModal"
+                    type="button"
                   >
                     <i
                       class="fa-solid fa-circle-question"
@@ -338,9 +344,9 @@
                   <div class="btn-group">
                     <button
                       class="btn btn-sm btn-outline-primary dropdown-toggle add-item-button"
-                      type="button"
                       id="addPersonalInfoButton"
                       data-bs-toggle="dropdown"
+                      type="button"
                       aria-expanded="false"
                     >
                       <i class="fa-solid fa-plus" aria-hidden="true"></i>
@@ -353,8 +359,8 @@
                       <li>
                         <button
                           class="dropdown-item"
-                          type="button"
                           data-personal-info-value=""
+                          type="button"
                         >
                           Blank item
                         </button>
@@ -362,8 +368,8 @@
                       <li>
                         <button
                           class="dropdown-item"
-                          type="button"
                           data-personal-info-value="Biographical details (name, sex, age, race)"
+                          type="button"
                         >
                           Biographical details
                         </button>
@@ -371,8 +377,8 @@
                       <li>
                         <button
                           class="dropdown-item"
-                          type="button"
                           data-personal-info-value="Biological details (face, fingerprints, blood type)"
+                          type="button"
                         >
                           Biological details
                         </button>
@@ -380,8 +386,8 @@
                       <li>
                         <button
                           class="dropdown-item"
-                          type="button"
                           data-personal-info-value="Nationality"
+                          type="button"
                         >
                           Nationality
                         </button>
@@ -389,8 +395,8 @@
                       <li>
                         <button
                           class="dropdown-item"
-                          type="button"
                           data-personal-info-value="Religion"
+                          type="button"
                         >
                           Religion
                         </button>
@@ -398,8 +404,8 @@
                       <li>
                         <button
                           class="dropdown-item"
-                          type="button"
                           data-personal-info-value="Marital status"
+                          type="button"
                         >
                           Marital status
                         </button>
@@ -407,8 +413,8 @@
                       <li>
                         <button
                           class="dropdown-item"
-                          type="button"
                           data-personal-info-value="Education"
+                          type="button"
                         >
                           Education
                         </button>
@@ -416,8 +422,8 @@
                       <li>
                         <button
                           class="dropdown-item"
-                          type="button"
                           data-personal-info-value="Medical or criminal history"
+                          type="button"
                         >
                           Medical or criminal history
                         </button>
@@ -425,8 +431,8 @@
                       <li>
                         <button
                           class="dropdown-item"
-                          type="button"
                           data-personal-info-value="Financial information"
+                          type="button"
                         >
                           Financial information
                         </button>
@@ -434,8 +440,8 @@
                       <li>
                         <button
                           class="dropdown-item"
-                          type="button"
                           data-personal-info-value="Identifying numbers (e.g., social insurance numbers)"
+                          type="button"
                         >
                           Identifying numbers
                         </button>
@@ -443,8 +449,8 @@
                       <li>
                         <button
                           class="dropdown-item"
-                          type="button"
                           data-personal-info-value="Contact details (personal address, phone number)"
+                          type="button"
                         >
                           Contact details
                         </button>
@@ -452,8 +458,8 @@
                       <li>
                         <button
                           class="dropdown-item"
-                          type="button"
                           data-personal-info-value="Personal opinions and views"
+                          type="button"
                         >
                           Personal opinions and views
                         </button>
@@ -462,7 +468,7 @@
                   </div>
                 </div>
               </div>
-              <div id="personalInfoList" class="vstack gap-2"></div>
+              <div class="vstack gap-2" id="personalInfoList"></div>
             </div>
             <hr />
             <div class="mb-3">
@@ -470,9 +476,9 @@
                 class="d-flex justify-content-between align-items-center mb-2 gap-2 flex-wrap"
               >
                 <div>
-                  <label class="form-label mb-0"
-                    >Sources of Personal Information to be Collected</label
-                  >
+                  <label class="form-label mb-0">
+                    Sources of Personal Information to be Collected
+                  </label>
                   <div class="form-text">
                     List each source (individuals, third parties, other
                     institutions, etc.).
@@ -480,14 +486,14 @@
                 </div>
                 <button
                   class="btn btn-sm btn-outline-primary add-item-button"
-                  type="button"
                   id="addInformationSourceButton"
+                  type="button"
                 >
                   <i class="fa-solid fa-plus" aria-hidden="true"></i>
                   Add Source
                 </button>
               </div>
-              <div id="informationSourcesList" class="vstack gap-2"></div>
+              <div class="vstack gap-2" id="informationSourcesList"></div>
             </div>
           </div>
         </section>
@@ -500,9 +506,9 @@
               class="markdown-field mb-3"
               data-markdown-field="collectionUseDisclosure"
             >
-              <label for="collectionUseDisclosure" class="form-label"
-                >Collection, Use, and Disclosure Controls</label
-              >
+              <label class="form-label" for="collectionUseDisclosure">
+                Collection, Use, and Disclosure Controls
+              </label>
               <div class="form-text mb-2">
                 Describe notices, consent approaches, access controls, and
                 disclosure conditions.
@@ -513,18 +519,18 @@
                 aria-label="Collection use disclosure mode"
               >
                 <button
-                  type="button"
                   class="btn btn-outline-secondary active"
                   data-md-target="collectionUseDisclosure"
                   data-md-mode="edit"
+                  type="button"
                 >
                   Edit
                 </button>
                 <button
-                  type="button"
                   class="btn btn-outline-secondary"
                   data-md-target="collectionUseDisclosure"
                   data-md-mode="preview"
+                  type="button"
                 >
                   Preview
                 </button>
@@ -536,8 +542,8 @@
                 rows="4"
               ></textarea>
               <div
-                id="collectionUseDisclosurePreview"
                 class="markdown-preview p-3 border rounded d-none"
+                id="collectionUseDisclosurePreview"
               ></div>
             </div>
 
@@ -545,9 +551,9 @@
               class="markdown-field mb-3"
               data-markdown-field="retentionDisposal"
             >
-              <label for="retentionDisposal" class="form-label"
-                >Retention and Disposal Strategy</label
-              >
+              <label class="form-label" for="retentionDisposal">
+                Retention and Disposal Strategy
+              </label>
               <div class="form-text mb-2">
                 Document retention timelines, records authority, secure
                 destruction, and archival requirements.
@@ -558,18 +564,18 @@
                 aria-label="Retention and disposal mode"
               >
                 <button
-                  type="button"
                   class="btn btn-outline-secondary active"
                   data-md-target="retentionDisposal"
                   data-md-mode="edit"
+                  type="button"
                 >
                   Edit
                 </button>
                 <button
-                  type="button"
                   class="btn btn-outline-secondary"
                   data-md-target="retentionDisposal"
                   data-md-mode="preview"
+                  type="button"
                 >
                   Preview
                 </button>
@@ -581,8 +587,8 @@
                 rows="4"
               ></textarea>
               <div
-                id="retentionDisposalPreview"
                 class="markdown-preview p-3 border rounded d-none"
+                id="retentionDisposalPreview"
               ></div>
             </div>
             <hr />
@@ -601,9 +607,9 @@
                 <div class="btn-group">
                   <button
                     class="btn btn-sm btn-outline-primary dropdown-toggle add-item-button"
-                    type="button"
                     id="addTechnicalSafeguardButton"
                     data-bs-toggle="dropdown"
+                    type="button"
                     aria-expanded="false"
                   >
                     <i class="fa-solid fa-plus" aria-hidden="true"></i>
@@ -616,8 +622,8 @@
                     <li>
                       <button
                         class="dropdown-item"
-                        type="button"
                         data-safeguard-value=""
+                        type="button"
                       >
                         Blank item
                       </button>
@@ -625,8 +631,8 @@
                     <li>
                       <button
                         class="dropdown-item"
-                        type="button"
                         data-safeguard-value="Encryption in transit and at rest for personal information."
+                        type="button"
                       >
                         Encryption in transit and at rest
                       </button>
@@ -634,8 +640,8 @@
                     <li>
                       <button
                         class="dropdown-item"
-                        type="button"
                         data-safeguard-value="Role-based access controls and multi-factor authentication."
+                        type="button"
                       >
                         Role-based access and MFA
                       </button>
@@ -643,8 +649,8 @@
                     <li>
                       <button
                         class="dropdown-item"
-                        type="button"
                         data-safeguard-value="Audit logging and regular monitoring for unauthorized access."
+                        type="button"
                       >
                         Audit logging and monitoring
                       </button>
@@ -652,7 +658,7 @@
                   </ul>
                 </div>
               </div>
-              <div id="technicalSafeguardsList" class="vstack gap-2"></div>
+              <div class="vstack gap-2" id="technicalSafeguardsList"></div>
             </div>
 
             <div class="mb-3">
@@ -660,9 +666,9 @@
                 class="d-flex justify-content-between align-items-center mb-2 gap-2 flex-wrap"
               >
                 <div>
-                  <label class="form-label mb-0"
-                    >Administrative Safeguards</label
-                  >
+                  <label class="form-label mb-0">
+                    Administrative Safeguards
+                  </label>
                   <div class="form-text">
                     Describe administrative controls protecting personal
                     information (e.g., policies, training, privacy governance,
@@ -672,9 +678,9 @@
                 <div class="btn-group">
                   <button
                     class="btn btn-sm btn-outline-primary dropdown-toggle add-item-button"
-                    type="button"
                     id="addAdministrativeSafeguardButton"
                     data-bs-toggle="dropdown"
+                    type="button"
                     aria-expanded="false"
                   >
                     <i class="fa-solid fa-plus" aria-hidden="true"></i>
@@ -687,8 +693,8 @@
                     <li>
                       <button
                         class="dropdown-item"
-                        type="button"
                         data-safeguard-value=""
+                        type="button"
                       >
                         Blank item
                       </button>
@@ -696,8 +702,8 @@
                     <li>
                       <button
                         class="dropdown-item"
-                        type="button"
                         data-safeguard-value="Privacy and security training for staff with access to personal information."
+                        type="button"
                       >
                         Staff privacy and security training
                       </button>
@@ -705,8 +711,8 @@
                     <li>
                       <button
                         class="dropdown-item"
-                        type="button"
                         data-safeguard-value="Documented privacy policies, procedures, and breach response processes."
+                        type="button"
                       >
                         Policies and breach response process
                       </button>
@@ -714,8 +720,8 @@
                     <li>
                       <button
                         class="dropdown-item"
-                        type="button"
                         data-safeguard-value="Confidentiality agreements and vendor contract privacy clauses."
+                        type="button"
                       >
                         Confidentiality and vendor clauses
                       </button>
@@ -723,7 +729,7 @@
                   </ul>
                 </div>
               </div>
-              <div id="administrativeSafeguardsList" class="vstack gap-2"></div>
+              <div class="vstack gap-2" id="administrativeSafeguardsList"></div>
             </div>
 
             <div class="mb-3">
@@ -741,9 +747,9 @@
                 <div class="btn-group">
                   <button
                     class="btn btn-sm btn-outline-primary dropdown-toggle add-item-button"
-                    type="button"
                     id="addPhysicalSafeguardButton"
                     data-bs-toggle="dropdown"
+                    type="button"
                     aria-expanded="false"
                   >
                     <i class="fa-solid fa-plus" aria-hidden="true"></i>
@@ -756,8 +762,8 @@
                     <li>
                       <button
                         class="dropdown-item"
-                        type="button"
                         data-safeguard-value=""
+                        type="button"
                       >
                         Blank item
                       </button>
@@ -765,8 +771,8 @@
                     <li>
                       <button
                         class="dropdown-item"
-                        type="button"
                         data-safeguard-value="Restricted facility access with locked offices and controlled entry."
+                        type="button"
                       >
                         Restricted facility access
                       </button>
@@ -774,8 +780,8 @@
                     <li>
                       <button
                         class="dropdown-item"
-                        type="button"
                         data-safeguard-value="Secure storage for paper records and media containing personal information."
+                        type="button"
                       >
                         Secure storage for records
                       </button>
@@ -783,8 +789,8 @@
                     <li>
                       <button
                         class="dropdown-item"
-                        type="button"
                         data-safeguard-value="Secure destruction processes for paper records and physical media."
+                        type="button"
                       >
                         Secure destruction processes
                       </button>
@@ -792,20 +798,16 @@
                   </ul>
                 </div>
               </div>
-              <div id="physicalSafeguardsList" class="vstack gap-2"></div>
+              <div class="vstack gap-2" id="physicalSafeguardsList"></div>
             </div>
             <hr />
-            <div
-              class="markdown-field mb-3"
-              data-markdown-field="riskSummary"
-            >
-              <label for="riskSummary" class="form-label"
-                >Summary of Risks to Individuals</label
-              >
+            <div class="markdown-field mb-3" data-markdown-field="riskSummary">
+              <label class="form-label" for="riskSummary">
+                Summary of Risks to Individuals
+              </label>
               <div class="form-text mb-2">
-                Summarize any risks to individuals in the event of a theft,
-                loss or unauthorized use or disclosure of the personal
-                information.
+                Summarize any risks to individuals in the event of a theft, loss
+                or unauthorized use or disclosure of the personal information.
               </div>
               <div
                 class="markdown-tabs btn-group btn-group-sm mb-2"
@@ -813,18 +815,18 @@
                 aria-label="Risk summary mode"
               >
                 <button
-                  type="button"
                   class="btn btn-outline-secondary active"
                   data-md-target="riskSummary"
                   data-md-mode="edit"
+                  type="button"
                 >
                   Edit
                 </button>
                 <button
-                  type="button"
                   class="btn btn-outline-secondary"
                   data-md-target="riskSummary"
                   data-md-mode="preview"
+                  type="button"
                 >
                   Preview
                 </button>
@@ -836,8 +838,8 @@
                 rows="4"
               ></textarea>
               <div
-                id="riskSummaryPreview"
                 class="markdown-preview p-3 border rounded d-none"
+                id="riskSummaryPreview"
               ></div>
             </div>
 
@@ -845,13 +847,13 @@
               class="markdown-field mb-3"
               data-markdown-field="riskMitigation"
             >
-              <label for="riskMitigation" class="form-label"
-                >Steps to Prevent or Reduce Risks</label
-              >
+              <label class="form-label" for="riskMitigation">
+                Steps to Prevent or Reduce Risks
+              </label>
               <div class="form-text mb-2">
-                Describe the steps to be taken by the institution to prevent
-                or reduce the likelihood of a theft, loss or unauthorized use
-                or disclosure of personal information and to mitigate risks to
+                Describe the steps to be taken by the institution to prevent or
+                reduce the likelihood of a theft, loss or unauthorized use or
+                disclosure of personal information and to mitigate risks to
                 individuals.
               </div>
               <div
@@ -860,18 +862,18 @@
                 aria-label="Risk mitigation mode"
               >
                 <button
-                  type="button"
                   class="btn btn-outline-secondary active"
                   data-md-target="riskMitigation"
                   data-md-mode="edit"
+                  type="button"
                 >
                   Edit
                 </button>
                 <button
-                  type="button"
                   class="btn btn-outline-secondary"
                   data-md-target="riskMitigation"
                   data-md-mode="preview"
+                  type="button"
                 >
                   Preview
                 </button>
@@ -883,8 +885,8 @@
                 rows="4"
               ></textarea>
               <div
-                id="riskMitigationPreview"
                 class="markdown-preview p-3 border rounded d-none"
+                id="riskMitigationPreview"
               ></div>
             </div>
             <hr />
@@ -893,9 +895,9 @@
                 class="d-flex justify-content-between align-items-center mb-2 gap-2 flex-wrap"
               >
                 <div>
-                  <label class="form-label mb-0"
-                    >Roles with Access to Personal Information</label
-                  >
+                  <label class="form-label mb-0">
+                    Roles with Access to Personal Information
+                  </label>
                   <div class="form-text">
                     List position titles of officers, employees, consultants, or
                     agents with access.
@@ -904,9 +906,9 @@
                 <div>
                   <button
                     class="btn btn-info btn-sm"
-                    type="button"
                     data-bs-toggle="modal"
                     data-bs-target="#rolesAndResponsibilitiesModal"
+                    type="button"
                   >
                     <i
                       class="fa-solid fa-circle-question"
@@ -916,26 +918,29 @@
                   </button>
                   <button
                     class="btn btn-sm btn-outline-primary add-item-button"
-                    type="button"
                     id="addAccessRoleButton"
+                    type="button"
                   >
                     <i class="fa-solid fa-plus" aria-hidden="true"></i>
                     Add
                   </button>
                 </div>
               </div>
-              <div id="accessRolesList" class="vstack gap-2"></div>
+              <div class="vstack gap-2" id="accessRolesList"></div>
             </div>
           </div>
         </section>
 
         <section class="step-card card mb-3 d-none" data-step="3">
           <div class="card-body">
-            <div id="emptyFieldsSummary" class="alert alert-warning d-none mb-4">
+            <div
+              class="alert alert-warning d-none mb-4"
+              id="emptyFieldsSummary"
+            >
               <div class="fw-semibold mb-1">
                 Please complete the following before finalizing:
               </div>
-              <ul id="emptyFieldsSummaryList" class="mb-0"></ul>
+              <ul class="mb-0" id="emptyFieldsSummaryList"></ul>
             </div>
 
             <h2 class="h5">Export and Print</h2>
@@ -943,32 +948,32 @@
             <div class="d-grid gap-2">
               <button
                 class="btn btn-outline-primary"
-                type="button"
                 id="exportMarkdownButton"
+                type="button"
               >
                 <i class="fa-solid fa-file-lines" aria-hidden="true"></i>
                 Export Markdown
               </button>
               <button
                 class="btn btn-outline-primary"
-                type="button"
                 id="exportJsonButton"
+                type="button"
               >
                 <i class="fa-solid fa-file-code" aria-hidden="true"></i>
                 Export JSON
               </button>
               <button
                 class="btn btn-outline-primary"
-                type="button"
                 id="exportWordButton"
+                type="button"
               >
                 <i class="fa-solid fa-file" aria-hidden="true"></i>
                 Export Word-compatible .doc
               </button>
               <button
                 class="btn btn-outline-secondary"
-                type="button"
                 id="printButton"
+                type="button"
               >
                 <i class="fa-solid fa-print" aria-hidden="true"></i>
                 Print
@@ -995,13 +1000,13 @@
         <div class="d-flex justify-content-between mt-3">
           <button
             class="btn btn-outline-secondary"
-            type="button"
             id="prevStepButton"
+            type="button"
           >
             <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
             Previous
           </button>
-          <button class="btn btn-primary" type="button" id="nextStepButton">
+          <button class="btn btn-primary" id="nextStepButton" type="button">
             Next
             <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
           </button>
@@ -1011,16 +1016,17 @@
       <footer class="text-center text-muted small mt-4 mb-3">
         <a
           href="https://github.com/cityssm/pia-builder"
-          target="_blank"
           rel="noopener noreferrer"
-          >View source on GitHub</a
+          target="_blank"
         >
+          View source on GitHub
+        </a>
       </footer>
 
       <input
+        class="d-none"
         id="importJsonInput"
         type="file"
-        class="d-none"
         accept="application/json,.json"
       />
     </main>
@@ -1030,8 +1036,8 @@
       id="statusToastContainer"
     >
       <div
-        id="statusToast"
         class="toast border-0"
+        id="statusToast"
         role="status"
         aria-live="polite"
         aria-atomic="true"
@@ -1043,8 +1049,8 @@
     <div
       class="modal fade"
       id="whatIsPersonalInformationModal"
-      tabindex="-1"
       aria-hidden="true"
+      tabindex="-1"
     >
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -1052,8 +1058,8 @@
             <h2 class="modal-title h5">What is Personal Information?</h2>
             <button
               class="btn-close"
-              type="button"
               data-bs-dismiss="modal"
+              type="button"
               aria-label="Close"
             ></button>
           </div>
@@ -1062,10 +1068,9 @@
               <blockquote class="blockquote">
                 <p>
                   Both FIPPA and MFIPPA define personal information as
-                  <strong
-                    >recorded information about an identifiable
-                    individual</strong
-                  >
+                  <strong>
+                    recorded information about an identifiable individual
+                  </strong>
                 </p>
                 <p>Personal information can include:</p>
                 <ul>
@@ -1106,8 +1111,8 @@
     <div
       class="modal fade"
       id="rolesAndResponsibilitiesModal"
-      tabindex="-1"
       aria-hidden="true"
+      tabindex="-1"
     >
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -1115,8 +1120,8 @@
             <h2 class="modal-title h5">Roles and Responsibilities</h2>
             <button
               class="btn-close"
-              type="button"
               data-bs-dismiss="modal"
+              type="button"
               aria-label="Close"
             ></button>
           </div>
@@ -1157,35 +1162,40 @@
       </div>
     </div>
 
-    <div class="modal fade" id="newPiaModal" tabindex="-1" aria-hidden="true">
+    <div
+      class="modal fade"
+      id="newPiaModal"
+      aria-hidden="true"
+      tabindex="-1"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h2 class="modal-title h5">Create New PIA</h2>
             <button
               class="btn-close"
-              type="button"
               data-bs-dismiss="modal"
+              type="button"
               aria-label="Close"
             ></button>
           </div>
           <div class="modal-body">
-            <label for="newPiaName" class="form-label">PIA Name</label>
+            <label class="form-label" for="newPiaName">PIA Name</label>
             <input class="form-control" id="newPiaName" maxlength="200" />
           </div>
           <div class="modal-footer">
             <button
               class="btn btn-outline-secondary"
-              type="button"
               data-bs-dismiss="modal"
+              type="button"
             >
               <i class="fa-solid fa-xmark" aria-hidden="true"></i>
               Cancel
             </button>
             <button
               class="btn btn-primary"
-              type="button"
               id="confirmNewPiaButton"
+              type="button"
             >
               <i class="fa-solid fa-plus" aria-hidden="true"></i>
               Create
@@ -1198,8 +1208,8 @@
     <div
       class="modal fade"
       id="savedPiasModal"
-      tabindex="-1"
       aria-hidden="true"
+      tabindex="-1"
     >
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -1207,13 +1217,13 @@
             <h2 class="modal-title h5">Saved PIAs</h2>
             <button
               class="btn-close"
-              type="button"
               data-bs-dismiss="modal"
+              type="button"
               aria-label="Close"
             ></button>
           </div>
           <div class="modal-body">
-            <div id="savedPiasList" class="list-group"></div>
+            <div class="list-group" id="savedPiasList"></div>
             <p class="text-muted mb-0 mt-2" id="savedPiasEmptyState">
               No PIAs saved yet.
             </p>
@@ -1224,13 +1234,13 @@
 
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
       crossorigin="anonymous"
+      integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
     ></script>
     <script
       src="https://cdn.jsdelivr.net/npm/marked@18.0.6/lib/marked.umd.min.js"
-      integrity="sha384-1DYHBgZ9bqWhQdbNJYAgtRGPTREOhdqe9pMai6XZ6lEOxEpf8014NcYGxp62VGbv"
       crossorigin="anonymous"
+      integrity="sha384-1DYHBgZ9bqWhQdbNJYAgtRGPTREOhdqe9pMai6XZ6lEOxEpf8014NcYGxp62VGbv"
     ></script>
     <script src="js/app.js"></script>
   </body>

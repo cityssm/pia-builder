@@ -61,11 +61,11 @@
             typeof crypto.randomUUID === 'function') {
             return crypto.randomUUID();
         }
-        return `pia-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+        return `pia-${Date.now()}-${Math.floor(Math.random() * 100_000)}`;
     };
     const loadDocuments = () => {
         try {
-            return JSON.parse(localStorage.getItem(storageKey) || '[]');
+            return JSON.parse(localStorage.getItem(storageKey) ?? '[]');
         }
         catch {
             return [];
@@ -74,16 +74,16 @@
     const saveDocuments = (documents) => {
         localStorage.setItem(storageKey, JSON.stringify(documents));
     };
-    const getDocumentsSortedByUpdatedAt = () => loadDocuments().sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    const getDocumentsSortedByUpdatedAt = () => loadDocuments().toSorted((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
     const showStatus = (message, type = 'info') => {
         if (!statusToastInstance || !statusToastBody || !statusToastElement) {
             return;
         }
         const toastClassByType = {
+            danger: 'text-bg-danger',
             info: 'text-bg-primary',
             success: 'text-bg-success',
-            warning: 'text-bg-warning',
-            danger: 'text-bg-danger'
+            warning: 'text-bg-warning'
         };
         for (const cssClass of [
             ...Object.values(toastClassByType),
@@ -122,21 +122,21 @@
         return [];
     };
     const splitPositionAndName = (combinedValue) => {
-        const value = (combinedValue || '').trim();
+        const value = (combinedValue ?? '').trim();
         if (value === '') {
-            return { position: '', name: '' };
+            return { name: '', position: '' };
         }
         const dividerIndex = value.indexOf('/');
         if (dividerIndex === -1) {
-            return { position: value, name: '' };
+            return { name: '', position: value };
         }
         return {
-            position: value.slice(0, dividerIndex).trim(),
-            name: value.slice(dividerIndex + 1).trim()
+            name: value.slice(dividerIndex + 1).trim(),
+            position: value.slice(0, dividerIndex).trim()
         };
     };
     const updateHeaderTitle = () => {
-        const name = (piaNameInput.value || '').trim();
+        const name = (piaNameInput?.value ?? '').trim();
         activePiaTitle.textContent = name || 'Untitled PIA';
     };
     const generateDynamicFieldId = (prefix) => {
@@ -177,7 +177,7 @@
             blockedElement.remove();
         }
         for (const element of sanitizedHtmlTemplate.content.querySelectorAll('*')) {
-            for (const attribute of [...element.attributes]) {
+            for (const attribute of element.attributes) {
                 const attributeName = attribute.name.toLowerCase();
                 if (attributeName.startsWith('on')) {
                     element.removeAttribute(attribute.name);
@@ -193,7 +193,7 @@
     };
     const updateMarkdownPreview = (fieldId) => {
         const sourceTextarea = form.elements.namedItem(fieldId);
-        const preview = document.getElementById(`${fieldId}Preview`);
+        const preview = document.querySelector(`#${fieldId}Preview`);
         if (!sourceTextarea || !preview) {
             return;
         }
@@ -210,7 +210,7 @@
             return;
         }
         const textarea = fieldWrapper.querySelector('.markdown-input');
-        const preview = document.getElementById(`${fieldId}Preview`);
+        const preview = document.querySelector(`#${fieldId}Preview`);
         const buttons = fieldWrapper.querySelectorAll(`[data-md-target="${fieldId}"]`);
         for (const button of buttons) {
             button.classList.toggle('active', button.dataset.mdMode === mode);
@@ -218,11 +218,11 @@
         if (mode === 'preview') {
             updateMarkdownPreview(fieldId);
             textarea.classList.add('d-none');
-            preview.classList.remove('d-none');
+            preview?.classList.remove('d-none');
             return;
         }
         textarea.classList.remove('d-none');
-        preview.classList.add('d-none');
+        preview?.classList.add('d-none');
     };
     const buildWarningFieldWrapper = (field) => {
         const wrapper = document.createElement('div');
@@ -252,12 +252,12 @@
         const nextSibling = field.nextSibling;
         const wrapper = buildWarningFieldWrapper(field);
         if (nextSibling) {
-            parentElement.insertBefore(wrapper, nextSibling);
+            nextSibling.before(wrapper);
             return;
         }
         parentElement.append(wrapper);
     };
-    const getFieldEmptyWarningIcon = (field) => field.parentElement?.querySelector('.field-empty-warning');
+    const getFieldEmptyWarningIcon = (field) => field.parentElement?.querySelector('.field-empty-warning') ?? null;
     const setFieldWarningState = (field, isEmpty) => {
         const warningIcon = getFieldEmptyWarningIcon(field);
         if (!warningIcon) {
@@ -323,7 +323,7 @@
         const infoInput = document.createElement('input');
         infoInput.id = nameFieldId;
         infoInput.className = 'form-control mb-2 personal-info-name';
-        infoInput.value = item.name || '';
+        infoInput.value = item.name ?? '';
         infoInput.placeholder = 'e.g., Home address, email, employee ID';
         const useLabel = document.createElement('label');
         useLabel.className = 'form-label';
@@ -334,7 +334,7 @@
         useInput.className = 'form-control personal-info-use';
         useInput.rows = 2;
         useInput.placeholder = 'How this item will be used and/or disclosed';
-        useInput.value = item.useOrDisclosure || '';
+        useInput.value = item.useOrDisclosure ?? '';
         const infoFieldWrapper = buildWarningFieldWrapper(infoInput);
         const useFieldWrapper = buildWarningFieldWrapper(useInput);
         const controls = buildListControls(row, 'Remove Item');
@@ -1103,24 +1103,24 @@
             setStep(step);
         });
     }
-    addPersonalInfoButton.addEventListener('click', clearStatus);
+    addPersonalInfoButton?.addEventListener('click', clearStatus);
     document.addEventListener('click', (event) => {
         const personalInfoMenuButton = event.target?.closest('[data-personal-info-value]');
         if (!personalInfoMenuButton) {
             return;
         }
         const name = personalInfoMenuButton.dataset.personalInfoValue || '';
-        personalInfoList.append(buildPersonalInfoRow({ name }));
+        personalInfoList?.append(buildPersonalInfoRow({ name }));
         refreshCompletionWarnings();
         clearStatus();
     });
-    addInformationSourceButton.addEventListener('click', () => {
-        informationSourcesList.append(buildInformationSourceRow());
+    addInformationSourceButton?.addEventListener('click', () => {
+        informationSourcesList?.append(buildInformationSourceRow());
         refreshCompletionWarnings();
         clearStatus();
     });
-    addAccessRoleButton.addEventListener('click', () => {
-        accessRolesList.append(buildAccessRoleRow());
+    addAccessRoleButton?.addEventListener('click', () => {
+        accessRolesList?.append(buildAccessRoleRow());
         refreshCompletionWarnings();
         clearStatus();
     });
@@ -1141,18 +1141,18 @@
             type: 'physical'
         }
     ]) {
-        menu.addEventListener('click', (event) => {
+        menu?.addEventListener('click', (event) => {
             const button = event.target?.closest('[data-safeguard-value]');
             if (!button) {
                 return;
             }
-            list.append(buildSafeguardRow(type, button.dataset.safeguardValue || ''));
+            list?.append(buildSafeguardRow(type, button.dataset.safeguardValue || ''));
             refreshCompletionWarnings();
             clearStatus();
         });
     }
-    piaNameInput.addEventListener('input', updateHeaderTitle);
-    nextStepButton.addEventListener('click', () => {
+    piaNameInput?.addEventListener('input', updateHeaderTitle);
+    nextStepButton?.addEventListener('click', () => {
         if (currentStep < stepCards.length - 1) {
             setStep(currentStep + 1);
         }
@@ -1160,20 +1160,20 @@
             persistCurrent();
         }
     });
-    previousStepButton.addEventListener('click', () => setStep(currentStep - 1));
-    saveButton.addEventListener('click', persistCurrent);
-    confirmNewPiaButton.addEventListener('click', () => {
+    previousStepButton?.addEventListener('click', () => setStep(currentStep - 1));
+    saveButton?.addEventListener('click', persistCurrent);
+    confirmNewPiaButton?.addEventListener('click', () => {
         const newPiaName = (document.querySelector('#newPiaName')?.value || '').trim();
         createNewDocument(newPiaName);
         bootstrap.Modal.getInstance('#newPiaModal')?.hide();
         showStatus(`Created ${newPiaName ? `"${newPiaName}"` : 'a new PIA'}.`, 'info');
     });
-    openSavedPiasButton.addEventListener('click', renderSavedList);
-    exportMarkdownButton.addEventListener('click', () => {
+    openSavedPiasButton?.addEventListener('click', renderSavedList);
+    exportMarkdownButton?.addEventListener('click', () => {
         exportToFile(`${getExportSlug()}.md`, 'text/markdown;charset=utf-8', buildMarkdownExport());
         showStatus('Exported Markdown file.', 'success');
     });
-    exportJsonButton.addEventListener('click', () => {
+    exportJsonButton?.addEventListener('click', () => {
         exportToFile(`${getExportSlug()}.json`, 'application/json;charset=utf-8', JSON.stringify({
             id: currentDocumentId,
             name: getCurrentDocumentName(),
@@ -1182,15 +1182,15 @@
         }, null, 2));
         showStatus('Exported JSON file.', 'success');
     });
-    exportWordButton.addEventListener('click', () => {
+    exportWordButton?.addEventListener('click', () => {
         exportToFile(`${getExportSlug()}.doc`, 'text/html;charset=utf-8', buildWordExport());
         showStatus('Exported Microsoft Word document.', 'success');
     });
-    importButton.addEventListener('click', () => {
+    importButton?.addEventListener('click', () => {
         importJsonInput.value = '';
         importJsonInput.click();
     });
-    importJsonInput.addEventListener('change', async () => {
+    importJsonInput?.addEventListener('change', async () => {
         const [file] = importJsonInput.files || [];
         if (!file) {
             return;
@@ -1210,18 +1210,18 @@
                 updateHeaderTitle();
             }
             setStep(0);
-            showStatus(`Imported "${imported?.name || 'PIA'}" from JSON.`, 'success');
+            showStatus(`Imported "${imported?.name ?? 'PIA'}" from JSON.`, 'success');
         }
         catch {
             showStatus('Import failed. Please choose a valid exported JSON file.', 'danger');
         }
     });
-    printButton.addEventListener('click', () => {
+    printButton?.addEventListener('click', () => {
         closeModalsForPrint();
         updateAllMarkdownPreviews();
-        window.print();
+        globalThis.print();
     });
-    window.addEventListener('beforeprint', () => {
+    globalThis.addEventListener('beforeprint', () => {
         closeModalsForPrint();
         updateAllMarkdownPreviews();
     });
@@ -1232,7 +1232,7 @@
         const [latest] = existingDocuments;
         if (latest) {
             currentDocumentId = latest.id;
-            setFormData(latest.data || {});
+            setFormData(latest.data ?? {});
             showStatus(`Loaded most recent draft: "${latest.name}".`, 'info');
         }
     }
