@@ -431,7 +431,7 @@ declare const marked: typeof Marked
     warningIcon.classList.toggle('d-none', !isEmpty)
   }
 
-  const normalizeWhitespace = (labelText: string) =>
+  const collapseAndTrimWhitespace = (labelText: string) =>
     (labelText || '').replaceAll(/\s+/g, ' ').trim()
 
   const getWarnableFields = () =>
@@ -718,7 +718,7 @@ declare const marked: typeof Marked
     const matchingLabel = field.id
       ? form.querySelector(`label[for="${field.id}"]`)
       : null
-    const fieldLabel = normalizeWhitespace(matchingLabel?.textContent || '')
+    const fieldLabel = collapseAndTrimWhitespace(matchingLabel?.textContent || '')
 
     for (const [listId, config] of dynamicListSummaryConfigById.entries()) {
       const listElement = document.getElementById(listId)
@@ -737,12 +737,15 @@ declare const marked: typeof Marked
     }
 
     return (
-      fieldLabel || normalizeWhitespace(field.name) || field.id || 'Unnamed field'
+      fieldLabel ||
+      collapseAndTrimWhitespace(field.name) ||
+      collapseAndTrimWhitespace(field.id) ||
+      'Unnamed field'
     )
   }
 
   const getEmptyListSummaries = () => {
-    const emptyListMessages = [] as string[]
+    const emptyListMessages: string[] = []
 
     for (const config of dynamicListSummaryConfigById.values()) {
       if (config.getCount() === 0) {
@@ -754,7 +757,7 @@ declare const marked: typeof Marked
   }
 
   const refreshCompletionWarnings = () => {
-    const emptyFieldSummaries = [] as string[]
+    const emptyFieldSummaries: string[] = []
 
     for (const field of getWarnableFields()) {
       ensureWarningFieldWrapper(field)
