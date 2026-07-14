@@ -111,6 +111,12 @@ body {
   min-height: 80px;
 }
 
+textarea.form-control {
+  overflow: hidden;
+  resize: none;
+  min-height: 2.375rem;
+}
+
 .dynamic-list-controls {
   display: flex;
   flex-wrap: wrap;

@@ -1053,6 +1053,7 @@ declare const marked: typeof Marked
     }
 
     refreshCompletionWarnings()
+    initializeTextareaAutoResize()
   }
 
   const loadDocument = (id) => {
@@ -1068,6 +1069,7 @@ declare const marked: typeof Marked
     setFormData(documentRecord.data || {})
     setStep(0)
     showStatus(`Loaded "${documentRecord.name}".`, 'info')
+    initializeTextareaAutoResize()
   }
 
   const deleteDocument = (id) => {
@@ -1466,6 +1468,8 @@ declare const marked: typeof Marked
       currentStep === stepCards.length - 1
         ? '<i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Finish &amp; Save'
         : 'Next <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>'
+
+    initializeTextareaAutoResize()
   }
 
   const closeModalsForPrint = () => {
@@ -1553,18 +1557,21 @@ declare const marked: typeof Marked
 
     const name = personalInfoMenuButton.dataset.personalInfoValue || ''
     personalInfoList?.append(buildPersonalInfoRow({ name }))
+    initializeTextareaAutoResize()
     refreshCompletionWarnings()
     clearStatus()
   })
 
   addInformationSourceButton?.addEventListener('click', () => {
     informationSourcesList?.append(buildInformationSourceRow())
+    initializeTextareaAutoResize()
     refreshCompletionWarnings()
     clearStatus()
   })
 
   addAccessRoleButton?.addEventListener('click', () => {
     accessRolesList?.append(buildAccessRoleRow())
+    initializeTextareaAutoResize()
     refreshCompletionWarnings()
     clearStatus()
   })
@@ -1596,6 +1603,7 @@ declare const marked: typeof Marked
       }
 
       list?.append(buildSafeguardRow(type, button.dataset.safeguardValue || ''))
+      initializeTextareaAutoResize()
       refreshCompletionWarnings()
       clearStatus()
     })
@@ -1695,6 +1703,7 @@ declare const marked: typeof Marked
       }
 
       setStep(0)
+      initializeTextareaAutoResize()
       showStatus(`Imported "${imported?.name ?? 'PIA'}" from JSON.`, 'success')
     } catch {
       showStatus(
@@ -1715,6 +1724,30 @@ declare const marked: typeof Marked
     updateAllMarkdownPreviews()
   })
 
+  const resizeTextarea = (textarea: HTMLTextAreaElement): void => {
+    Promise.resolve().then(() => {
+      textarea.style.height = 'auto'
+      textarea.style.height = `${textarea.scrollHeight}px`
+    })
+  }
+
+  const initializeTextareaAutoResize = (): void => {
+    const textareas = form.querySelectorAll('textarea')
+    Promise.resolve().then(() => {
+      for (const textarea of textareas) {
+        textarea.style.height = 'auto'
+        textarea.style.height = `${textarea.scrollHeight}px`
+      }
+    })
+  }
+
+  form.addEventListener('input', (event) => {
+    const target = event.target as HTMLElement
+    if (target instanceof HTMLTextAreaElement) {
+      resizeTextarea(target)
+    }
+  })
+
   form.addEventListener('input', clearStatus)
   form.addEventListener('input', refreshCompletionWarnings)
 
@@ -1726,6 +1759,7 @@ declare const marked: typeof Marked
     if (latest) {
       currentDocumentId = latest.id
       setFormData(latest.data ?? {})
+      initializeTextareaAutoResize()
       showStatus(`Loaded most recent draft: "${latest.name}".`, 'info')
     }
   } else {
@@ -1740,5 +1774,6 @@ declare const marked: typeof Marked
 
   updateAllMarkdownPreviews()
   refreshCompletionWarnings()
+  initializeTextareaAutoResize()
   setStep(0)
 })()

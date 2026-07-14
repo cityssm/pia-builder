@@ -716,6 +716,7 @@
             setMarkdownMode(fieldId, 'edit');
         }
         refreshCompletionWarnings();
+        initializeTextareaAutoResize();
     };
     const loadDocument = (id) => {
         const documentRecord = loadDocuments().find((doc) => doc.id === id);
@@ -728,6 +729,7 @@
         setFormData(documentRecord.data || {});
         setStep(0);
         showStatus(`Loaded "${documentRecord.name}".`, 'info');
+        initializeTextareaAutoResize();
     };
     const deleteDocument = (id) => {
         const documents = loadDocuments();
@@ -1053,6 +1055,7 @@
             currentStep === stepCards.length - 1
                 ? '<i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Finish &amp; Save'
                 : 'Next <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>';
+        initializeTextareaAutoResize();
     };
     const closeModalsForPrint = () => {
         for (const modalElement of document.querySelectorAll('.modal')) {
@@ -1111,16 +1114,19 @@
         }
         const name = personalInfoMenuButton.dataset.personalInfoValue || '';
         personalInfoList?.append(buildPersonalInfoRow({ name }));
+        initializeTextareaAutoResize();
         refreshCompletionWarnings();
         clearStatus();
     });
     addInformationSourceButton?.addEventListener('click', () => {
         informationSourcesList?.append(buildInformationSourceRow());
+        initializeTextareaAutoResize();
         refreshCompletionWarnings();
         clearStatus();
     });
     addAccessRoleButton?.addEventListener('click', () => {
         accessRolesList?.append(buildAccessRoleRow());
+        initializeTextareaAutoResize();
         refreshCompletionWarnings();
         clearStatus();
     });
@@ -1147,6 +1153,7 @@
                 return;
             }
             list?.append(buildSafeguardRow(type, button.dataset.safeguardValue || ''));
+            initializeTextareaAutoResize();
             refreshCompletionWarnings();
             clearStatus();
         });
@@ -1210,6 +1217,7 @@
                 updateHeaderTitle();
             }
             setStep(0);
+            initializeTextareaAutoResize();
             showStatus(`Imported "${imported?.name ?? 'PIA'}" from JSON.`, 'success');
         }
         catch {
@@ -1225,6 +1233,27 @@
         closeModalsForPrint();
         updateAllMarkdownPreviews();
     });
+    const resizeTextarea = (textarea) => {
+        Promise.resolve().then(() => {
+            textarea.style.height = 'auto';
+            textarea.style.height = `${textarea.scrollHeight}px`;
+        });
+    };
+    const initializeTextareaAutoResize = () => {
+        const textareas = form.querySelectorAll('textarea');
+        Promise.resolve().then(() => {
+            for (const textarea of textareas) {
+                textarea.style.height = 'auto';
+                textarea.style.height = `${textarea.scrollHeight}px`;
+            }
+        });
+    };
+    form.addEventListener('input', (event) => {
+        const target = event.target;
+        if (target instanceof HTMLTextAreaElement) {
+            resizeTextarea(target);
+        }
+    });
     form.addEventListener('input', clearStatus);
     form.addEventListener('input', refreshCompletionWarnings);
     const existingDocuments = getDocumentsSortedByUpdatedAt();
@@ -1233,6 +1262,7 @@
         if (latest) {
             currentDocumentId = latest.id;
             setFormData(latest.data ?? {});
+            initializeTextareaAutoResize();
             showStatus(`Loaded most recent draft: "${latest.name}".`, 'info');
         }
     }
@@ -1245,5 +1275,6 @@
     }
     updateAllMarkdownPreviews();
     refreshCompletionWarnings();
+    initializeTextareaAutoResize();
     setStep(0);
 })();
