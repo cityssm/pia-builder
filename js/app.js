@@ -45,7 +45,9 @@
         'initiativeSummary',
         'legalAuthority',
         'collectionUseDisclosure',
-        'retentionDisposal'
+        'retentionDisposal',
+        'riskSummary',
+        'riskMitigation'
     ];
     let currentStep = 0;
     let currentDocumentId = '';
@@ -822,6 +824,14 @@
             '',
             physicalSafeguardLines,
             '',
+            '## Summary of Risks to Individuals',
+            '',
+            data.riskSummary || '',
+            '',
+            '## Steps to Prevent or Reduce Risks',
+            '',
+            data.riskMitigation || '',
+            '',
             '## Roles with Access to Personal Information',
             '',
             accessRoleLines,
@@ -929,6 +939,18 @@
                 safeguardsList.append(safeguardItem);
             }
             container.append(safeguardsList);
+        }
+        const riskSections = [
+            ['Summary of Risks to Individuals', data.riskSummary],
+            ['Steps to Prevent or Reduce Risks', data.riskMitigation]
+        ];
+        for (const [label, source] of riskSections) {
+            const heading = document.createElement('h2');
+            heading.textContent = label;
+            container.append(heading);
+            const preview = document.createElement('div');
+            renderMarkdownInto(source, preview);
+            container.append(preview);
         }
         const accessHeading = document.createElement('h2');
         accessHeading.textContent = 'Roles with Access to Personal Information';
