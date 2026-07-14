@@ -51,6 +51,9 @@ a PIA must include the following:
 
 This project attempts to help a user gather the information required in a PIA.
 
-## Links
+## Related Links
 
-- [Planning for Success: Privacy Impact Assessment Guide for Ontario’s public institutions](https://www.ipc.on.ca/en/resources/planning-success-privacy-impact-assessment-guide-ontarios-public-institutions)
+- **Ontario** -
+  [Planning for Success: Privacy Impact Assessment Guide for Ontario's public institutions](https://www.ipc.on.ca/en/resources/planning-success-privacy-impact-assessment-guide-ontarios-public-institutions)
+- **British Columbia** -
+  [Completing a Privacy Impact Assessment](https://www2.gov.bc.ca/gov/content/governments/services-for-government/information-management-technology/privacy/privacy-impact-assessments/complete-a-privacy-impact-assessment#signatures)
