@@ -332,7 +332,8 @@
         input.id = textAreaFieldId;
         input.className = `form-control safeguard-item ${type}-safeguard-item`;
         input.rows = 3;
-        input.placeholder = 'Describe this safeguard. Markdown formatting is supported.';
+        input.placeholder =
+            'Describe this safeguard. Markdown formatting is supported.';
         input.value = value;
         const preview = document.createElement('div');
         preview.className = 'markdown-preview p-3 border rounded mt-2';
@@ -635,7 +636,7 @@
             accessRoleLines,
             '',
             '## Next Steps',
-            '- Review the PIA with your institution\'s privacy office or designated privacy contact.',
+            "- Review the PIA with your institution's privacy office or designated privacy contact.",
             '- Address any required mitigations or recommended actions.',
             '- Obtain approvals and signatures as required.',
             '- Gather copies of all relevant documentation, including any checklists completed prior to the PIA, and any documents cited in the "Legal Authorities" section.'
@@ -698,7 +699,10 @@
         }
         container.append(sourceList);
         const riskSections = [
-            ['Collection, Use, and Disclosure Controls', data.collectionUseDisclosure],
+            [
+                'Collection, Use, and Disclosure Controls',
+                data.collectionUseDisclosure
+            ],
             ['Retention and Disposal Strategy', data.retentionDisposal]
         ];
         for (const [label, source] of riskSections) {
@@ -748,7 +752,7 @@
         container.append(nextStepsHeading);
         const nextStepsList = document.createElement('ul');
         for (const detail of [
-            'Review the PIA with your institution\'s privacy office or designated privacy contact.',
+            "Review the PIA with your institution's privacy office or designated privacy contact.",
             'Address any required mitigations or recommended actions.',
             'Obtain approvals and signatures as required.',
             'Gather copies of all relevant documentation, including any checklists completed prior to the PIA, and any documents cited in the "Legal Authorities" section.'
@@ -776,7 +780,8 @@
         reviewNotesHeading.textContent = 'Review Notes and Recommended Actions';
         container.append(reviewNotesHeading);
         const reviewNotesBlank = document.createElement('p');
-        reviewNotesBlank.textContent = '____________________________________________________________';
+        reviewNotesBlank.textContent =
+            '____________________________________________________________';
         container.append(reviewNotesBlank);
         return `<!doctype html><html><head><meta charset="utf-8"></head><body>${container.innerHTML}</body></html>`;
     };

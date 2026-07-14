@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-type-assertion */
 
 import type * as Bootstrap from 'bootstrap'
+import type { marked as Marked } from 'marked'
 
 declare const bootstrap: typeof Bootstrap
-declare const marked: {
-  parse: (source: string) => string
-}
+declare const marked: typeof Marked
 
 ;(() => {
   const storageKey = 'piaBuilder.documents.v1'
@@ -509,7 +508,8 @@ declare const marked: {
     const preview = document.createElement('div')
     preview.className = 'markdown-preview p-3 border rounded mt-2'
 
-    const updatePreview = () => renderMarkdownInto(input.value || '', preview, '')
+    const updatePreview = () =>
+      renderMarkdownInto(input.value || '', preview, '')
     input.addEventListener('input', updatePreview)
     updatePreview()
 
@@ -941,7 +941,7 @@ declare const marked: {
       accessRoleLines,
       '',
       '## Next Steps',
-      '- Review the PIA with your institution\'s privacy office or designated privacy contact.',
+      "- Review the PIA with your institution's privacy office or designated privacy contact.",
       '- Address any required mitigations or recommended actions.',
       '- Obtain approvals and signatures as required.',
       '- Gather copies of all relevant documentation, including any checklists completed prior to the PIA, and any documents cited in the "Legal Authorities" section.'
@@ -1019,7 +1019,10 @@ declare const marked: {
 
     // Step 2: Risk & Controls
     const riskSections: Array<[string, string]> = [
-      ['Collection, Use, and Disclosure Controls', data.collectionUseDisclosure],
+      [
+        'Collection, Use, and Disclosure Controls',
+        data.collectionUseDisclosure
+      ],
       ['Retention and Disposal Strategy', data.retentionDisposal]
     ]
 
@@ -1081,7 +1084,7 @@ declare const marked: {
     container.append(nextStepsHeading)
     const nextStepsList = document.createElement('ul')
     for (const detail of [
-      'Review the PIA with your institution\'s privacy office or designated privacy contact.',
+      "Review the PIA with your institution's privacy office or designated privacy contact.",
       'Address any required mitigations or recommended actions.',
       'Obtain approvals and signatures as required.',
       'Gather copies of all relevant documentation, including any checklists completed prior to the PIA, and any documents cited in the "Legal Authorities" section.'
@@ -1111,7 +1114,8 @@ declare const marked: {
     reviewNotesHeading.textContent = 'Review Notes and Recommended Actions'
     container.append(reviewNotesHeading)
     const reviewNotesBlank = document.createElement('p')
-    reviewNotesBlank.textContent = '____________________________________________________________'
+    reviewNotesBlank.textContent =
+      '____________________________________________________________'
     container.append(reviewNotesBlank)
 
     return `<!doctype html><html><head><meta charset="utf-8"></head><body>${container.innerHTML}</body></html>`
@@ -1280,11 +1284,7 @@ declare const marked: {
     clearStatus()
   })
 
-  for (const {
-    menu,
-    list,
-    type
-  } of [
+  for (const { menu, list, type } of [
     {
       menu: addTechnicalSafeguardMenu,
       list: technicalSafeguardsList,
