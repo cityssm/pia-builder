@@ -119,7 +119,9 @@ declare const marked: typeof Marked
     'initiativeSummary',
     'legalAuthority',
     'collectionUseDisclosure',
-    'retentionDisposal'
+    'retentionDisposal',
+    'riskSummary',
+    'riskMitigation'
   ]
 
   let currentStep = 0
@@ -1198,6 +1200,14 @@ declare const marked: typeof Marked
       '',
       physicalSafeguardLines,
       '',
+      '## Summary of Risks to Individuals',
+      '',
+      data.riskSummary || '',
+      '',
+      '## Steps to Prevent or Reduce Risks',
+      '',
+      data.riskMitigation || '',
+      '',
       '## Roles with Access to Personal Information',
       '',
       accessRoleLines,
@@ -1328,6 +1338,19 @@ declare const marked: typeof Marked
       }
 
       container.append(safeguardsList)
+    }
+
+    const riskSections: Array<[string, string]> = [
+      ['Summary of Risks to Individuals', data.riskSummary as string],
+      ['Steps to Prevent or Reduce Risks', data.riskMitigation as string]
+    ]
+    for (const [label, source] of riskSections) {
+      const heading = document.createElement('h2')
+      heading.textContent = label
+      container.append(heading)
+      const preview = document.createElement('div')
+      renderMarkdownInto(source, preview)
+      container.append(preview)
     }
 
     // Step 2: Roles with Access to Personal Information
