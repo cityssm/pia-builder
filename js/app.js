@@ -137,6 +137,22 @@
         dynamicFieldIndex += 1;
         return `${prefix}-${dynamicFieldIndex}`;
     };
+    const isSafeUrlAttributeValue = (value) => {
+        const trimmedValue = (value || '').trim();
+        if (trimmedValue === '' || trimmedValue.startsWith('#')) {
+            return true;
+        }
+        const normalizedValue = trimmedValue
+            .replaceAll(/[\u0000-\u0020\u007f\s]+/g, '')
+            .toLowerCase();
+        try {
+            const parsedUrl = new URL(normalizedValue, 'https://pia-builder.local');
+            return ['http:', 'https:', 'mailto:', 'tel:'].includes(parsedUrl.protocol);
+        }
+        catch {
+            return false;
+        }
+    };
     const renderMarkdownInto = (source, container, placeholder = null) => {
         const trimmedSource = (source || '').trim();
         if (trimmedSource === '') {
@@ -148,10 +164,7 @@
             }
             return;
         }
-        const escapedSource = trimmedSource
-            .replaceAll('<', '&lt;')
-            .replaceAll('>', '&gt;');
-        const renderedHtml = marked.parse(escapedSource);
+        const renderedHtml = marked.parse(trimmedSource);
         const sanitizedHtmlTemplate = document.createElement('template');
         sanitizedHtmlTemplate.innerHTML = renderedHtml;
         for (const blockedElement of sanitizedHtmlTemplate.content.querySelectorAll('script, iframe, object, embed, link, meta, style, base')) {
@@ -160,14 +173,12 @@
         for (const element of sanitizedHtmlTemplate.content.querySelectorAll('*')) {
             for (const attribute of [...element.attributes]) {
                 const attributeName = attribute.name.toLowerCase();
-                const attributeValue = (attribute.value || '').trim().toLowerCase();
                 if (attributeName.startsWith('on')) {
                     element.removeAttribute(attribute.name);
                     continue;
                 }
                 if (['href', 'src', 'xlink:href', 'formaction'].includes(attributeName) &&
-                    (attributeValue.startsWith('javascript:') ||
-                        attributeValue.startsWith('data:text/html'))) {
+                    !isSafeUrlAttributeValue(attribute.value)) {
                     element.removeAttribute(attribute.name);
                 }
             }
