@@ -188,7 +188,7 @@
         container.innerHTML = sanitizedHtmlTemplate.innerHTML;
     };
     const updateMarkdownPreview = (fieldId) => {
-        const sourceTextarea = form.elements.namedItem(fieldId) || document.getElementById(fieldId);
+        const sourceTextarea = form.elements.namedItem(fieldId);
         const preview = document.getElementById(`${fieldId}Preview`);
         if (!sourceTextarea || !preview) {
             return;
@@ -261,9 +261,10 @@
         }
         warningIcon.classList.toggle('d-none', !isEmpty);
     };
-    const normalizeLabelText = (labelText) => (labelText || '').replaceAll(/\s+/g, ' ').trim();
-    const getWarnableFields = () => [...form.querySelectorAll('input.form-control, textarea.form-control')]
-        .filter((field) => !field.disabled && field.type !== 'hidden');
+    const normalizeWhitespace = (labelText) => (labelText || '').replaceAll(/\s+/g, ' ').trim();
+    const getWarnableFields = () => [
+        ...form.querySelectorAll('input.form-control, textarea.form-control')
+    ].filter((field) => !field.disabled && field.type !== 'hidden');
     const buildListControls = (row, removeLabel) => {
         const controls = document.createElement('div');
         controls.className = 'dynamic-list-controls justify-content-end';
@@ -435,78 +436,103 @@
     const getSafeguards = (list, itemSelector) => [...list.querySelectorAll(itemSelector)]
         .map((input) => (input.value || '').trim())
         .filter((item) => item !== '');
-    const dynamicListLabelById = new Map([
-        ['personalInfoList', 'Personal Information Collected'],
+    const dynamicListSummaryConfigById = new Map([
+        [
+            'personalInfoList',
+            {
+                label: 'Personal Information Collected',
+                getCount: () => getPersonalInfoItems().length
+            }
+        ],
         [
             'informationSourcesList',
-            'Sources of Personal Information to be Collected'
+            {
+                label: 'Sources of Personal Information to be Collected',
+                getCount: () => getInformationSources().length
+            }
         ],
-        ['technicalSafeguardsList', 'Technical Safeguards'],
-        ['administrativeSafeguardsList', 'Administrative Safeguards'],
-        ['physicalSafeguardsList', 'Physical Safeguards'],
-        ['accessRolesList', 'Roles with Access to Personal Information']
+        [
+            'technicalSafeguardsList',
+            {
+                label: 'Technical Safeguards',
+                getCount: () => getSafeguards(technicalSafeguardsList, '.technical-safeguard-item')
+                    .length
+            }
+        ],
+        [
+            'administrativeSafeguardsList',
+            {
+                label: 'Administrative Safeguards',
+                getCount: () => getSafeguards(administrativeSafeguardsList, '.administrative-safeguard-item').length
+            }
+        ],
+        [
+            'physicalSafeguardsList',
+            {
+                label: 'Physical Safeguards',
+                getCount: () => getSafeguards(physicalSafeguardsList, '.physical-safeguard-item')
+                    .length
+            }
+        ],
+        [
+            'accessRolesList',
+            {
+                label: 'Roles with Access to Personal Information',
+                getCount: () => getAccessRoles().length
+            }
+        ]
     ]);
-    const getFieldSummaryLabel = (field) => {
+    const getFieldWarningDescription = (field) => {
         const matchingLabel = field.id
             ? form.querySelector(`label[for="${field.id}"]`)
             : null;
-        const fieldLabel = normalizeLabelText(matchingLabel?.textContent);
-        for (const [listId, listLabel] of dynamicListLabelById.entries()) {
+        const fieldLabel = normalizeWhitespace(matchingLabel?.textContent || '');
+        for (const [listId, config] of dynamicListSummaryConfigById.entries()) {
             const listElement = document.getElementById(listId);
             if (!listElement || !listElement.contains(field)) {
                 continue;
             }
             const row = field.closest('.dynamic-list-item');
             const rowIndex = row
-                ? [...listElement.querySelectorAll('.dynamic-list-item')].indexOf(row) + 1
+                ? [...listElement.querySelectorAll('.dynamic-list-item')].indexOf(row) +
+                    1
                 : 0;
-            return `${listLabel} (item ${rowIndex || 1}): ${fieldLabel || 'Field'}`;
+            return `${config.label} (item ${rowIndex || 1}): ${fieldLabel || 'Field'}`;
         }
-        return fieldLabel || normalizeLabelText(field.name) || field.id || 'Unnamed field';
+        return (fieldLabel ||
+            normalizeWhitespace(field.name) ||
+            normalizeWhitespace(field.id) ||
+            'Unnamed field');
     };
     const getEmptyListSummaries = () => {
-        const emptyListMessages = [];
-        if (getPersonalInfoItems().length === 0) {
-            emptyListMessages.push('List has no items: Personal Information Collected');
+        const emptyListSummaries = [];
+        for (const config of dynamicListSummaryConfigById.values()) {
+            if (config.getCount() === 0) {
+                emptyListSummaries.push(`List has no items: ${config.label}`);
+            }
         }
-        if (getInformationSources().length === 0) {
-            emptyListMessages.push('List has no items: Sources of Personal Information to be Collected');
-        }
-        if (getSafeguards(technicalSafeguardsList, '.technical-safeguard-item').length === 0) {
-            emptyListMessages.push('List has no items: Technical Safeguards');
-        }
-        if (getSafeguards(administrativeSafeguardsList, '.administrative-safeguard-item').length === 0) {
-            emptyListMessages.push('List has no items: Administrative Safeguards');
-        }
-        if (getSafeguards(physicalSafeguardsList, '.physical-safeguard-item').length === 0) {
-            emptyListMessages.push('List has no items: Physical Safeguards');
-        }
-        if (getAccessRoles().length === 0) {
-            emptyListMessages.push('List has no items: Roles with Access to Personal Information');
-        }
-        return emptyListMessages;
+        return emptyListSummaries;
     };
     const refreshCompletionWarnings = () => {
+        if (!emptyFieldsSummary || !emptyFieldsSummaryList) {
+            return;
+        }
         const emptyFieldSummaries = [];
         for (const field of getWarnableFields()) {
             ensureWarningFieldWrapper(field);
             const isEmpty = (field.value || '').trim() === '';
             setFieldWarningState(field, isEmpty);
             if (isEmpty) {
-                emptyFieldSummaries.push(getFieldSummaryLabel(field));
+                emptyFieldSummaries.push(getFieldWarningDescription(field));
             }
         }
         const emptyListSummaries = getEmptyListSummaries();
-        if (!emptyFieldsSummary || !emptyFieldsSummaryList) {
-            return;
-        }
         const summaryItems = [...emptyFieldSummaries, ...emptyListSummaries];
-        emptyFieldsSummaryList.textContent = '';
-        for (const summaryItem of summaryItems) {
+        emptyFieldsSummaryList.replaceChildren(...summaryItems.map((summaryItem) => {
             const listItem = document.createElement('li');
             listItem.textContent = summaryItem;
-            emptyFieldsSummaryList.append(listItem);
-        }
+            return listItem;
+        }));
         emptyFieldsSummary.classList.toggle('d-none', summaryItems.length === 0);
     };
     const getFormData = () => {
