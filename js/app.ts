@@ -597,25 +597,39 @@ declare const marked: {
       : []
     const informationSourceItems = parseInformationSourceItems(data)
     const roleItems = Array.isArray(data?.accessRoles) ? data.accessRoles : []
-    const technicalSafeguardsItems = Array.isArray(data?.technicalSafeguardsItems)
-      ? data.technicalSafeguardsItems
-      : (data?.technicalSafeguards || '').trim()
-        ? [data.technicalSafeguards]
-        : (data?.safeguards || '').trim()
-          ? [data.safeguards]
-          : []
-    const administrativeSafeguardsItems = Array.isArray(
-      data?.administrativeSafeguardsItems
+    const getSafeguardsFromData = (
+      itemKey: string,
+      legacyKey: string,
+      fallbackLegacyKey = ''
+    ) => {
+      if (Array.isArray(data?.[itemKey])) {
+        return data[itemKey]
+      }
+
+      if ((data?.[legacyKey] || '').trim()) {
+        return [data[legacyKey]]
+      }
+
+      if (fallbackLegacyKey && (data?.[fallbackLegacyKey] || '').trim()) {
+        return [data[fallbackLegacyKey]]
+      }
+
+      return []
+    }
+
+    const technicalSafeguardsItems = getSafeguardsFromData(
+      'technicalSafeguardsItems',
+      'technicalSafeguards',
+      'safeguards'
     )
-      ? data.administrativeSafeguardsItems
-      : (data?.administrativeSafeguards || '').trim()
-        ? [data.administrativeSafeguards]
-        : []
-    const physicalSafeguardsItems = Array.isArray(data?.physicalSafeguardsItems)
-      ? data.physicalSafeguardsItems
-      : (data?.physicalSafeguards || '').trim()
-        ? [data.physicalSafeguards]
-        : []
+    const administrativeSafeguardsItems = getSafeguardsFromData(
+      'administrativeSafeguardsItems',
+      'administrativeSafeguards'
+    )
+    const physicalSafeguardsItems = getSafeguardsFromData(
+      'physicalSafeguardsItems',
+      'physicalSafeguards'
+    )
 
     const applyLegacyCombinedField = (
       legacyFieldKey,
