@@ -2,6 +2,7 @@
   "devDependencies": {
     "@types/bootstrap": "^5.2.11",
     "eslint-config-cityssm": "^42.0.0",
+    "marked": "^18.0.6",
     "prettier-config-cityssm": "^2.1.2"
   }
 }

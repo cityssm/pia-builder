@@ -7,6 +7,10 @@ body {
   background-color: #f8f9fa;
 }
 
+.form-label {
+  font-weight: 700;
+}
+
 .step-indicator {
   list-style: none;
   padding: 0;
@@ -71,11 +75,40 @@ body {
   margin-bottom: 0.75rem;
 }
 
+.field-warning-wrapper {
+  position: relative;
+}
+
+.field-warning-input {
+  padding-right: 2rem;
+}
+
+.field-empty-warning {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.field-empty-warning.textarea-warning {
+  top: 0.75rem;
+  transform: none;
+}
+
 .dynamic-list-item {
   border: 1px solid #dee2e6;
   border-radius: 0.5rem;
   padding: 0.75rem;
   background: #fff;
+}
+
+.dynamic-list-item .form-label {
+  font-weight: 600;
+}
+
+.dynamic-list-item .markdown-preview {
+  min-height: 80px;
 }
 
 .dynamic-list-controls {

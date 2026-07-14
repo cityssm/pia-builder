@@ -193,7 +193,8 @@
                   name="assessorPosition"
                 />
                 <div class="form-text">
-                  Position title of the person completing this PIA and answering follow-up questions.
+                  Position title of the person completing this PIA and answering
+                  follow-up questions.
                 </div>
               </div>
               <div class="col-md-6">
@@ -334,14 +335,131 @@
                     ></i>
                     Help
                   </button>
-                  <button
-                    class="btn btn-sm btn-outline-primary add-item-button"
-                    type="button"
-                    id="addPersonalInfoButton"
-                  >
-                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                    Add
-                  </button>
+                  <div class="btn-group">
+                    <button
+                      class="btn btn-sm btn-outline-primary dropdown-toggle add-item-button"
+                      type="button"
+                      id="addPersonalInfoButton"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                      Add
+                    </button>
+                    <ul
+                      class="dropdown-menu dropdown-menu-end"
+                      id="addPersonalInfoMenu"
+                    >
+                      <li>
+                        <button
+                          class="dropdown-item"
+                          type="button"
+                          data-personal-info-value=""
+                        >
+                          Blank item
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          class="dropdown-item"
+                          type="button"
+                          data-personal-info-value="Biographical details (name, sex, age, race)"
+                        >
+                          Biographical details
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          class="dropdown-item"
+                          type="button"
+                          data-personal-info-value="Biological details (face, fingerprints, blood type)"
+                        >
+                          Biological details
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          class="dropdown-item"
+                          type="button"
+                          data-personal-info-value="Nationality"
+                        >
+                          Nationality
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          class="dropdown-item"
+                          type="button"
+                          data-personal-info-value="Religion"
+                        >
+                          Religion
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          class="dropdown-item"
+                          type="button"
+                          data-personal-info-value="Marital status"
+                        >
+                          Marital status
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          class="dropdown-item"
+                          type="button"
+                          data-personal-info-value="Education"
+                        >
+                          Education
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          class="dropdown-item"
+                          type="button"
+                          data-personal-info-value="Medical or criminal history"
+                        >
+                          Medical or criminal history
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          class="dropdown-item"
+                          type="button"
+                          data-personal-info-value="Financial information"
+                        >
+                          Financial information
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          class="dropdown-item"
+                          type="button"
+                          data-personal-info-value="Identifying numbers (e.g., social insurance numbers)"
+                        >
+                          Identifying numbers
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          class="dropdown-item"
+                          type="button"
+                          data-personal-info-value="Contact details (personal address, phone number)"
+                        >
+                          Contact details
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          class="dropdown-item"
+                          type="button"
+                          data-personal-info-value="Personal opinions and views"
+                        >
+                          Personal opinions and views
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
               <div id="personalInfoList" class="vstack gap-2"></div>
@@ -468,142 +586,213 @@
               ></div>
             </div>
             <hr />
-            <div
-              class="markdown-field mb-3"
-              data-markdown-field="technicalSafeguards"
-            >
-              <label for="technicalSafeguards" class="form-label"
-                >Technical Safeguards</label
-              >
-              <div class="form-text mb-2">
-                Describe technical controls protecting confidentiality,
-                integrity, and availability (e.g., encryption, access controls,
-                audit logging, network security).
-              </div>
+            <div class="mb-3">
               <div
-                class="markdown-tabs btn-group btn-group-sm mb-2"
-                role="group"
-                aria-label="Technical safeguards mode"
+                class="d-flex justify-content-between align-items-center mb-2 gap-2 flex-wrap"
               >
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary active"
-                  data-md-target="technicalSafeguards"
-                  data-md-mode="edit"
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary"
-                  data-md-target="technicalSafeguards"
-                  data-md-mode="preview"
-                >
-                  Preview
-                </button>
+                <div>
+                  <label class="form-label mb-0">Technical Safeguards</label>
+                  <div class="form-text">
+                    Describe technical controls protecting confidentiality,
+                    integrity, and availability (e.g., encryption, access
+                    controls, audit logging, network security).
+                  </div>
+                </div>
+                <div class="btn-group">
+                  <button
+                    class="btn btn-sm btn-outline-primary dropdown-toggle add-item-button"
+                    type="button"
+                    id="addTechnicalSafeguardButton"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    Add
+                  </button>
+                  <ul
+                    class="dropdown-menu dropdown-menu-end"
+                    id="addTechnicalSafeguardMenu"
+                  >
+                    <li>
+                      <button
+                        class="dropdown-item"
+                        type="button"
+                        data-safeguard-value=""
+                      >
+                        Blank item
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        class="dropdown-item"
+                        type="button"
+                        data-safeguard-value="Encryption in transit and at rest for personal information."
+                      >
+                        Encryption in transit and at rest
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        class="dropdown-item"
+                        type="button"
+                        data-safeguard-value="Role-based access controls and multi-factor authentication."
+                      >
+                        Role-based access and MFA
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        class="dropdown-item"
+                        type="button"
+                        data-safeguard-value="Audit logging and regular monitoring for unauthorized access."
+                      >
+                        Audit logging and monitoring
+                      </button>
+                    </li>
+                  </ul>
+                </div>
               </div>
-              <textarea
-                class="form-control markdown-input"
-                id="technicalSafeguards"
-                name="technicalSafeguards"
-                rows="4"
-              ></textarea>
-              <div
-                id="technicalSafeguardsPreview"
-                class="markdown-preview p-3 border rounded d-none"
-              ></div>
+              <div id="technicalSafeguardsList" class="vstack gap-2"></div>
             </div>
 
-            <div
-              class="markdown-field mb-3"
-              data-markdown-field="administrativeSafeguards"
-            >
-              <label for="administrativeSafeguards" class="form-label"
-                >Administrative Safeguards</label
-              >
-              <div class="form-text mb-2">
-                Describe administrative controls protecting personal information
-                (e.g., policies, training, privacy governance, agreements with
-                third parties).
-              </div>
+            <div class="mb-3">
               <div
-                class="markdown-tabs btn-group btn-group-sm mb-2"
-                role="group"
-                aria-label="Administrative safeguards mode"
+                class="d-flex justify-content-between align-items-center mb-2 gap-2 flex-wrap"
               >
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary active"
-                  data-md-target="administrativeSafeguards"
-                  data-md-mode="edit"
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary"
-                  data-md-target="administrativeSafeguards"
-                  data-md-mode="preview"
-                >
-                  Preview
-                </button>
+                <div>
+                  <label class="form-label mb-0"
+                    >Administrative Safeguards</label
+                  >
+                  <div class="form-text">
+                    Describe administrative controls protecting personal
+                    information (e.g., policies, training, privacy governance,
+                    agreements with third parties).
+                  </div>
+                </div>
+                <div class="btn-group">
+                  <button
+                    class="btn btn-sm btn-outline-primary dropdown-toggle add-item-button"
+                    type="button"
+                    id="addAdministrativeSafeguardButton"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    Add
+                  </button>
+                  <ul
+                    class="dropdown-menu dropdown-menu-end"
+                    id="addAdministrativeSafeguardMenu"
+                  >
+                    <li>
+                      <button
+                        class="dropdown-item"
+                        type="button"
+                        data-safeguard-value=""
+                      >
+                        Blank item
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        class="dropdown-item"
+                        type="button"
+                        data-safeguard-value="Privacy and security training for staff with access to personal information."
+                      >
+                        Staff privacy and security training
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        class="dropdown-item"
+                        type="button"
+                        data-safeguard-value="Documented privacy policies, procedures, and breach response processes."
+                      >
+                        Policies and breach response process
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        class="dropdown-item"
+                        type="button"
+                        data-safeguard-value="Confidentiality agreements and vendor contract privacy clauses."
+                      >
+                        Confidentiality and vendor clauses
+                      </button>
+                    </li>
+                  </ul>
+                </div>
               </div>
-              <textarea
-                class="form-control markdown-input"
-                id="administrativeSafeguards"
-                name="administrativeSafeguards"
-                rows="4"
-              ></textarea>
-              <div
-                id="administrativeSafeguardsPreview"
-                class="markdown-preview p-3 border rounded d-none"
-              ></div>
+              <div id="administrativeSafeguardsList" class="vstack gap-2"></div>
             </div>
 
-            <div
-              class="markdown-field mb-3"
-              data-markdown-field="physicalSafeguards"
-            >
-              <label for="physicalSafeguards" class="form-label"
-                >Physical Safeguards</label
-              >
-              <div class="form-text mb-2">
-                Describe physical controls protecting personal information
-                (e.g., locked facilities, clean desk practices, secure disposal
-                of physical records).
-              </div>
+            <div class="mb-3">
               <div
-                class="markdown-tabs btn-group btn-group-sm mb-2"
-                role="group"
-                aria-label="Physical safeguards mode"
+                class="d-flex justify-content-between align-items-center mb-2 gap-2 flex-wrap"
               >
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary active"
-                  data-md-target="physicalSafeguards"
-                  data-md-mode="edit"
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary"
-                  data-md-target="physicalSafeguards"
-                  data-md-mode="preview"
-                >
-                  Preview
-                </button>
+                <div>
+                  <label class="form-label mb-0">Physical Safeguards</label>
+                  <div class="form-text">
+                    Describe physical controls protecting personal information
+                    (e.g., locked facilities, clean desk practices, secure
+                    disposal of physical records).
+                  </div>
+                </div>
+                <div class="btn-group">
+                  <button
+                    class="btn btn-sm btn-outline-primary dropdown-toggle add-item-button"
+                    type="button"
+                    id="addPhysicalSafeguardButton"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    Add
+                  </button>
+                  <ul
+                    class="dropdown-menu dropdown-menu-end"
+                    id="addPhysicalSafeguardMenu"
+                  >
+                    <li>
+                      <button
+                        class="dropdown-item"
+                        type="button"
+                        data-safeguard-value=""
+                      >
+                        Blank item
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        class="dropdown-item"
+                        type="button"
+                        data-safeguard-value="Restricted facility access with locked offices and controlled entry."
+                      >
+                        Restricted facility access
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        class="dropdown-item"
+                        type="button"
+                        data-safeguard-value="Secure storage for paper records and media containing personal information."
+                      >
+                        Secure storage for records
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        class="dropdown-item"
+                        type="button"
+                        data-safeguard-value="Secure destruction processes for paper records and physical media."
+                      >
+                        Secure destruction processes
+                      </button>
+                    </li>
+                  </ul>
+                </div>
               </div>
-              <textarea
-                class="form-control markdown-input"
-                id="physicalSafeguards"
-                name="physicalSafeguards"
-                rows="4"
-              ></textarea>
-              <div
-                id="physicalSafeguardsPreview"
-                class="markdown-preview p-3 border rounded d-none"
-              ></div>
+              <div id="physicalSafeguardsList" class="vstack gap-2"></div>
             </div>
             <hr />
             <div>
@@ -650,19 +839,13 @@
         <section class="step-card card mb-3 d-none" data-step="3">
           <div class="card-body">
             <h2 class="h5">Next Steps</h2>
-            <ul>
-              <li>
-                Review the PIA with your institution's privacy office or
-                designated privacy contact.
-              </li>
-              <li>Address any required mitigations or recommended actions.</li>
-              <li>Obtain approvals and signatures as required.</li>
-              <li>
-                Gather copies of all relevant documentation, including any
-                checklists completed prior to the PIA, and any documents cited
-                in the "Legal Authorities" section.
-              </li>
-            </ul>
+
+            <div id="emptyFieldsSummary" class="alert alert-warning d-none">
+              <div class="fw-semibold mb-1">
+                Please complete the following before finalizing:
+              </div>
+              <ul id="emptyFieldsSummaryList" class="mb-0"></ul>
+            </div>
 
             <h2 class="h5 mt-4">Export and Print</h2>
             <p class="mb-2">Choose export format:</p>
@@ -700,6 +883,21 @@
                 Print
               </button>
             </div>
+
+            <h2 class="h5 mt-4">Next Steps</h2>
+            <ul>
+              <li>
+                Review the PIA with your institution's privacy office or
+                designated privacy contact.
+              </li>
+              <li>Address any required mitigations or recommended actions.</li>
+              <li>Obtain approvals and signatures as required.</li>
+              <li>
+                Gather copies of all relevant documentation, including any
+                checklists completed prior to the PIA, and any documents cited
+                in the "Legal Authorities" section.
+              </li>
+            </ul>
           </div>
         </section>
 
@@ -718,6 +916,15 @@
           </button>
         </div>
       </form>
+
+      <footer class="text-center text-muted small mt-4 mb-3">
+        <a
+          href="https://github.com/cityssm/pia-builder"
+          target="_blank"
+          rel="noopener noreferrer"
+          >View source on GitHub</a
+        >
+      </footer>
 
       <input
         id="importJsonInput"
@@ -927,6 +1134,11 @@
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/marked@18.0.6/lib/marked.umd.min.js"
+      integrity="sha384-1DYHBgZ9bqWhQdbNJYAgtRGPTREOhdqe9pMai6XZ6lEOxEpf8014NcYGxp62VGbv"
       crossorigin="anonymous"
     ></script>
     <script src="js/app.js"></script>
