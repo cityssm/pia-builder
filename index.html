@@ -795,6 +795,99 @@
               <div id="physicalSafeguardsList" class="vstack gap-2"></div>
             </div>
             <hr />
+            <div
+              class="markdown-field mb-3"
+              data-markdown-field="riskSummary"
+            >
+              <label for="riskSummary" class="form-label"
+                >Summary of Risks to Individuals</label
+              >
+              <div class="form-text mb-2">
+                Summarize any risks to individuals in the event of a theft,
+                loss or unauthorized use or disclosure of the personal
+                information.
+              </div>
+              <div
+                class="markdown-tabs btn-group btn-group-sm mb-2"
+                role="group"
+                aria-label="Risk summary mode"
+              >
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary active"
+                  data-md-target="riskSummary"
+                  data-md-mode="edit"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  data-md-target="riskSummary"
+                  data-md-mode="preview"
+                >
+                  Preview
+                </button>
+              </div>
+              <textarea
+                class="form-control markdown-input"
+                id="riskSummary"
+                name="riskSummary"
+                rows="4"
+              ></textarea>
+              <div
+                id="riskSummaryPreview"
+                class="markdown-preview p-3 border rounded d-none"
+              ></div>
+            </div>
+
+            <div
+              class="markdown-field mb-3"
+              data-markdown-field="riskMitigation"
+            >
+              <label for="riskMitigation" class="form-label"
+                >Steps to Prevent or Reduce Risks</label
+              >
+              <div class="form-text mb-2">
+                Describe the steps to be taken by the institution to prevent
+                or reduce the likelihood of a theft, loss or unauthorized use
+                or disclosure of personal information and to mitigate risks to
+                individuals.
+              </div>
+              <div
+                class="markdown-tabs btn-group btn-group-sm mb-2"
+                role="group"
+                aria-label="Risk mitigation mode"
+              >
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary active"
+                  data-md-target="riskMitigation"
+                  data-md-mode="edit"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  data-md-target="riskMitigation"
+                  data-md-mode="preview"
+                >
+                  Preview
+                </button>
+              </div>
+              <textarea
+                class="form-control markdown-input"
+                id="riskMitigation"
+                name="riskMitigation"
+                rows="4"
+              ></textarea>
+              <div
+                id="riskMitigationPreview"
+                class="markdown-preview p-3 border rounded d-none"
+              ></div>
+            </div>
+            <hr />
             <div>
               <div
                 class="d-flex justify-content-between align-items-center mb-2 gap-2 flex-wrap"
