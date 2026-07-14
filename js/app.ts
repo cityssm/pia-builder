@@ -3,6 +3,9 @@
 import type * as Bootstrap from 'bootstrap'
 
 declare const bootstrap: typeof Bootstrap
+declare const marked: {
+  parse: (source: string) => string
+}
 
 ;(() => {
   const storageKey = 'piaBuilder.documents.v1'
@@ -86,20 +89,36 @@ declare const bootstrap: typeof Bootstrap
   const accessRolesList = document.querySelector(
     '#accessRolesList'
   ) as HTMLUListElement
+  const addTechnicalSafeguardMenu = document.querySelector(
+    '#addTechnicalSafeguardMenu'
+  ) as HTMLUListElement
+  const technicalSafeguardsList = document.querySelector(
+    '#technicalSafeguardsList'
+  ) as HTMLUListElement
+  const addAdministrativeSafeguardMenu = document.querySelector(
+    '#addAdministrativeSafeguardMenu'
+  ) as HTMLUListElement
+  const administrativeSafeguardsList = document.querySelector(
+    '#administrativeSafeguardsList'
+  ) as HTMLUListElement
+  const addPhysicalSafeguardMenu = document.querySelector(
+    '#addPhysicalSafeguardMenu'
+  ) as HTMLUListElement
+  const physicalSafeguardsList = document.querySelector(
+    '#physicalSafeguardsList'
+  ) as HTMLUListElement
 
   const markdownFieldIds = [
     'initiativeSummary',
     'legalAuthority',
     'collectionUseDisclosure',
-    'retentionDisposal',
-    'technicalSafeguards',
-    'administrativeSafeguards',
-    'physicalSafeguards'
+    'retentionDisposal'
   ]
 
   let currentStep = 0
   let currentDocumentId = ''
   let statusToastTimeoutId
+  let dynamicFieldIndex = 0
   const statusToastInstance = statusToastElement
     ? new bootstrap.Toast(statusToastElement, { autohide: false })
     : null
@@ -220,34 +239,9 @@ declare const bootstrap: typeof Bootstrap
     activePiaTitle.textContent = name || 'Untitled PIA'
   }
 
-  const appendInlineMarkdown = (text: string, container: HTMLElement) => {
-    const pattern = /(\*\*[^*]+\*\*|\*[^*]+\*)/g
-    let lastIndex = 0
-
-    for (const match of text.matchAll(pattern)) {
-      const matchText = match[0]
-      const index = match.index || 0
-
-      if (index > lastIndex) {
-        container.append(document.createTextNode(text.slice(lastIndex, index)))
-      }
-
-      if (matchText.startsWith('**')) {
-        const strong = document.createElement('strong')
-        strong.textContent = matchText.slice(2, -2)
-        container.append(strong)
-      } else {
-        const emphasis = document.createElement('em')
-        emphasis.textContent = matchText.slice(1, -1)
-        container.append(emphasis)
-      }
-
-      lastIndex = index + matchText.length
-    }
-
-    if (lastIndex < text.length) {
-      container.append(document.createTextNode(text.slice(lastIndex)))
-    }
+  const generateDynamicFieldId = (prefix: string) => {
+    dynamicFieldIndex += 1
+    return `${prefix}-${dynamicFieldIndex}`
   }
 
   const renderMarkdownInto = (
@@ -255,9 +249,10 @@ declare const bootstrap: typeof Bootstrap
     container: HTMLElement,
     placeholder: string | null = null
   ) => {
-    container.textContent = ''
+    const trimmedSource = (source || '').trim()
 
-    if ((source || '').trim() === '') {
+    if (trimmedSource === '') {
+      container.textContent = ''
       if (placeholder) {
         const paragraph = document.createElement('p')
         paragraph.textContent = placeholder
@@ -266,51 +261,11 @@ declare const bootstrap: typeof Bootstrap
       return
     }
 
-    const lines = source.split('\n')
-    let listElement: HTMLUListElement | null = null
-
-    const flushList = () => {
-      if (listElement) {
-        container.append(listElement)
-        listElement = null
-      }
-    }
-
-    for (const rawLine of lines) {
-      const line = rawLine.trim()
-
-      if (line.startsWith('- ')) {
-        if (!listElement) {
-          listElement = document.createElement('ul')
-        }
-
-        const listItem = document.createElement('li')
-        appendInlineMarkdown(line.slice(2), listItem)
-        listElement.append(listItem)
-        continue
-      }
-
-      flushList()
-
-      if (line === '') {
-        continue
-      }
-
-      const headingMatch = line.match(/^(#{1,3})\s+(.+)$/)
-
-      if (headingMatch) {
-        const heading = document.createElement(`h${headingMatch[1].length}`)
-        appendInlineMarkdown(headingMatch[2], heading)
-        container.append(heading)
-        continue
-      }
-
-      const paragraph = document.createElement('p')
-      appendInlineMarkdown(line, paragraph)
-      container.append(paragraph)
-    }
-
-    flushList()
+    const escapedSource = trimmedSource
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+    container.innerHTML = marked.parse(escapedSource)
   }
 
   const updateMarkdownPreview = (fieldId: string) => {
@@ -414,21 +369,27 @@ declare const bootstrap: typeof Bootstrap
   ) => {
     const row = document.createElement('div')
     row.className = 'dynamic-list-item'
+    const nameFieldId = generateDynamicFieldId('personal-info-name')
+    const useFieldId = generateDynamicFieldId('personal-info-use')
 
     const infoLabel = document.createElement('label')
     infoLabel.className = 'form-label'
+    infoLabel.htmlFor = nameFieldId
     infoLabel.textContent = 'Personal Information Element'
 
     const infoInput = document.createElement('input')
+    infoInput.id = nameFieldId
     infoInput.className = 'form-control mb-2 personal-info-name'
     infoInput.value = item.name || ''
     infoInput.placeholder = 'e.g., Home address, email, employee ID'
 
     const useLabel = document.createElement('label')
     useLabel.className = 'form-label'
+    useLabel.htmlFor = useFieldId
     useLabel.textContent = 'Intended Use or Disclosure'
 
     const useInput = document.createElement('textarea')
+    useInput.id = useFieldId
     useInput.className = 'form-control personal-info-use'
     useInput.rows = 2
     useInput.placeholder = 'How this item will be used and/or disclosed'
@@ -443,12 +404,15 @@ declare const bootstrap: typeof Bootstrap
   const buildInformationSourceRow = (source: string = '') => {
     const row = document.createElement('div')
     row.className = 'dynamic-list-item'
+    const sourceFieldId = generateDynamicFieldId('information-source')
 
     const sourceLabel = document.createElement('label')
     sourceLabel.className = 'form-label'
+    sourceLabel.htmlFor = sourceFieldId
     sourceLabel.textContent = 'Source'
 
     const sourceInput = document.createElement('input')
+    sourceInput.id = sourceFieldId
     sourceInput.className = 'form-control information-source'
     sourceInput.placeholder =
       'e.g., Data subject, external partner, another institution'
@@ -463,14 +427,51 @@ declare const bootstrap: typeof Bootstrap
   const buildAccessRoleRow = (title = '') => {
     const row = document.createElement('div')
     row.className = 'dynamic-list-item'
+    const accessRoleFieldId = generateDynamicFieldId('access-role-title')
+
+    const label = document.createElement('label')
+    label.className = 'form-label'
+    label.htmlFor = accessRoleFieldId
+    label.textContent = 'Position Title'
 
     const input = document.createElement('input')
+    input.id = accessRoleFieldId
     input.className = 'form-control access-role-title'
     input.placeholder = 'Position title with access to personal information'
     input.value = title
 
     const controls = buildListControls(row, 'Remove')
-    row.append(input, controls)
+    row.append(label, input, controls)
+    return row
+  }
+
+  const buildSafeguardRow = (type: string, value = '') => {
+    const row = document.createElement('div')
+    row.className = 'dynamic-list-item'
+    const textAreaFieldId = generateDynamicFieldId(`${type}-safeguard`)
+
+    const label = document.createElement('label')
+    label.className = 'form-label'
+    label.htmlFor = textAreaFieldId
+    label.textContent = 'Safeguard'
+
+    const input = document.createElement('textarea')
+    input.id = textAreaFieldId
+    input.className = `form-control safeguard-item ${type}-safeguard-item`
+    input.rows = 3
+    input.placeholder =
+      'Describe this safeguard. Markdown formatting is supported.'
+    input.value = value
+
+    const preview = document.createElement('div')
+    preview.className = 'markdown-preview p-3 border rounded mt-2'
+
+    const updatePreview = () => renderMarkdownInto(input.value || '', preview, '')
+    input.addEventListener('input', updatePreview)
+    updatePreview()
+
+    const controls = buildListControls(row, 'Remove Safeguard')
+    row.append(label, input, preview, controls)
     return row
   }
 
@@ -494,12 +495,29 @@ declare const bootstrap: typeof Bootstrap
       .map((input) => (input.value || '').trim())
       .filter((source) => source !== '')
 
+  const getSafeguards = (list: HTMLElement, itemSelector: string) =>
+    [...list.querySelectorAll(itemSelector)]
+      .map((input) => (input.value || '').trim())
+      .filter((item) => item !== '')
+
   const getFormData = () => {
     const raw = Object.fromEntries(new FormData(form).entries())
 
     raw.personalInfoItems = getPersonalInfoItems()
     raw.informationSourcesItems = getInformationSources()
     raw.accessRoles = getAccessRoles()
+    raw.technicalSafeguardsItems = getSafeguards(
+      technicalSafeguardsList,
+      '.technical-safeguard-item'
+    )
+    raw.administrativeSafeguardsItems = getSafeguards(
+      administrativeSafeguardsList,
+      '.administrative-safeguard-item'
+    )
+    raw.physicalSafeguardsItems = getSafeguards(
+      physicalSafeguardsList,
+      '.physical-safeguard-item'
+    )
 
     return raw
   }
@@ -509,7 +527,10 @@ declare const bootstrap: typeof Bootstrap
       if (
         key === 'personalInfoItems' ||
         key === 'accessRoles' ||
-        key === 'informationSourcesItems'
+        key === 'informationSourcesItems' ||
+        key === 'technicalSafeguardsItems' ||
+        key === 'administrativeSafeguardsItems' ||
+        key === 'physicalSafeguardsItems'
       ) {
         continue
       }
@@ -524,12 +545,34 @@ declare const bootstrap: typeof Bootstrap
     personalInfoList.textContent = ''
     informationSourcesList.textContent = ''
     accessRolesList.textContent = ''
+    technicalSafeguardsList.textContent = ''
+    administrativeSafeguardsList.textContent = ''
+    physicalSafeguardsList.textContent = ''
 
     const personalItems = Array.isArray(data?.personalInfoItems)
       ? data.personalInfoItems
       : []
     const informationSourceItems = parseInformationSourceItems(data)
     const roleItems = Array.isArray(data?.accessRoles) ? data.accessRoles : []
+    const technicalSafeguardsItems = Array.isArray(data?.technicalSafeguardsItems)
+      ? data.technicalSafeguardsItems
+      : (data?.technicalSafeguards || '').trim()
+        ? [data.technicalSafeguards]
+        : (data?.safeguards || '').trim()
+          ? [data.safeguards]
+          : []
+    const administrativeSafeguardsItems = Array.isArray(
+      data?.administrativeSafeguardsItems
+    )
+      ? data.administrativeSafeguardsItems
+      : (data?.administrativeSafeguards || '').trim()
+        ? [data.administrativeSafeguards]
+        : []
+    const physicalSafeguardsItems = Array.isArray(data?.physicalSafeguardsItems)
+      ? data.physicalSafeguardsItems
+      : (data?.physicalSafeguards || '').trim()
+        ? [data.physicalSafeguards]
+        : []
 
     const applyLegacyCombinedField = (
       legacyFieldKey,
@@ -574,25 +617,6 @@ declare const bootstrap: typeof Bootstrap
       'reviewedByName'
     )
 
-    // Handle legacy combined safeguards field: migrate to technicalSafeguards.
-    // The original field mixed all three safeguard types. Migrating the content
-    // to technicalSafeguards preserves the data and prompts users to review and
-    // split it into the appropriate new fields.
-    if (
-      (data?.safeguards || '').trim() &&
-      !data?.technicalSafeguards &&
-      !data?.administrativeSafeguards &&
-      !data?.physicalSafeguards
-    ) {
-      const technicalField = form.elements.namedItem(
-        'technicalSafeguards'
-      ) as HTMLTextAreaElement
-
-      if (technicalField) {
-        technicalField.value = data.safeguards
-      }
-    }
-
     for (const item of personalItems) {
       personalInfoList.append(buildPersonalInfoRow(item))
     }
@@ -603,6 +627,20 @@ declare const bootstrap: typeof Bootstrap
 
     for (const role of roleItems) {
       accessRolesList.append(buildAccessRoleRow(role))
+    }
+
+    for (const safeguard of technicalSafeguardsItems) {
+      technicalSafeguardsList.append(buildSafeguardRow('technical', safeguard))
+    }
+
+    for (const safeguard of administrativeSafeguardsItems) {
+      administrativeSafeguardsList.append(
+        buildSafeguardRow('administrative', safeguard)
+      )
+    }
+
+    for (const safeguard of physicalSafeguardsItems) {
+      physicalSafeguardsList.append(buildSafeguardRow('physical', safeguard))
     }
 
     ensureMinimumListRows()
@@ -622,6 +660,18 @@ declare const bootstrap: typeof Bootstrap
 
     if (informationSourcesList.children.length === 0) {
       informationSourcesList.append(buildInformationSourceRow())
+    }
+
+    if (technicalSafeguardsList.children.length === 0) {
+      technicalSafeguardsList.append(buildSafeguardRow('technical'))
+    }
+
+    if (administrativeSafeguardsList.children.length === 0) {
+      administrativeSafeguardsList.append(buildSafeguardRow('administrative'))
+    }
+
+    if (physicalSafeguardsList.children.length === 0) {
+      physicalSafeguardsList.append(buildSafeguardRow('physical'))
     }
   }
 
@@ -676,6 +726,12 @@ declare const bootstrap: typeof Bootstrap
 
     currentDocumentId = generateDocumentId()
     piaNameInput.value = name || ''
+    const assessmentDateInput = form.elements.namedItem(
+      'assessmentDate'
+    ) as HTMLInputElement
+    if (assessmentDateInput) {
+      assessmentDateInput.value = new Date().toISOString().slice(0, 10)
+    }
 
     personalInfoList.textContent = ''
     informationSourcesList.textContent = ''
@@ -740,6 +796,10 @@ declare const bootstrap: typeof Bootstrap
 
   const buildMarkdownExport = () => {
     const data = getFormData()
+    const getMarkdownListLines = (items) =>
+      (items || []).length > 0
+        ? items.map((item) => `- ${item}`).join('\n')
+        : '- None listed'
 
     const personalInfoLines =
       (data.personalInfoItems || []).length > 0
@@ -760,6 +820,16 @@ declare const bootstrap: typeof Bootstrap
       (data.informationSourcesItems || []).length > 0
         ? data.informationSourcesItems.map((source) => `- ${source}`).join('\n')
         : '- None listed'
+
+    const technicalSafeguardLines = getMarkdownListLines(
+      data.technicalSafeguardsItems || []
+    )
+    const administrativeSafeguardLines = getMarkdownListLines(
+      data.administrativeSafeguardsItems || []
+    )
+    const physicalSafeguardLines = getMarkdownListLines(
+      data.physicalSafeguardsItems || []
+    )
 
     return [
       `# ${getCurrentDocumentName()}`,
@@ -791,13 +861,13 @@ declare const bootstrap: typeof Bootstrap
       data.retentionDisposal || '',
       '',
       '## Technical Safeguards',
-      data.technicalSafeguards || '',
+      technicalSafeguardLines,
       '',
       '## Administrative Safeguards',
-      data.administrativeSafeguards || '',
+      administrativeSafeguardLines,
       '',
       '## Physical Safeguards',
-      data.physicalSafeguards || '',
+      physicalSafeguardLines,
       '',
       '## Roles with Access to Personal Information',
       accessRoleLines,
@@ -879,25 +949,50 @@ declare const bootstrap: typeof Bootstrap
     }
     container.append(sourceList)
 
-    // Step 2: Risk & Controls (text sections)
+    // Step 2: Risk & Controls
     const riskSections: Array<[string, string]> = [
-      ['Collection, Use, and Disclosure Controls', 'collectionUseDisclosure'],
-      ['Retention and Disposal Strategy', 'retentionDisposal'],
-      ['Technical Safeguards', 'technicalSafeguards'],
-      ['Administrative Safeguards', 'administrativeSafeguards'],
-      ['Physical Safeguards', 'physicalSafeguards']
+      ['Collection, Use, and Disclosure Controls', data.collectionUseDisclosure],
+      ['Retention and Disposal Strategy', data.retentionDisposal]
     ]
 
-    for (const [label, fieldId] of riskSections) {
+    for (const [label, source] of riskSections) {
       const heading = document.createElement('h2')
       heading.textContent = label
       container.append(heading)
 
       const preview = document.createElement('div')
-      const source =
-        (form.elements.namedItem(fieldId) as HTMLTextAreaElement)?.value || ''
       renderMarkdownInto(source, preview)
       container.append(preview)
+    }
+
+    const safeguardSections: Array<[string, string[]]> = [
+      ['Technical Safeguards', data.technicalSafeguardsItems || []],
+      ['Administrative Safeguards', data.administrativeSafeguardsItems || []],
+      ['Physical Safeguards', data.physicalSafeguardsItems || []]
+    ]
+
+    for (const [label, safeguards] of safeguardSections) {
+      const heading = document.createElement('h2')
+      heading.textContent = label
+      container.append(heading)
+
+      const safeguardsList = document.createElement('ul')
+
+      for (const safeguard of safeguards) {
+        const safeguardItem = document.createElement('li')
+        const safeguardPreview = document.createElement('div')
+        renderMarkdownInto(safeguard, safeguardPreview)
+        safeguardItem.append(safeguardPreview)
+        safeguardsList.append(safeguardItem)
+      }
+
+      if (safeguardsList.children.length === 0) {
+        const safeguardItem = document.createElement('li')
+        safeguardItem.textContent = 'None listed'
+        safeguardsList.append(safeguardItem)
+      }
+
+      container.append(safeguardsList)
     }
 
     // Step 2: Roles with Access to Personal Information
@@ -1074,7 +1169,14 @@ declare const bootstrap: typeof Bootstrap
       return
     }
 
-    setMarkdownMode(button.dataset.mdTarget, button.dataset.mdMode)
+    if (!button.dataset.mdTarget || !button.dataset.mdMode) {
+      return
+    }
+
+    setMarkdownMode(
+      button.dataset.mdTarget,
+      button.dataset.mdMode as 'edit' | 'preview'
+    )
   })
 
   for (const stepButton of stepTabButtons) {
@@ -1084,8 +1186,19 @@ declare const bootstrap: typeof Bootstrap
     })
   }
 
-  addPersonalInfoButton.addEventListener('click', () => {
-    personalInfoList.append(buildPersonalInfoRow())
+  addPersonalInfoButton.addEventListener('click', clearStatus)
+
+  document.addEventListener('click', (event) => {
+    const personalInfoMenuButton = (event.target as HTMLElement)?.closest(
+      '[data-personal-info-value]'
+    ) as HTMLButtonElement
+
+    if (!personalInfoMenuButton) {
+      return
+    }
+
+    const name = personalInfoMenuButton.dataset.personalInfoValue || ''
+    personalInfoList.append(buildPersonalInfoRow({ name }))
     clearStatus()
   })
 
@@ -1098,6 +1211,41 @@ declare const bootstrap: typeof Bootstrap
     accessRolesList.append(buildAccessRoleRow())
     clearStatus()
   })
+
+  for (const {
+    menu,
+    list,
+    type
+  } of [
+    {
+      menu: addTechnicalSafeguardMenu,
+      list: technicalSafeguardsList,
+      type: 'technical'
+    },
+    {
+      menu: addAdministrativeSafeguardMenu,
+      list: administrativeSafeguardsList,
+      type: 'administrative'
+    },
+    {
+      menu: addPhysicalSafeguardMenu,
+      list: physicalSafeguardsList,
+      type: 'physical'
+    }
+  ]) {
+    menu.addEventListener('click', (event) => {
+      const button = (event.target as HTMLElement)?.closest(
+        '[data-safeguard-value]'
+      ) as HTMLButtonElement
+
+      if (!button) {
+        return
+      }
+
+      list.append(buildSafeguardRow(type, button.dataset.safeguardValue || ''))
+      clearStatus()
+    })
+  }
 
   piaNameInput.addEventListener('input', updateHeaderTitle)
 

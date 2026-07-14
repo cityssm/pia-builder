@@ -7,6 +7,10 @@ body {
   background-color: #f8f9fa;
 }
 
+.form-label {
+  font-weight: 700;
+}
+
 .step-indicator {
   list-style: none;
   padding: 0;
@@ -76,6 +80,14 @@ body {
   border-radius: 0.5rem;
   padding: 0.75rem;
   background: #fff;
+}
+
+.dynamic-list-item .form-label {
+  font-weight: 600;
+}
+
+.dynamic-list-item .markdown-preview {
+  min-height: 80px;
 }
 
 .dynamic-list-controls {

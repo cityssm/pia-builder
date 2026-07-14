@@ -31,18 +31,22 @@
     const informationSourcesList = document.querySelector('#informationSourcesList');
     const addAccessRoleButton = document.querySelector('#addAccessRoleButton');
     const accessRolesList = document.querySelector('#accessRolesList');
+    const addTechnicalSafeguardMenu = document.querySelector('#addTechnicalSafeguardMenu');
+    const technicalSafeguardsList = document.querySelector('#technicalSafeguardsList');
+    const addAdministrativeSafeguardMenu = document.querySelector('#addAdministrativeSafeguardMenu');
+    const administrativeSafeguardsList = document.querySelector('#administrativeSafeguardsList');
+    const addPhysicalSafeguardMenu = document.querySelector('#addPhysicalSafeguardMenu');
+    const physicalSafeguardsList = document.querySelector('#physicalSafeguardsList');
     const markdownFieldIds = [
         'initiativeSummary',
         'legalAuthority',
         'collectionUseDisclosure',
-        'retentionDisposal',
-        'technicalSafeguards',
-        'administrativeSafeguards',
-        'physicalSafeguards'
+        'retentionDisposal'
     ];
     let currentStep = 0;
     let currentDocumentId = '';
     let statusToastTimeoutId;
+    let dynamicFieldIndex = 0;
     const statusToastInstance = statusToastElement
         ? new bootstrap.Toast(statusToastElement, { autohide: false })
         : null;
@@ -129,34 +133,14 @@
         const name = (piaNameInput.value || '').trim();
         activePiaTitle.textContent = name || 'Untitled PIA';
     };
-    const appendInlineMarkdown = (text, container) => {
-        const pattern = /(\*\*[^*]+\*\*|\*[^*]+\*)/g;
-        let lastIndex = 0;
-        for (const match of text.matchAll(pattern)) {
-            const matchText = match[0];
-            const index = match.index || 0;
-            if (index > lastIndex) {
-                container.append(document.createTextNode(text.slice(lastIndex, index)));
-            }
-            if (matchText.startsWith('**')) {
-                const strong = document.createElement('strong');
-                strong.textContent = matchText.slice(2, -2);
-                container.append(strong);
-            }
-            else {
-                const emphasis = document.createElement('em');
-                emphasis.textContent = matchText.slice(1, -1);
-                container.append(emphasis);
-            }
-            lastIndex = index + matchText.length;
-        }
-        if (lastIndex < text.length) {
-            container.append(document.createTextNode(text.slice(lastIndex)));
-        }
+    const generateDynamicFieldId = (prefix) => {
+        dynamicFieldIndex += 1;
+        return `${prefix}-${dynamicFieldIndex}`;
     };
     const renderMarkdownInto = (source, container, placeholder = null) => {
-        container.textContent = '';
-        if ((source || '').trim() === '') {
+        const trimmedSource = (source || '').trim();
+        if (trimmedSource === '') {
+            container.textContent = '';
             if (placeholder) {
                 const paragraph = document.createElement('p');
                 paragraph.textContent = placeholder;
@@ -164,41 +148,11 @@
             }
             return;
         }
-        const lines = source.split('\n');
-        let listElement = null;
-        const flushList = () => {
-            if (listElement) {
-                container.append(listElement);
-                listElement = null;
-            }
-        };
-        for (const rawLine of lines) {
-            const line = rawLine.trim();
-            if (line.startsWith('- ')) {
-                if (!listElement) {
-                    listElement = document.createElement('ul');
-                }
-                const listItem = document.createElement('li');
-                appendInlineMarkdown(line.slice(2), listItem);
-                listElement.append(listItem);
-                continue;
-            }
-            flushList();
-            if (line === '') {
-                continue;
-            }
-            const headingMatch = line.match(/^(#{1,3})\s+(.+)$/);
-            if (headingMatch) {
-                const heading = document.createElement(`h${headingMatch[1].length}`);
-                appendInlineMarkdown(headingMatch[2], heading);
-                container.append(heading);
-                continue;
-            }
-            const paragraph = document.createElement('p');
-            appendInlineMarkdown(line, paragraph);
-            container.append(paragraph);
-        }
-        flushList();
+        const escapedSource = trimmedSource
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;');
+        container.innerHTML = marked.parse(escapedSource);
     };
     const updateMarkdownPreview = (fieldId) => {
         const sourceTextarea = form.elements.namedItem(fieldId);
@@ -275,17 +229,23 @@
     const buildPersonalInfoRow = (item = {}) => {
         const row = document.createElement('div');
         row.className = 'dynamic-list-item';
+        const nameFieldId = generateDynamicFieldId('personal-info-name');
+        const useFieldId = generateDynamicFieldId('personal-info-use');
         const infoLabel = document.createElement('label');
         infoLabel.className = 'form-label';
+        infoLabel.htmlFor = nameFieldId;
         infoLabel.textContent = 'Personal Information Element';
         const infoInput = document.createElement('input');
+        infoInput.id = nameFieldId;
         infoInput.className = 'form-control mb-2 personal-info-name';
         infoInput.value = item.name || '';
         infoInput.placeholder = 'e.g., Home address, email, employee ID';
         const useLabel = document.createElement('label');
         useLabel.className = 'form-label';
+        useLabel.htmlFor = useFieldId;
         useLabel.textContent = 'Intended Use or Disclosure';
         const useInput = document.createElement('textarea');
+        useInput.id = useFieldId;
         useInput.className = 'form-control personal-info-use';
         useInput.rows = 2;
         useInput.placeholder = 'How this item will be used and/or disclosed';
@@ -297,10 +257,13 @@
     const buildInformationSourceRow = (source = '') => {
         const row = document.createElement('div');
         row.className = 'dynamic-list-item';
+        const sourceFieldId = generateDynamicFieldId('information-source');
         const sourceLabel = document.createElement('label');
         sourceLabel.className = 'form-label';
+        sourceLabel.htmlFor = sourceFieldId;
         sourceLabel.textContent = 'Source';
         const sourceInput = document.createElement('input');
+        sourceInput.id = sourceFieldId;
         sourceInput.className = 'form-control information-source';
         sourceInput.placeholder =
             'e.g., Data subject, external partner, another institution';
@@ -312,12 +275,41 @@
     const buildAccessRoleRow = (title = '') => {
         const row = document.createElement('div');
         row.className = 'dynamic-list-item';
+        const accessRoleFieldId = generateDynamicFieldId('access-role-title');
+        const label = document.createElement('label');
+        label.className = 'form-label';
+        label.htmlFor = accessRoleFieldId;
+        label.textContent = 'Position Title';
         const input = document.createElement('input');
+        input.id = accessRoleFieldId;
         input.className = 'form-control access-role-title';
         input.placeholder = 'Position title with access to personal information';
         input.value = title;
         const controls = buildListControls(row, 'Remove');
-        row.append(input, controls);
+        row.append(label, input, controls);
+        return row;
+    };
+    const buildSafeguardRow = (type, value = '') => {
+        const row = document.createElement('div');
+        row.className = 'dynamic-list-item';
+        const textAreaFieldId = generateDynamicFieldId(`${type}-safeguard`);
+        const label = document.createElement('label');
+        label.className = 'form-label';
+        label.htmlFor = textAreaFieldId;
+        label.textContent = 'Safeguard';
+        const input = document.createElement('textarea');
+        input.id = textAreaFieldId;
+        input.className = `form-control safeguard-item ${type}-safeguard-item`;
+        input.rows = 3;
+        input.placeholder = 'Describe this safeguard. Markdown formatting is supported.';
+        input.value = value;
+        const preview = document.createElement('div');
+        preview.className = 'markdown-preview p-3 border rounded mt-2';
+        const updatePreview = () => renderMarkdownInto(input.value || '', preview, '');
+        input.addEventListener('input', updatePreview);
+        updatePreview();
+        const controls = buildListControls(row, 'Remove Safeguard');
+        row.append(label, input, preview, controls);
         return row;
     };
     const getPersonalInfoItems = () => [...personalInfoList.querySelectorAll('.dynamic-list-item')]
@@ -332,18 +324,27 @@
     const getInformationSources = () => [...informationSourcesList.querySelectorAll('.information-source')]
         .map((input) => (input.value || '').trim())
         .filter((source) => source !== '');
+    const getSafeguards = (list, itemSelector) => [...list.querySelectorAll(itemSelector)]
+        .map((input) => (input.value || '').trim())
+        .filter((item) => item !== '');
     const getFormData = () => {
         const raw = Object.fromEntries(new FormData(form).entries());
         raw.personalInfoItems = getPersonalInfoItems();
         raw.informationSourcesItems = getInformationSources();
         raw.accessRoles = getAccessRoles();
+        raw.technicalSafeguardsItems = getSafeguards(technicalSafeguardsList, '.technical-safeguard-item');
+        raw.administrativeSafeguardsItems = getSafeguards(administrativeSafeguardsList, '.administrative-safeguard-item');
+        raw.physicalSafeguardsItems = getSafeguards(physicalSafeguardsList, '.physical-safeguard-item');
         return raw;
     };
     const setFormData = (data) => {
         for (const [key, value] of Object.entries(data || {})) {
             if (key === 'personalInfoItems' ||
                 key === 'accessRoles' ||
-                key === 'informationSourcesItems') {
+                key === 'informationSourcesItems' ||
+                key === 'technicalSafeguardsItems' ||
+                key === 'administrativeSafeguardsItems' ||
+                key === 'physicalSafeguardsItems') {
                 continue;
             }
             const field = form.elements.namedItem(key);
@@ -354,11 +355,31 @@
         personalInfoList.textContent = '';
         informationSourcesList.textContent = '';
         accessRolesList.textContent = '';
+        technicalSafeguardsList.textContent = '';
+        administrativeSafeguardsList.textContent = '';
+        physicalSafeguardsList.textContent = '';
         const personalItems = Array.isArray(data?.personalInfoItems)
             ? data.personalInfoItems
             : [];
         const informationSourceItems = parseInformationSourceItems(data);
         const roleItems = Array.isArray(data?.accessRoles) ? data.accessRoles : [];
+        const technicalSafeguardsItems = Array.isArray(data?.technicalSafeguardsItems)
+            ? data.technicalSafeguardsItems
+            : (data?.technicalSafeguards || '').trim()
+                ? [data.technicalSafeguards]
+                : (data?.safeguards || '').trim()
+                    ? [data.safeguards]
+                    : [];
+        const administrativeSafeguardsItems = Array.isArray(data?.administrativeSafeguardsItems)
+            ? data.administrativeSafeguardsItems
+            : (data?.administrativeSafeguards || '').trim()
+                ? [data.administrativeSafeguards]
+                : [];
+        const physicalSafeguardsItems = Array.isArray(data?.physicalSafeguardsItems)
+            ? data.physicalSafeguardsItems
+            : (data?.physicalSafeguards || '').trim()
+                ? [data.physicalSafeguards]
+                : [];
         const applyLegacyCombinedField = (legacyFieldKey, positionFieldKey, nameFieldKey) => {
             if (!(data?.[legacyFieldKey] || '').trim()) {
                 return;
@@ -379,15 +400,6 @@
         };
         applyLegacyCombinedField('projectLead', 'projectLeadPosition', 'projectLeadName');
         applyLegacyCombinedField('reviewedBy', 'reviewedByPosition', 'reviewedByName');
-        if ((data?.safeguards || '').trim() &&
-            !data?.technicalSafeguards &&
-            !data?.administrativeSafeguards &&
-            !data?.physicalSafeguards) {
-            const technicalField = form.elements.namedItem('technicalSafeguards');
-            if (technicalField) {
-                technicalField.value = data.safeguards;
-            }
-        }
         for (const item of personalItems) {
             personalInfoList.append(buildPersonalInfoRow(item));
         }
@@ -396,6 +408,15 @@
         }
         for (const role of roleItems) {
             accessRolesList.append(buildAccessRoleRow(role));
+        }
+        for (const safeguard of technicalSafeguardsItems) {
+            technicalSafeguardsList.append(buildSafeguardRow('technical', safeguard));
+        }
+        for (const safeguard of administrativeSafeguardsItems) {
+            administrativeSafeguardsList.append(buildSafeguardRow('administrative', safeguard));
+        }
+        for (const safeguard of physicalSafeguardsItems) {
+            physicalSafeguardsList.append(buildSafeguardRow('physical', safeguard));
         }
         ensureMinimumListRows();
         updateHeaderTitle();
@@ -410,6 +431,15 @@
         }
         if (informationSourcesList.children.length === 0) {
             informationSourcesList.append(buildInformationSourceRow());
+        }
+        if (technicalSafeguardsList.children.length === 0) {
+            technicalSafeguardsList.append(buildSafeguardRow('technical'));
+        }
+        if (administrativeSafeguardsList.children.length === 0) {
+            administrativeSafeguardsList.append(buildSafeguardRow('administrative'));
+        }
+        if (physicalSafeguardsList.children.length === 0) {
+            physicalSafeguardsList.append(buildSafeguardRow('physical'));
         }
     };
     const getCurrentDocumentName = () => {
@@ -454,6 +484,10 @@
         form.reset();
         currentDocumentId = generateDocumentId();
         piaNameInput.value = name || '';
+        const assessmentDateInput = form.elements.namedItem('assessmentDate');
+        if (assessmentDateInput) {
+            assessmentDateInput.value = new Date().toISOString().slice(0, 10);
+        }
         personalInfoList.textContent = '';
         informationSourcesList.textContent = '';
         accessRolesList.textContent = '';
@@ -504,6 +538,9 @@
     };
     const buildMarkdownExport = () => {
         const data = getFormData();
+        const getMarkdownListLines = (items) => (items || []).length > 0
+            ? items.map((item) => `- ${item}`).join('\n')
+            : '- None listed';
         const personalInfoLines = (data.personalInfoItems || []).length > 0
             ? data.personalInfoItems
                 .map((item) => `- **${item.name || 'Item'}:** ${item.useOrDisclosure || ''}`)
@@ -515,6 +552,9 @@
         const informationSourceLines = (data.informationSourcesItems || []).length > 0
             ? data.informationSourcesItems.map((source) => `- ${source}`).join('\n')
             : '- None listed';
+        const technicalSafeguardLines = getMarkdownListLines(data.technicalSafeguardsItems || []);
+        const administrativeSafeguardLines = getMarkdownListLines(data.administrativeSafeguardsItems || []);
+        const physicalSafeguardLines = getMarkdownListLines(data.physicalSafeguardsItems || []);
         return [
             `# ${getCurrentDocumentName()}`,
             '',
@@ -545,13 +585,13 @@
             data.retentionDisposal || '',
             '',
             '## Technical Safeguards',
-            data.technicalSafeguards || '',
+            technicalSafeguardLines,
             '',
             '## Administrative Safeguards',
-            data.administrativeSafeguards || '',
+            administrativeSafeguardLines,
             '',
             '## Physical Safeguards',
-            data.physicalSafeguards || '',
+            physicalSafeguardLines,
             '',
             '## Roles with Access to Personal Information',
             accessRoleLines,
@@ -620,20 +660,40 @@
         }
         container.append(sourceList);
         const riskSections = [
-            ['Collection, Use, and Disclosure Controls', 'collectionUseDisclosure'],
-            ['Retention and Disposal Strategy', 'retentionDisposal'],
-            ['Technical Safeguards', 'technicalSafeguards'],
-            ['Administrative Safeguards', 'administrativeSafeguards'],
-            ['Physical Safeguards', 'physicalSafeguards']
+            ['Collection, Use, and Disclosure Controls', data.collectionUseDisclosure],
+            ['Retention and Disposal Strategy', data.retentionDisposal]
         ];
-        for (const [label, fieldId] of riskSections) {
+        for (const [label, source] of riskSections) {
             const heading = document.createElement('h2');
             heading.textContent = label;
             container.append(heading);
             const preview = document.createElement('div');
-            const source = form.elements.namedItem(fieldId)?.value || '';
             renderMarkdownInto(source, preview);
             container.append(preview);
+        }
+        const safeguardSections = [
+            ['Technical Safeguards', data.technicalSafeguardsItems || []],
+            ['Administrative Safeguards', data.administrativeSafeguardsItems || []],
+            ['Physical Safeguards', data.physicalSafeguardsItems || []]
+        ];
+        for (const [label, safeguards] of safeguardSections) {
+            const heading = document.createElement('h2');
+            heading.textContent = label;
+            container.append(heading);
+            const safeguardsList = document.createElement('ul');
+            for (const safeguard of safeguards) {
+                const safeguardItem = document.createElement('li');
+                const safeguardPreview = document.createElement('div');
+                renderMarkdownInto(safeguard, safeguardPreview);
+                safeguardItem.append(safeguardPreview);
+                safeguardsList.append(safeguardItem);
+            }
+            if (safeguardsList.children.length === 0) {
+                const safeguardItem = document.createElement('li');
+                safeguardItem.textContent = 'None listed';
+                safeguardsList.append(safeguardItem);
+            }
+            container.append(safeguardsList);
         }
         const accessHeading = document.createElement('h2');
         accessHeading.textContent = 'Roles with Access to Personal Information';
@@ -771,6 +831,9 @@
         if (!button) {
             return;
         }
+        if (!button.dataset.mdTarget || !button.dataset.mdMode) {
+            return;
+        }
         setMarkdownMode(button.dataset.mdTarget, button.dataset.mdMode);
     });
     for (const stepButton of stepTabButtons) {
@@ -779,8 +842,14 @@
             setStep(step);
         });
     }
-    addPersonalInfoButton.addEventListener('click', () => {
-        personalInfoList.append(buildPersonalInfoRow());
+    addPersonalInfoButton.addEventListener('click', clearStatus);
+    document.addEventListener('click', (event) => {
+        const personalInfoMenuButton = event.target?.closest('[data-personal-info-value]');
+        if (!personalInfoMenuButton) {
+            return;
+        }
+        const name = personalInfoMenuButton.dataset.personalInfoValue || '';
+        personalInfoList.append(buildPersonalInfoRow({ name }));
         clearStatus();
     });
     addInformationSourceButton.addEventListener('click', () => {
@@ -791,6 +860,32 @@
         accessRolesList.append(buildAccessRoleRow());
         clearStatus();
     });
+    for (const { menu, list, type } of [
+        {
+            menu: addTechnicalSafeguardMenu,
+            list: technicalSafeguardsList,
+            type: 'technical'
+        },
+        {
+            menu: addAdministrativeSafeguardMenu,
+            list: administrativeSafeguardsList,
+            type: 'administrative'
+        },
+        {
+            menu: addPhysicalSafeguardMenu,
+            list: physicalSafeguardsList,
+            type: 'physical'
+        }
+    ]) {
+        menu.addEventListener('click', (event) => {
+            const button = event.target?.closest('[data-safeguard-value]');
+            if (!button) {
+                return;
+            }
+            list.append(buildSafeguardRow(type, button.dataset.safeguardValue || ''));
+            clearStatus();
+        });
+    }
     piaNameInput.addEventListener('input', updateHeaderTitle);
     nextStepButton.addEventListener('click', () => {
         if (currentStep < stepCards.length - 1) {
