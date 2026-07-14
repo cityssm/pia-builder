@@ -17,7 +17,9 @@ declare const marked: typeof Marked
     ...document.querySelectorAll('#stepIndicator li')
   ] as HTMLLIElement[]
 
-  const stepTabButtons = [...document.querySelectorAll('.step-tab')]
+  const stepTabButtons = [
+    ...document.querySelectorAll('.step-tab')
+  ] as HTMLButtonElement[]
   const previousStepButton = document.querySelector(
     '#prevStepButton'
   ) as HTMLButtonElement
@@ -286,7 +288,7 @@ declare const marked: typeof Marked
       return
     }
 
-    const renderedHtml = marked.parse(trimmedSource)
+    const renderedHtml = marked.parse(trimmedSource) as string
     const sanitizedHtmlTemplate = document.createElement('template')
     sanitizedHtmlTemplate.innerHTML = renderedHtml
 

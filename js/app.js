@@ -7,7 +7,9 @@
     const stepIndicatorItems = [
         ...document.querySelectorAll('#stepIndicator li')
     ];
-    const stepTabButtons = [...document.querySelectorAll('.step-tab')];
+    const stepTabButtons = [
+        ...document.querySelectorAll('.step-tab')
+    ];
     const previousStepButton = document.querySelector('#prevStepButton');
     const nextStepButton = document.querySelector('#nextStepButton');
     const saveButton = document.querySelector('#saveButton');
