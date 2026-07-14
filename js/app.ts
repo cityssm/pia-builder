@@ -431,7 +431,7 @@ declare const marked: typeof Marked
     warningIcon.classList.toggle('d-none', !isEmpty)
   }
 
-  const collapseAndTrimWhitespace = (labelText: string) =>
+  const normalizeWhitespace = (labelText: string) =>
     (labelText || '').replaceAll(/\s+/g, ' ').trim()
 
   const getWarnableFields = () =>
@@ -712,13 +712,13 @@ declare const marked: typeof Marked
     ]
   ])
 
-  const getFieldSummaryLabel = (
+  const getFieldWarningDescription = (
     field: HTMLInputElement | HTMLTextAreaElement
   ) => {
     const matchingLabel = field.id
       ? form.querySelector(`label[for="${field.id}"]`)
       : null
-    const fieldLabel = collapseAndTrimWhitespace(matchingLabel?.textContent || '')
+    const fieldLabel = normalizeWhitespace(matchingLabel?.textContent || '')
 
     for (const [listId, config] of dynamicListSummaryConfigById.entries()) {
       const listElement = document.getElementById(listId)
@@ -738,22 +738,22 @@ declare const marked: typeof Marked
 
     return (
       fieldLabel ||
-      collapseAndTrimWhitespace(field.name) ||
-      collapseAndTrimWhitespace(field.id) ||
+      normalizeWhitespace(field.name) ||
+      normalizeWhitespace(field.id) ||
       'Unnamed field'
     )
   }
 
   const getEmptyListSummaries = () => {
-    const emptyListMessages: string[] = []
+    const emptyListSummaries: string[] = []
 
     for (const config of dynamicListSummaryConfigById.values()) {
       if (config.getCount() === 0) {
-        emptyListMessages.push(`List has no items: ${config.label}`)
+        emptyListSummaries.push(`List has no items: ${config.label}`)
       }
     }
 
-    return emptyListMessages
+    return emptyListSummaries
   }
 
   const refreshCompletionWarnings = () => {
@@ -766,7 +766,7 @@ declare const marked: typeof Marked
       setFieldWarningState(field, isEmpty)
 
       if (isEmpty) {
-        emptyFieldSummaries.push(getFieldSummaryLabel(field))
+        emptyFieldSummaries.push(getFieldWarningDescription(field))
       }
     }
 
@@ -777,14 +777,15 @@ declare const marked: typeof Marked
     }
 
     const summaryItems = [...emptyFieldSummaries, ...emptyListSummaries]
-    emptyFieldsSummaryList.textContent = ''
+    const listItemsFragment = document.createDocumentFragment()
 
     for (const summaryItem of summaryItems) {
       const listItem = document.createElement('li')
       listItem.textContent = summaryItem
-      emptyFieldsSummaryList.append(listItem)
+      listItemsFragment.append(listItem)
     }
 
+    emptyFieldsSummaryList.replaceChildren(listItemsFragment)
     emptyFieldsSummary.classList.toggle('d-none', summaryItems.length === 0)
   }
 
