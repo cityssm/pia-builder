@@ -151,7 +151,28 @@
         const escapedSource = trimmedSource
             .replaceAll('<', '&lt;')
             .replaceAll('>', '&gt;');
-        container.innerHTML = marked.parse(escapedSource);
+        const renderedHtml = marked.parse(escapedSource);
+        const sanitizedHtmlTemplate = document.createElement('template');
+        sanitizedHtmlTemplate.innerHTML = renderedHtml;
+        for (const blockedElement of sanitizedHtmlTemplate.content.querySelectorAll('script, iframe, object, embed, link, meta, style, base')) {
+            blockedElement.remove();
+        }
+        for (const element of sanitizedHtmlTemplate.content.querySelectorAll('*')) {
+            for (const attribute of [...element.attributes]) {
+                const attributeName = attribute.name.toLowerCase();
+                const attributeValue = (attribute.value || '').trim().toLowerCase();
+                if (attributeName.startsWith('on')) {
+                    element.removeAttribute(attribute.name);
+                    continue;
+                }
+                if (['href', 'src', 'xlink:href', 'formaction'].includes(attributeName) &&
+                    (attributeValue.startsWith('javascript:') ||
+                        attributeValue.startsWith('data:text/html'))) {
+                    element.removeAttribute(attribute.name);
+                }
+            }
+        }
+        container.innerHTML = sanitizedHtmlTemplate.innerHTML;
     };
     const updateMarkdownPreview = (fieldId) => {
         const sourceTextarea = form.elements.namedItem(fieldId);
