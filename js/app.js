@@ -37,6 +37,8 @@
     const administrativeSafeguardsList = document.querySelector('#administrativeSafeguardsList');
     const addPhysicalSafeguardMenu = document.querySelector('#addPhysicalSafeguardMenu');
     const physicalSafeguardsList = document.querySelector('#physicalSafeguardsList');
+    const emptyFieldsSummary = document.querySelector('#emptyFieldsSummary');
+    const emptyFieldsSummaryList = document.querySelector('#emptyFieldsSummaryList');
     const markdownFieldIds = [
         'initiativeSummary',
         'legalAuthority',
@@ -186,7 +188,7 @@
         container.innerHTML = sanitizedHtmlTemplate.innerHTML;
     };
     const updateMarkdownPreview = (fieldId) => {
-        const sourceTextarea = form.elements.namedItem(fieldId);
+        const sourceTextarea = form.elements.namedItem(fieldId) || document.getElementById(fieldId);
         const preview = document.getElementById(`${fieldId}Preview`);
         if (!sourceTextarea || !preview) {
             return;
@@ -218,6 +220,50 @@
         textarea.classList.remove('d-none');
         preview.classList.add('d-none');
     };
+    const buildWarningFieldWrapper = (field) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'field-warning-wrapper';
+        field.classList.add('field-warning-input');
+        const warningIcon = document.createElement('span');
+        warningIcon.className = 'field-empty-warning text-warning d-none';
+        if (field.tagName === 'TEXTAREA') {
+            warningIcon.classList.add('textarea-warning');
+        }
+        warningIcon.innerHTML =
+            '<i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i><span class="visually-hidden">This field is empty</span>';
+        wrapper.append(field, warningIcon);
+        return wrapper;
+    };
+    const ensureWarningFieldWrapper = (field) => {
+        if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement)) {
+            return;
+        }
+        if (field.parentElement?.classList.contains('field-warning-wrapper')) {
+            return;
+        }
+        const parentElement = field.parentElement;
+        if (!parentElement) {
+            return;
+        }
+        const nextSibling = field.nextSibling;
+        const wrapper = buildWarningFieldWrapper(field);
+        if (nextSibling) {
+            parentElement.insertBefore(wrapper, nextSibling);
+            return;
+        }
+        parentElement.append(wrapper);
+    };
+    const getFieldEmptyWarningIcon = (field) => field.parentElement?.querySelector('.field-empty-warning');
+    const setFieldWarningState = (field, isEmpty) => {
+        const warningIcon = getFieldEmptyWarningIcon(field);
+        if (!warningIcon) {
+            return;
+        }
+        warningIcon.classList.toggle('d-none', !isEmpty);
+    };
+    const normalizeLabelText = (labelText) => (labelText || '').replaceAll(/\s+/g, ' ').trim();
+    const getWarnableFields = () => [...form.querySelectorAll('input.form-control, textarea.form-control')]
+        .filter((field) => !field.disabled && field.type !== 'hidden');
     const buildListControls = (row, removeLabel) => {
         const controls = document.createElement('div');
         controls.className = 'dynamic-list-controls justify-content-end';
@@ -232,6 +278,7 @@
             if (previousRow) {
                 previousRow.before(row);
             }
+            refreshCompletionWarnings();
             clearStatus();
         });
         const moveDownButton = document.createElement('button');
@@ -244,6 +291,7 @@
             if (nextRow) {
                 nextRow.after(row);
             }
+            refreshCompletionWarnings();
             clearStatus();
         });
         const removeButton = document.createElement('button');
@@ -252,6 +300,7 @@
         removeButton.innerHTML = `<i class="fa-solid fa-trash" aria-hidden="true"></i> <span class="visually-hidden">${removeLabel}</span>`;
         removeButton.addEventListener('click', () => {
             row.remove();
+            refreshCompletionWarnings();
             clearStatus();
         });
         controls.append(moveUpButton, moveDownButton, removeButton);
@@ -281,8 +330,10 @@
         useInput.rows = 2;
         useInput.placeholder = 'How this item will be used and/or disclosed';
         useInput.value = item.useOrDisclosure || '';
+        const infoFieldWrapper = buildWarningFieldWrapper(infoInput);
+        const useFieldWrapper = buildWarningFieldWrapper(useInput);
         const controls = buildListControls(row, 'Remove Item');
-        row.append(infoLabel, infoInput, useLabel, useInput, controls);
+        row.append(infoLabel, infoFieldWrapper, useLabel, useFieldWrapper, controls);
         return row;
     };
     const buildInformationSourceRow = (source = '') => {
@@ -299,8 +350,9 @@
         sourceInput.placeholder =
             'e.g., Data subject, external partner, another institution';
         sourceInput.value = source;
+        const sourceFieldWrapper = buildWarningFieldWrapper(sourceInput);
         const controls = buildListControls(row, 'Remove Source');
-        row.append(sourceLabel, sourceInput, controls);
+        row.append(sourceLabel, sourceFieldWrapper, controls);
         return row;
     };
     const buildAccessRoleRow = (title = '') => {
@@ -316,32 +368,53 @@
         input.className = 'form-control access-role-title';
         input.placeholder = 'Position title with access to personal information';
         input.value = title;
+        const inputWrapper = buildWarningFieldWrapper(input);
         const controls = buildListControls(row, 'Remove');
-        row.append(label, input, controls);
+        row.append(label, inputWrapper, controls);
         return row;
     };
     const buildSafeguardRow = (type, value = '') => {
         const row = document.createElement('div');
-        row.className = 'dynamic-list-item';
+        row.className = 'dynamic-list-item markdown-field';
         const textAreaFieldId = generateDynamicFieldId(`${type}-safeguard`);
+        row.dataset.markdownField = textAreaFieldId;
         const label = document.createElement('label');
         label.className = 'form-label';
         label.htmlFor = textAreaFieldId;
         label.textContent = 'Safeguard';
+        const tabs = document.createElement('div');
+        tabs.className = 'markdown-tabs btn-group btn-group-sm mb-2';
+        tabs.role = 'group';
+        tabs.setAttribute('aria-label', 'Safeguard mode');
+        const editButton = document.createElement('button');
+        editButton.type = 'button';
+        editButton.className = 'btn btn-outline-secondary active';
+        editButton.dataset.mdTarget = textAreaFieldId;
+        editButton.dataset.mdMode = 'edit';
+        editButton.textContent = 'Edit';
+        const previewButton = document.createElement('button');
+        previewButton.type = 'button';
+        previewButton.className = 'btn btn-outline-secondary';
+        previewButton.dataset.mdTarget = textAreaFieldId;
+        previewButton.dataset.mdMode = 'preview';
+        previewButton.textContent = 'Preview';
+        tabs.append(editButton, previewButton);
         const input = document.createElement('textarea');
         input.id = textAreaFieldId;
-        input.className = `form-control safeguard-item ${type}-safeguard-item`;
+        input.className = `form-control markdown-input safeguard-item ${type}-safeguard-item`;
         input.rows = 3;
         input.placeholder =
             'Describe this safeguard. Markdown formatting is supported.';
         input.value = value;
         const preview = document.createElement('div');
-        preview.className = 'markdown-preview p-3 border rounded mt-2';
+        preview.id = `${textAreaFieldId}Preview`;
+        preview.className = 'markdown-preview p-3 border rounded d-none';
         const updatePreview = () => renderMarkdownInto(input.value || '', preview, '');
         input.addEventListener('input', updatePreview);
         updatePreview();
+        const inputWrapper = buildWarningFieldWrapper(input);
         const controls = buildListControls(row, 'Remove Safeguard');
-        row.append(label, input, preview, controls);
+        row.append(label, tabs, inputWrapper, preview, controls);
         return row;
     };
     const getPersonalInfoItems = () => [...personalInfoList.querySelectorAll('.dynamic-list-item')]
@@ -359,6 +432,80 @@
     const getSafeguards = (list, itemSelector) => [...list.querySelectorAll(itemSelector)]
         .map((input) => (input.value || '').trim())
         .filter((item) => item !== '');
+    const dynamicListLabelById = new Map([
+        ['personalInfoList', 'Personal Information Collected'],
+        [
+            'informationSourcesList',
+            'Sources of Personal Information to be Collected'
+        ],
+        ['technicalSafeguardsList', 'Technical Safeguards'],
+        ['administrativeSafeguardsList', 'Administrative Safeguards'],
+        ['physicalSafeguardsList', 'Physical Safeguards'],
+        ['accessRolesList', 'Roles with Access to Personal Information']
+    ]);
+    const getFieldSummaryLabel = (field) => {
+        const matchingLabel = field.id
+            ? form.querySelector(`label[for="${field.id}"]`)
+            : null;
+        const fieldLabel = normalizeLabelText(matchingLabel?.textContent);
+        for (const [listId, listLabel] of dynamicListLabelById.entries()) {
+            const listElement = document.getElementById(listId);
+            if (!listElement || !listElement.contains(field)) {
+                continue;
+            }
+            const row = field.closest('.dynamic-list-item');
+            const rowIndex = row
+                ? [...listElement.querySelectorAll('.dynamic-list-item')].indexOf(row) + 1
+                : 0;
+            return `${listLabel} (item ${rowIndex || 1}): ${fieldLabel || 'Field'}`;
+        }
+        return fieldLabel || normalizeLabelText(field.name) || field.id || 'Unnamed field';
+    };
+    const getEmptyListSummaries = () => {
+        const emptyListMessages = [];
+        if (getPersonalInfoItems().length === 0) {
+            emptyListMessages.push('List has no items: Personal Information Collected');
+        }
+        if (getInformationSources().length === 0) {
+            emptyListMessages.push('List has no items: Sources of Personal Information to be Collected');
+        }
+        if (getSafeguards(technicalSafeguardsList, '.technical-safeguard-item').length === 0) {
+            emptyListMessages.push('List has no items: Technical Safeguards');
+        }
+        if (getSafeguards(administrativeSafeguardsList, '.administrative-safeguard-item').length === 0) {
+            emptyListMessages.push('List has no items: Administrative Safeguards');
+        }
+        if (getSafeguards(physicalSafeguardsList, '.physical-safeguard-item').length === 0) {
+            emptyListMessages.push('List has no items: Physical Safeguards');
+        }
+        if (getAccessRoles().length === 0) {
+            emptyListMessages.push('List has no items: Roles with Access to Personal Information');
+        }
+        return emptyListMessages;
+    };
+    const refreshCompletionWarnings = () => {
+        const emptyFieldSummaries = [];
+        for (const field of getWarnableFields()) {
+            ensureWarningFieldWrapper(field);
+            const isEmpty = (field.value || '').trim() === '';
+            setFieldWarningState(field, isEmpty);
+            if (isEmpty) {
+                emptyFieldSummaries.push(getFieldSummaryLabel(field));
+            }
+        }
+        const emptyListSummaries = getEmptyListSummaries();
+        if (!emptyFieldsSummary || !emptyFieldsSummaryList) {
+            return;
+        }
+        const summaryItems = [...emptyFieldSummaries, ...emptyListSummaries];
+        emptyFieldsSummaryList.textContent = '';
+        for (const summaryItem of summaryItems) {
+            const listItem = document.createElement('li');
+            listItem.textContent = summaryItem;
+            emptyFieldsSummaryList.append(listItem);
+        }
+        emptyFieldsSummary.classList.toggle('d-none', summaryItems.length === 0);
+    };
     const getFormData = () => {
         const raw = Object.fromEntries(new FormData(form).entries());
         raw.personalInfoItems = getPersonalInfoItems();
@@ -451,6 +598,7 @@
         ensureMinimumListRows();
         updateHeaderTitle();
         updateAllMarkdownPreviews();
+        refreshCompletionWarnings();
     };
     const ensureMinimumListRows = () => {
         if (personalInfoList.children.length === 0) {
@@ -534,6 +682,7 @@
         for (const fieldId of markdownFieldIds) {
             setMarkdownMode(fieldId, 'edit');
         }
+        refreshCompletionWarnings();
     };
     const loadDocument = (id) => {
         const documentRecord = loadDocuments().find((doc) => doc.id === id);
@@ -830,6 +979,9 @@
         for (const [index, step] of stepIndicatorItems.entries()) {
             step.classList.toggle('active', index === currentStep);
         }
+        if (currentStep === stepCards.length - 1) {
+            refreshCompletionWarnings();
+        }
         previousStepButton.disabled = currentStep === 0;
         nextStepButton.innerHTML =
             currentStep === stepCards.length - 1
@@ -893,14 +1045,17 @@
         }
         const name = personalInfoMenuButton.dataset.personalInfoValue || '';
         personalInfoList.append(buildPersonalInfoRow({ name }));
+        refreshCompletionWarnings();
         clearStatus();
     });
     addInformationSourceButton.addEventListener('click', () => {
         informationSourcesList.append(buildInformationSourceRow());
+        refreshCompletionWarnings();
         clearStatus();
     });
     addAccessRoleButton.addEventListener('click', () => {
         accessRolesList.append(buildAccessRoleRow());
+        refreshCompletionWarnings();
         clearStatus();
     });
     for (const { menu, list, type } of [
@@ -926,6 +1081,7 @@
                 return;
             }
             list.append(buildSafeguardRow(type, button.dataset.safeguardValue || ''));
+            refreshCompletionWarnings();
             clearStatus();
         });
     }
@@ -1004,6 +1160,7 @@
         updateAllMarkdownPreviews();
     });
     form.addEventListener('input', clearStatus);
+    form.addEventListener('input', refreshCompletionWarnings);
     const existingDocuments = getDocumentsSortedByUpdatedAt();
     if (existingDocuments.length > 0) {
         const [latest] = existingDocuments;
@@ -1021,5 +1178,6 @@
         setMarkdownMode(fieldId, 'edit');
     }
     updateAllMarkdownPreviews();
+    refreshCompletionWarnings();
     setStep(0);
 })();
