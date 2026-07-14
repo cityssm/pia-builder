@@ -431,7 +431,7 @@ declare const marked: typeof Marked
     warningIcon.classList.toggle('d-none', !isEmpty)
   }
 
-  const normalizeLabelText = (labelText: string) =>
+  const normalizeWhitespace = (labelText: string) =>
     (labelText || '').replaceAll(/\s+/g, ' ').trim()
 
   const getWarnableFields = () =>
@@ -659,16 +659,57 @@ declare const marked: typeof Marked
       .map((input) => (input.value || '').trim())
       .filter((item) => item !== '')
 
-  const dynamicListLabelById = new Map([
-    ['personalInfoList', 'Personal Information Collected'],
+  const dynamicListSummaryConfigById = new Map([
+    [
+      'personalInfoList',
+      {
+        label: 'Personal Information Collected',
+        getCount: () => getPersonalInfoItems().length
+      }
+    ],
     [
       'informationSourcesList',
-      'Sources of Personal Information to be Collected'
+      {
+        label: 'Sources of Personal Information to be Collected',
+        getCount: () => getInformationSources().length
+      }
     ],
-    ['technicalSafeguardsList', 'Technical Safeguards'],
-    ['administrativeSafeguardsList', 'Administrative Safeguards'],
-    ['physicalSafeguardsList', 'Physical Safeguards'],
-    ['accessRolesList', 'Roles with Access to Personal Information']
+    [
+      'technicalSafeguardsList',
+      {
+        label: 'Technical Safeguards',
+        getCount: () =>
+          getSafeguards(technicalSafeguardsList, '.technical-safeguard-item')
+            .length
+      }
+    ],
+    [
+      'administrativeSafeguardsList',
+      {
+        label: 'Administrative Safeguards',
+        getCount: () =>
+          getSafeguards(
+            administrativeSafeguardsList,
+            '.administrative-safeguard-item'
+          ).length
+      }
+    ],
+    [
+      'physicalSafeguardsList',
+      {
+        label: 'Physical Safeguards',
+        getCount: () =>
+          getSafeguards(physicalSafeguardsList, '.physical-safeguard-item')
+            .length
+      }
+    ],
+    [
+      'accessRolesList',
+      {
+        label: 'Roles with Access to Personal Information',
+        getCount: () => getAccessRoles().length
+      }
+    ]
   ])
 
   const getFieldSummaryLabel = (
@@ -677,9 +718,9 @@ declare const marked: typeof Marked
     const matchingLabel = field.id
       ? form.querySelector(`label[for="${field.id}"]`)
       : null
-    const fieldLabel = normalizeLabelText(matchingLabel?.textContent || '')
+    const fieldLabel = normalizeWhitespace(matchingLabel?.textContent || '')
 
-    for (const [listId, listLabel] of dynamicListLabelById.entries()) {
+    for (const [listId, config] of dynamicListSummaryConfigById.entries()) {
       const listElement = document.getElementById(listId)
 
       if (!listElement || !listElement.contains(field)) {
@@ -692,49 +733,21 @@ declare const marked: typeof Marked
           1
         : 0
 
-      return `${listLabel} (item ${rowIndex || 1}): ${fieldLabel || 'Field'}`
+      return `${config.label} (item ${rowIndex || 1}): ${fieldLabel || 'Field'}`
     }
 
-    return fieldLabel || normalizeLabelText(field.name) || field.id || 'Unnamed field'
+    return (
+      fieldLabel || normalizeWhitespace(field.name) || field.id || 'Unnamed field'
+    )
   }
 
   const getEmptyListSummaries = () => {
     const emptyListMessages = [] as string[]
 
-    if (getPersonalInfoItems().length === 0) {
-      emptyListMessages.push('List has no items: Personal Information Collected')
-    }
-
-    if (getInformationSources().length === 0) {
-      emptyListMessages.push(
-        'List has no items: Sources of Personal Information to be Collected'
-      )
-    }
-
-    if (
-      getSafeguards(technicalSafeguardsList, '.technical-safeguard-item')
-        .length === 0
-    ) {
-      emptyListMessages.push('List has no items: Technical Safeguards')
-    }
-
-    if (
-      getSafeguards(
-        administrativeSafeguardsList,
-        '.administrative-safeguard-item'
-      ).length === 0
-    ) {
-      emptyListMessages.push('List has no items: Administrative Safeguards')
-    }
-
-    if (getSafeguards(physicalSafeguardsList, '.physical-safeguard-item').length === 0) {
-      emptyListMessages.push('List has no items: Physical Safeguards')
-    }
-
-    if (getAccessRoles().length === 0) {
-      emptyListMessages.push(
-        'List has no items: Roles with Access to Personal Information'
-      )
+    for (const config of dynamicListSummaryConfigById.values()) {
+      if (config.getCount() === 0) {
+        emptyListMessages.push(`List has no items: ${config.label}`)
+      }
     }
 
     return emptyListMessages
