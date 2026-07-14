@@ -378,12 +378,14 @@
         row.className = 'dynamic-list-item markdown-field';
         const textAreaFieldId = generateDynamicFieldId(`${type}-safeguard`);
         row.dataset.markdownField = textAreaFieldId;
+        const fieldHeader = document.createElement('div');
+        fieldHeader.className = 'd-flex align-items-center gap-2 mb-2';
         const label = document.createElement('label');
-        label.className = 'form-label';
+        label.className = 'form-label mb-0';
         label.htmlFor = textAreaFieldId;
         label.textContent = 'Safeguard';
         const tabs = document.createElement('div');
-        tabs.className = 'markdown-tabs btn-group btn-group-sm mb-2';
+        tabs.className = 'markdown-tabs btn-group btn-group-sm';
         tabs.role = 'group';
         tabs.setAttribute('aria-label', 'Safeguard mode');
         const editButton = document.createElement('button');
@@ -414,7 +416,8 @@
         updatePreview();
         const inputWrapper = buildWarningFieldWrapper(input);
         const controls = buildListControls(row, 'Remove Safeguard');
-        row.append(label, tabs, inputWrapper, preview, controls);
+        fieldHeader.append(label, tabs);
+        row.append(fieldHeader, inputWrapper, preview, controls);
         return row;
     };
     const getPersonalInfoItems = () => [...personalInfoList.querySelectorAll('.dynamic-list-item')]

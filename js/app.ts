@@ -489,24 +489,49 @@ declare const marked: typeof Marked
 
   const buildSafeguardRow = (type: string, value = '') => {
     const row = document.createElement('div')
-    row.className = 'dynamic-list-item'
+    row.className = 'dynamic-list-item markdown-field'
     const textAreaFieldId = generateDynamicFieldId(`${type}-safeguard`)
+    row.dataset.markdownField = textAreaFieldId
 
+    const fieldHeader = document.createElement('div')
+    fieldHeader.className = 'd-flex align-items-center gap-2 mb-2'
     const label = document.createElement('label')
-    label.className = 'form-label'
+    label.className = 'form-label mb-0'
     label.htmlFor = textAreaFieldId
     label.textContent = 'Safeguard'
 
+    const tabs = document.createElement('div')
+    tabs.className = 'markdown-tabs btn-group btn-group-sm'
+    tabs.role = 'group'
+    tabs.setAttribute('aria-label', 'Safeguard mode')
+
+    const editButton = document.createElement('button')
+    editButton.type = 'button'
+    editButton.className = 'btn btn-outline-secondary active'
+    editButton.dataset.mdTarget = textAreaFieldId
+    editButton.dataset.mdMode = 'edit'
+    editButton.textContent = 'Edit'
+
+    const previewButton = document.createElement('button')
+    previewButton.type = 'button'
+    previewButton.className = 'btn btn-outline-secondary'
+    previewButton.dataset.mdTarget = textAreaFieldId
+    previewButton.dataset.mdMode = 'preview'
+    previewButton.textContent = 'Preview'
+
+    tabs.append(editButton, previewButton)
+
     const input = document.createElement('textarea')
     input.id = textAreaFieldId
-    input.className = `form-control safeguard-item ${type}-safeguard-item`
+    input.className = `form-control markdown-input safeguard-item ${type}-safeguard-item`
     input.rows = 3
     input.placeholder =
       'Describe this safeguard. Markdown formatting is supported.'
     input.value = value
 
     const preview = document.createElement('div')
-    preview.className = 'markdown-preview p-3 border rounded mt-2'
+    preview.id = `${textAreaFieldId}Preview`
+    preview.className = 'markdown-preview p-3 border rounded d-none'
 
     const updatePreview = () =>
       renderMarkdownInto(input.value || '', preview, '')
@@ -514,7 +539,8 @@ declare const marked: typeof Marked
     updatePreview()
 
     const controls = buildListControls(row, 'Remove Safeguard')
-    row.append(label, input, preview, controls)
+    fieldHeader.append(label, tabs)
+    row.append(fieldHeader, input, preview, controls)
     return row
   }
 
