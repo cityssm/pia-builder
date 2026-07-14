@@ -389,7 +389,9 @@ declare const marked: typeof Marked
   }
 
   const ensureWarningFieldWrapper = (field: Element) => {
-    if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement)) {
+    if (!(
+      field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement
+    )) {
       return
     }
 
@@ -1150,48 +1152,61 @@ declare const marked: typeof Marked
       `# ${getCurrentDocumentName()}`,
       '',
       '## Overview',
+      '',
       `- **Responsible Business Unit:** ${data.businessUnit || ''}`,
       `- **Project Lead Name:** ${data.projectLeadName || ''}`,
       `- **Project Lead Position:** ${data.projectLeadPosition || ''}`,
-      `- **Assessment Date:** ${data.assessmentDate || ''}`,
       `- **Assessor Name:** ${data.assessorName || ''}`,
       `- **Assessor Position Title:** ${data.assessorPosition || ''}`,
+      `- **Assessment Date:** ${data.assessmentDate || ''}`,
       '',
       '## Initiative Summary and Program Context',
+      '',
       data.initiativeSummary || '',
       '',
       '## Legal Authority for Collection/Use/Disclosure',
+      '',
       data.legalAuthority || '',
       '',
       '## Personal Information Collected',
+      '',
       personalInfoLines,
       '',
       '## Sources of Personal Information',
+      '',
       informationSourceLines,
       '',
       '## Collection, Use, and Disclosure Controls',
+      '',
       data.collectionUseDisclosure || '',
       '',
       '## Retention and Disposal Strategy',
+      '',
       data.retentionDisposal || '',
       '',
       '## Technical Safeguards',
+      '',
       technicalSafeguardLines,
       '',
       '## Administrative Safeguards',
+      '',
       administrativeSafeguardLines,
       '',
       '## Physical Safeguards',
+      '',
       physicalSafeguardLines,
       '',
       '## Roles with Access to Personal Information',
+      '',
       accessRoleLines,
       '',
       '## Next Steps',
+      '',
       "- Review the PIA with your institution's privacy office or designated privacy contact.",
       '- Address any required mitigations or recommended actions.',
       '- Obtain approvals and signatures as required.',
-      '- Gather copies of all relevant documentation, including any checklists completed prior to the PIA, and any documents cited in the "Legal Authorities" section.'
+      '- Gather copies of all relevant documentation, including any checklists completed prior to the PIA, and any documents cited in the "Legal Authorities" section.',
+      ''
     ].join('\n')
   }
 
