@@ -477,6 +477,11 @@
         const customName = (piaNameInput.value || '').trim();
         return customName || 'Untitled PIA';
     };
+    const getTodayDateString = () => {
+        const now = new Date();
+        const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+        return localDate.toISOString().slice(0, 10);
+    };
     const getExportSlug = () => {
         const baseName = (piaNameInput.value || '').trim().toLowerCase();
         const slug = baseName
@@ -517,7 +522,7 @@
         piaNameInput.value = name || '';
         const assessmentDateInput = form.elements.namedItem('assessmentDate');
         if (assessmentDateInput) {
-            assessmentDateInput.value = new Date().toISOString().slice(0, 10);
+            assessmentDateInput.value = getTodayDateString();
         }
         personalInfoList.textContent = '';
         informationSourcesList.textContent = '';
@@ -569,8 +574,12 @@
     };
     const buildMarkdownExport = () => {
         const data = getFormData();
+        const formatMarkdownListItem = (item) => (item || '')
+            .split('\n')
+            .map((line, index) => (index === 0 ? line : `  ${line}`))
+            .join('\n');
         const getMarkdownListLines = (items) => (items || []).length > 0
-            ? items.map((item) => `- ${item}`).join('\n')
+            ? items.map((item) => `- ${formatMarkdownListItem(item)}`).join('\n')
             : '- None listed';
         const personalInfoLines = (data.personalInfoItems || []).length > 0
             ? data.personalInfoItems

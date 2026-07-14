@@ -723,6 +723,12 @@ declare const marked: {
     return customName || 'Untitled PIA'
   }
 
+  const getTodayDateString = () => {
+    const now = new Date()
+    const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+    return localDate.toISOString().slice(0, 10)
+  }
+
   const getExportSlug = () => {
     const baseName = (piaNameInput.value || '').trim().toLowerCase()
     const slug = baseName
@@ -773,7 +779,7 @@ declare const marked: {
       'assessmentDate'
     ) as HTMLInputElement
     if (assessmentDateInput) {
-      assessmentDateInput.value = new Date().toISOString().slice(0, 10)
+      assessmentDateInput.value = getTodayDateString()
     }
 
     personalInfoList.textContent = ''
@@ -839,9 +845,14 @@ declare const marked: {
 
   const buildMarkdownExport = () => {
     const data = getFormData()
+    const formatMarkdownListItem = (item: string) =>
+      (item || '')
+        .split('\n')
+        .map((line, index) => (index === 0 ? line : `  ${line}`))
+        .join('\n')
     const getMarkdownListLines = (items) =>
       (items || []).length > 0
-        ? items.map((item) => `- ${item}`).join('\n')
+        ? items.map((item) => `- ${formatMarkdownListItem(item)}`).join('\n')
         : '- None listed'
 
     const personalInfoLines =
