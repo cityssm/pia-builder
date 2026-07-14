@@ -106,6 +106,12 @@ declare const marked: typeof Marked
   const physicalSafeguardsList = document.querySelector(
     '#physicalSafeguardsList'
   ) as HTMLUListElement
+  const emptyFieldsSummary = document.querySelector(
+    '#emptyFieldsSummary'
+  ) as HTMLElement
+  const emptyFieldsSummaryList = document.querySelector(
+    '#emptyFieldsSummaryList'
+  ) as HTMLUListElement
 
   const markdownFieldIds = [
     'initiativeSummary',
@@ -361,6 +367,82 @@ declare const marked: typeof Marked
     preview.classList.add('d-none')
   }
 
+  const buildWarningFieldWrapper = (
+    field: HTMLInputElement | HTMLTextAreaElement
+  ) => {
+    const wrapper = document.createElement('div')
+    wrapper.className = 'field-warning-wrapper'
+    field.classList.add('field-warning-input')
+
+    const warningIcon = document.createElement('span')
+    warningIcon.className = 'field-empty-warning text-warning d-none'
+
+    if (field.tagName === 'TEXTAREA') {
+      warningIcon.classList.add('textarea-warning')
+    }
+
+    warningIcon.innerHTML =
+      '<i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i><span class="visually-hidden">This field is empty</span>'
+
+    wrapper.append(field, warningIcon)
+    return wrapper
+  }
+
+  const ensureWarningFieldWrapper = (field: Element) => {
+    if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement)) {
+      return
+    }
+
+    if (field.parentElement?.classList.contains('field-warning-wrapper')) {
+      return
+    }
+
+    const parentElement = field.parentElement
+
+    if (!parentElement) {
+      return
+    }
+
+    const nextSibling = field.nextSibling
+    const wrapper = buildWarningFieldWrapper(field)
+
+    if (nextSibling) {
+      parentElement.insertBefore(wrapper, nextSibling)
+      return
+    }
+
+    parentElement.append(wrapper)
+  }
+
+  const getFieldEmptyWarningIcon = (
+    field: HTMLInputElement | HTMLTextAreaElement
+  ) => field.parentElement?.querySelector('.field-empty-warning')
+
+  const setFieldWarningState = (
+    field: HTMLInputElement | HTMLTextAreaElement,
+    isEmpty: boolean
+  ) => {
+    const warningIcon = getFieldEmptyWarningIcon(field)
+
+    if (!warningIcon) {
+      return
+    }
+
+    warningIcon.classList.toggle('d-none', !isEmpty)
+  }
+
+  const normalizeLabelText = (labelText: string) =>
+    (labelText || '').replaceAll(/\s+/g, ' ').trim()
+
+  const getWarnableFields = () =>
+    [
+      ...(form.querySelectorAll(
+        'input.form-control, textarea.form-control'
+      ) as NodeListOf<HTMLInputElement | HTMLTextAreaElement>)
+    ].filter((field) => !field.disabled && field.type !== 'hidden') as Array<
+      HTMLInputElement | HTMLTextAreaElement
+    >
+
   const buildListControls = (row: HTMLElement, removeLabel: string) => {
     const controls = document.createElement('div')
     controls.className = 'dynamic-list-controls justify-content-end'
@@ -377,6 +459,7 @@ declare const marked: typeof Marked
       if (previousRow) {
         previousRow.before(row)
       }
+      refreshCompletionWarnings()
       clearStatus()
     })
 
@@ -390,6 +473,7 @@ declare const marked: typeof Marked
       if (nextRow) {
         nextRow.after(row)
       }
+      refreshCompletionWarnings()
       clearStatus()
     })
 
@@ -399,6 +483,7 @@ declare const marked: typeof Marked
     removeButton.innerHTML = `<i class="fa-solid fa-trash" aria-hidden="true"></i> <span class="visually-hidden">${removeLabel}</span>`
     removeButton.addEventListener('click', () => {
       row.remove()
+      refreshCompletionWarnings()
       clearStatus()
     })
 
@@ -437,8 +522,10 @@ declare const marked: typeof Marked
     useInput.placeholder = 'How this item will be used and/or disclosed'
     useInput.value = item.useOrDisclosure || ''
 
+    const infoFieldWrapper = buildWarningFieldWrapper(infoInput)
+    const useFieldWrapper = buildWarningFieldWrapper(useInput)
     const controls = buildListControls(row, 'Remove Item')
-    row.append(infoLabel, infoInput, useLabel, useInput, controls)
+    row.append(infoLabel, infoFieldWrapper, useLabel, useFieldWrapper, controls)
 
     return row
   }
@@ -460,8 +547,9 @@ declare const marked: typeof Marked
       'e.g., Data subject, external partner, another institution'
     sourceInput.value = source
 
+    const sourceFieldWrapper = buildWarningFieldWrapper(sourceInput)
     const controls = buildListControls(row, 'Remove Source')
-    row.append(sourceLabel, sourceInput, controls)
+    row.append(sourceLabel, sourceFieldWrapper, controls)
 
     return row
   }
@@ -482,8 +570,9 @@ declare const marked: typeof Marked
     input.placeholder = 'Position title with access to personal information'
     input.value = title
 
+    const inputWrapper = buildWarningFieldWrapper(input)
     const controls = buildListControls(row, 'Remove')
-    row.append(label, input, controls)
+    row.append(label, inputWrapper, controls)
     return row
   }
 
@@ -538,9 +627,10 @@ declare const marked: typeof Marked
     input.addEventListener('input', updatePreview)
     updatePreview()
 
+    const inputWrapper = buildWarningFieldWrapper(input)
     const controls = buildListControls(row, 'Remove Safeguard')
     fieldHeader.append(label, tabs)
-    row.append(fieldHeader, input, preview, controls)
+    row.append(fieldHeader, inputWrapper, preview, controls)
     return row
   }
 
@@ -568,6 +658,119 @@ declare const marked: typeof Marked
     [...list.querySelectorAll(itemSelector)]
       .map((input) => (input.value || '').trim())
       .filter((item) => item !== '')
+
+  const dynamicListLabelById = new Map([
+    ['personalInfoList', 'Personal Information Collected'],
+    [
+      'informationSourcesList',
+      'Sources of Personal Information to be Collected'
+    ],
+    ['technicalSafeguardsList', 'Technical Safeguards'],
+    ['administrativeSafeguardsList', 'Administrative Safeguards'],
+    ['physicalSafeguardsList', 'Physical Safeguards'],
+    ['accessRolesList', 'Roles with Access to Personal Information']
+  ])
+
+  const getFieldSummaryLabel = (
+    field: HTMLInputElement | HTMLTextAreaElement
+  ) => {
+    const matchingLabel = field.id
+      ? form.querySelector(`label[for="${field.id}"]`)
+      : null
+    const fieldLabel = normalizeLabelText(matchingLabel?.textContent || '')
+
+    for (const [listId, listLabel] of dynamicListLabelById.entries()) {
+      const listElement = document.getElementById(listId)
+
+      if (!listElement || !listElement.contains(field)) {
+        continue
+      }
+
+      const row = field.closest('.dynamic-list-item')
+      const rowIndex = row
+        ? [...listElement.querySelectorAll('.dynamic-list-item')].indexOf(row) +
+          1
+        : 0
+
+      return `${listLabel} (item ${rowIndex || 1}): ${fieldLabel || 'Field'}`
+    }
+
+    return fieldLabel || normalizeLabelText(field.name) || field.id || 'Unnamed field'
+  }
+
+  const getEmptyListSummaries = () => {
+    const emptyListMessages = [] as string[]
+
+    if (getPersonalInfoItems().length === 0) {
+      emptyListMessages.push('List has no items: Personal Information Collected')
+    }
+
+    if (getInformationSources().length === 0) {
+      emptyListMessages.push(
+        'List has no items: Sources of Personal Information to be Collected'
+      )
+    }
+
+    if (
+      getSafeguards(technicalSafeguardsList, '.technical-safeguard-item')
+        .length === 0
+    ) {
+      emptyListMessages.push('List has no items: Technical Safeguards')
+    }
+
+    if (
+      getSafeguards(
+        administrativeSafeguardsList,
+        '.administrative-safeguard-item'
+      ).length === 0
+    ) {
+      emptyListMessages.push('List has no items: Administrative Safeguards')
+    }
+
+    if (getSafeguards(physicalSafeguardsList, '.physical-safeguard-item').length === 0) {
+      emptyListMessages.push('List has no items: Physical Safeguards')
+    }
+
+    if (getAccessRoles().length === 0) {
+      emptyListMessages.push(
+        'List has no items: Roles with Access to Personal Information'
+      )
+    }
+
+    return emptyListMessages
+  }
+
+  const refreshCompletionWarnings = () => {
+    const emptyFieldSummaries = [] as string[]
+
+    for (const field of getWarnableFields()) {
+      ensureWarningFieldWrapper(field)
+
+      const isEmpty = (field.value || '').trim() === ''
+      setFieldWarningState(field, isEmpty)
+
+      if (isEmpty) {
+        emptyFieldSummaries.push(getFieldSummaryLabel(field))
+      }
+    }
+
+    const emptyListSummaries = getEmptyListSummaries()
+
+    if (!emptyFieldsSummary || !emptyFieldsSummaryList) {
+      return
+    }
+
+    const summaryItems = [...emptyFieldSummaries, ...emptyListSummaries]
+    emptyFieldsSummaryList.textContent = ''
+
+    for (const summaryItem of summaryItems) {
+      const listItem = document.createElement('li')
+      listItem.textContent = summaryItem
+      emptyFieldsSummaryList.append(listItem)
+    }
+
+    emptyFieldsSummary.classList.toggle('d-none', summaryItems.length === 0)
+  }
 
   const getFormData = () => {
     const raw = Object.fromEntries(new FormData(form).entries())
@@ -730,6 +933,7 @@ declare const marked: typeof Marked
 
     updateHeaderTitle()
     updateAllMarkdownPreviews()
+    refreshCompletionWarnings()
   }
 
   const ensureMinimumListRows = () => {
@@ -835,6 +1039,8 @@ declare const marked: typeof Marked
     for (const fieldId of markdownFieldIds) {
       setMarkdownMode(fieldId, 'edit')
     }
+
+    refreshCompletionWarnings()
   }
 
   const loadDocument = (id) => {
@@ -1205,6 +1411,10 @@ declare const marked: typeof Marked
       step.classList.toggle('active', index === currentStep)
     }
 
+    if (currentStep === stepCards.length - 1) {
+      refreshCompletionWarnings()
+    }
+
     previousStepButton.disabled = currentStep === 0
     nextStepButton.innerHTML =
       currentStep === stepCards.length - 1
@@ -1297,16 +1507,19 @@ declare const marked: typeof Marked
 
     const name = personalInfoMenuButton.dataset.personalInfoValue || ''
     personalInfoList.append(buildPersonalInfoRow({ name }))
+    refreshCompletionWarnings()
     clearStatus()
   })
 
   addInformationSourceButton.addEventListener('click', () => {
     informationSourcesList.append(buildInformationSourceRow())
+    refreshCompletionWarnings()
     clearStatus()
   })
 
   addAccessRoleButton.addEventListener('click', () => {
     accessRolesList.append(buildAccessRoleRow())
+    refreshCompletionWarnings()
     clearStatus()
   })
 
@@ -1337,6 +1550,7 @@ declare const marked: typeof Marked
       }
 
       list.append(buildSafeguardRow(type, button.dataset.safeguardValue || ''))
+      refreshCompletionWarnings()
       clearStatus()
     })
   }
@@ -1456,6 +1670,7 @@ declare const marked: typeof Marked
   })
 
   form.addEventListener('input', clearStatus)
+  form.addEventListener('input', refreshCompletionWarnings)
 
   const existingDocuments = getDocumentsSortedByUpdatedAt()
 
@@ -1478,5 +1693,6 @@ declare const marked: typeof Marked
   }
 
   updateAllMarkdownPreviews()
+  refreshCompletionWarnings()
   setStep(0)
 })()
